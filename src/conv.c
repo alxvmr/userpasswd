@@ -113,11 +113,11 @@ do_conv (int master)
 			display_error (_
 				       ("Wrong password.\nPlease try again."),
 				       0);
-			break;
+			return 2;
 		case CONV_WAIT_RETYPE:
 			display_error (_("Weak password.\nPlease try again."),
 				       0);
-			break;
+			return 2;
 		case CONV_DONE:
 			if (!child_rc)
 			{
