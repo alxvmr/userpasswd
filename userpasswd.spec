@@ -15,7 +15,7 @@ Install this package if you would like to provide users with
 graphical tool for changing password.
 
 %prep
-%setup -q
+%setup -q -n %name
 
 %build
 %make_build
