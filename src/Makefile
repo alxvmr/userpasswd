@@ -21,7 +21,7 @@
 #
 
 CPPFLAGS = $(RPM_OPT_FLAGS) -g -Wall -D_GNU_SOURCE $(shell gtk-config --cflags)
-LDFLAGS = $(shell gtk-config --libs)
+LDFLAGS = -lgtk -lgdk
 INSTALL = install
 PACKAGE = userpasswd
 
