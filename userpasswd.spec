@@ -1,3 +1,5 @@
+# $Id$
+
 Name: userpasswd
 Version: 0.2.5
 Release: alt1
@@ -9,6 +11,9 @@ License: GPL
 Source: %name-%version.tar.bz2
 
 Conflicts: usermode
+
+# Automatically added by buildreq on Sat Oct 12 2002
+BuildRequires: XFree86-devel XFree86-libs fontconfig freetype2-devel glib2-devel libXft-devel libatk-devel libexpat libgtk+2-devel libpango-devel pkgconfig
 
 %description
 Install this package if you would like to provide users with
