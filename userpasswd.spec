@@ -1,7 +1,7 @@
 # $Id$
 
 Name: userpasswd
-Version: 0.2.5
+Version: 0.2.6
 Release: alt1
 
 Group: System/Configuration/Other
@@ -38,10 +38,14 @@ graphical tool for changing password.
 
 %files -f %name.lang
 %_bindir/*
+%_libdir/*
 %_menudir/*
 %_datadir/pixmaps/*
 
 %changelog
+* Mon Jan 27 2003 Dmitry V. Levin <ldv@altlinux.org> 0.2.6-alt1
+- Added loop script for menu.
+
 * Sat Oct 12 2002 Dmitry V. Levin <ldv@altlinux.org> 0.2.5-alt1
 - 0.2.5 (fixed gtk_widget_grab_default problem).
 
