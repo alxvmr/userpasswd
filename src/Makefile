@@ -30,6 +30,7 @@ OBJ = $(SRC:.c=.o)
 DEP = $(SRC:.c=.d)
 
 bindir = $(RPM_BUILD_ROOT)/usr/bin
+libdir = $(RPM_BUILD_ROOT)/usr/lib
 
 .PHONY:	all install clean
 
@@ -40,6 +41,7 @@ $(PACKAGE): $(OBJ)
 
 install: all
 	$(INSTALL) -pD -m755 $(PACKAGE) $(bindir)/$(PACKAGE)
+	$(INSTALL) -pD -m755 loop.sh $(libdir)/$(PACKAGE)/loop
 
 clean:
 	$(RM) $(DEP) $(OBJ) $(PACKAGE) *~
