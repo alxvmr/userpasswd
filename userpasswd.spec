@@ -38,7 +38,7 @@ graphical tool for changing password.
 
 %files -f %name.lang
 %_bindir/*
-%_libdir/*
+%_libdir/%name
 %_menudir/*
 %_datadir/pixmaps/*
 
