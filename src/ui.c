@@ -81,10 +81,11 @@ display_dialog (const char *pixname, const char *message, const char *title)
 
 	/* window */
 	window = gtk_dialog_new ();
-	gtk_window_position (GTK_WINDOW (window), GTK_WIN_POS_CENTER_ALWAYS);
-	gtk_container_set_border_width (GTK_CONTAINER (window), 5);
-	gtk_window_set_title (GTK_WINDOW (window), title ? : __progname);
+	gtk_object_set (GTK_OBJECT (window), "type", GTK_WINDOW_POPUP, NULL);
+	gtk_container_set_border_width (GTK_CONTAINER (window), 8);
 	gtk_window_set_policy (GTK_WINDOW (window), FALSE, FALSE, TRUE);
+	gtk_window_set_title (GTK_WINDOW (window), title ? : __progname);
+	gtk_window_position (GTK_WINDOW (window), GTK_WIN_POS_CENTER_ALWAYS);
 	gtk_signal_connect (GTK_OBJECT (window), "destroy",
 			    GTK_SIGNAL_FUNC (ui_gtk_quit),
 			    GTK_OBJECT (window));
@@ -211,10 +212,11 @@ get_pw (const char *title, const char *message, const char *prompt,
 
 	/* window */
 	window = gtk_dialog_new ();
+	gtk_object_set (GTK_OBJECT (window), "type", GTK_WINDOW_POPUP, NULL);
+	gtk_container_set_border_width (GTK_CONTAINER (window), 8);
 	gtk_window_set_policy (GTK_WINDOW (window), FALSE, FALSE, TRUE);
-	gtk_window_position (GTK_WINDOW (window), GTK_WIN_POS_CENTER_ALWAYS);
-	gtk_container_set_border_width (GTK_CONTAINER (window), 5);
 	gtk_window_set_title (GTK_WINDOW (window), title);
+	gtk_window_position (GTK_WINDOW (window), GTK_WIN_POS_CENTER_ALWAYS);
 	gtk_signal_connect (GTK_OBJECT (window), "destroy",
 			    GTK_SIGNAL_FUNC (ui_gtk_quit),
 			    GTK_OBJECT (window));
@@ -226,10 +228,28 @@ get_pw (const char *title, const char *message, const char *prompt,
 			    GTK_OBJECT (window));
 	gtk_widget_show (window);
 
+	/* message_hbox */
+	message_hbox = gtk_hbox_new (1, 5);
+
+	/* pixmap */
+	pix = create_pixmap (window, pixfile);
+	gtk_box_pack_start (GTK_BOX (message_hbox), pix, 0, 0, 0);
+
+	/* message_label */
+	message_label = gtk_label_new (message);
+	gtk_box_pack_end (GTK_BOX (message_hbox), message_label, 0, 0, 5);
+
+	/* entry_hbox */
+	entry_hbox = gtk_hbox_new (1, 5);
+
+	/* entry_label */
+	entry_label = gtk_label_new (prompt);
+	gtk_box_pack_start (GTK_BOX (entry_hbox), entry_label, 0, 0, 5);
+
 	/* entry */
 	entry = gtk_entry_new ();
-	gtk_entry_set_visibility (GTK_ENTRY (entry), 0);
-	gtk_widget_grab_focus (entry);
+	gtk_box_pack_end (GTK_BOX (entry_hbox), entry, 0, 0, 5);
+	gtk_entry_set_visibility (GTK_ENTRY (entry), FALSE);
 
 	/* ok_button */
 	ok_button = gtk_button_new_with_label (_("Ok"));
@@ -251,26 +271,6 @@ get_pw (const char *title, const char *message, const char *prompt,
 				   (GtkSignalFunc) gtk_button_clicked,
 				   (gpointer) GTK_BUTTON (cancel_button));
 
-	/* message_hbox */
-	message_hbox = gtk_hbox_new (1, 5);
-
-	/* pixmap */
-	pix = create_pixmap (window, pixfile);
-	gtk_box_pack_start (GTK_BOX (message_hbox), pix, 0, 0, 0);
-
-	/* message_label */
-	message_label = gtk_label_new (message);
-	gtk_box_pack_end (GTK_BOX (message_hbox), message_label, 0, 0, 5);
-
-	/* entry_hbox */
-	entry_hbox = gtk_hbox_new (1, 5);
-
-	/* entry_label */
-	entry_label = gtk_label_new (prompt);
-	gtk_box_pack_start (GTK_BOX (entry_hbox), entry_label, 0, 0, 5);
-
-	gtk_box_pack_end (GTK_BOX (entry_hbox), entry, 0, 0, 5);
-
 	/* window */
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (window)->vbox), message_hbox,
 			    0, 0, 5);
@@ -280,9 +280,12 @@ get_pw (const char *title, const char *message, const char *prompt,
 			    ok_button, 1, 1, 5);
 	gtk_box_pack_end (GTK_BOX (GTK_DIALOG (window)->action_area),
 			  cancel_button, 1, 1, 5);
-	gtk_widget_show_all (window);
+
 
 	gtk_widget_grab_default (cancel_button);
+	gtk_widget_grab_focus (entry);
+	gtk_widget_show_all (window);
+
 	grab_focus (window);
 	gtk_main ();
 	ungrab_focus ();
