@@ -1,7 +1,7 @@
 
 /*
   $Id$
-  Copyright (C) 2002  Stanislav Ievlev <inger@altlinux.org>
+  Copyright (C) 2002,2003  Stanislav Ievlev <inger@altlinux.org>
   Copyright (C) 2002  Dmitry V. Levin <ldv@altlinux.org>
 
   interface functions for passwd wrapper
@@ -41,23 +41,6 @@
 extern const char *__progname;
 
 static int ui_rc;
-
-/*
- * create pixmap
- */
-static GtkWidget *
-create_pixmap (GtkWidget * widget, const char *fname)
-{
-	GdkBitmap *mask;
-	GtkStyle *style = gtk_widget_get_style (widget);
-	GdkPixmap *pixmap = gdk_pixmap_create_from_xpm (widget->window, &mask,
-							&style->
-							bg[GTK_STATE_NORMAL],
-							fname);
-
-	return gtk_pixmap_new (pixmap, mask);
-}
-
 
 static void
 ui_gtk_quit (void)
@@ -103,7 +86,7 @@ display_dialog (const char *pixname, const char *message, const char *title)
 			    5);
 
 	/* pixmap */
-	pix = create_pixmap (window, pixname);
+	pix = gtk_image_new_from_file (pixname);
 	gtk_box_pack_start (GTK_BOX (hbox), pix, 0, 0, 5);
 
 	/* label */
@@ -131,13 +114,13 @@ display_dialog (const char *pixname, const char *message, const char *title)
 void
 display_message (const char *message, const char *title)
 {
-	display_dialog (PIXMAPDIR "message.xpm", message, title);
+	display_dialog (PIXMAPDIR "info.png", message, title);
 }
 
 void
 display_error (const char *message, const char *title)
 {
-	display_dialog (PIXMAPDIR "error.xpm", message, title);
+	display_dialog (PIXMAPDIR "critical.png", message, title);
 }
 
 static void
@@ -232,7 +215,8 @@ get_pw (const char *title, const char *message, const char *prompt,
 	message_hbox = gtk_hbox_new (1, 5);
 
 	/* pixmap */
-	pix = create_pixmap (window, pixfile);
+	pix = gtk_image_new_from_file (pixfile);
+	
 	gtk_box_pack_start (GTK_BOX (message_hbox), pix, 0, 0, 0);
 
 	/* message_label */
@@ -302,7 +286,7 @@ get_current_pw ()
 	char   *pw = get_pw (_("Current password"),
 			     _("Please enter your\ncurrent password first"),
 			     _("Enter current password:"),
-			     PIXMAPDIR "current.xpm");
+			     PIXMAPDIR "keyring.png");
 
 	if (!pw)
 		exit (ui_rc ?: 2);
@@ -320,13 +304,13 @@ get_new_pw ()
 
 	pw1 = get_pw (_("New password"),
 		      _("Now enter your\nnew password twice"),
-		      _("Enter new password:"), PIXMAPDIR "new.xpm");
+		      _("Enter new password:"), PIXMAPDIR "keyring.png");
 	if (!pw1)
 		exit (ui_rc ?: 2);
 
 	pw2 = get_pw (_("Re-type password"),
 		      _("Now enter your\nnew password twice"),
-		      _("Re-type new password:"), PIXMAPDIR "new.xpm");
+		      _("Re-type new password:"), PIXMAPDIR "keyring.png");
 	if (!pw2)
 		exit (ui_rc ?: 2);
 	if (strcmp (pw1, pw2))

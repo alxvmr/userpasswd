@@ -29,6 +29,6 @@ datadir = $(RPM_BUILD_ROOT)/usr/share
 all clean: 
 
 install:
-	for f in *.xpm; do \
+	for f in *.png; do \
 		$(INSTALL) -pD -m644 "$$f" "$(datadir)/pixmaps/userpasswd-$$f"; \
 	done
