@@ -100,7 +100,6 @@ display_dialog (const char *pixname, const char *message, const char *title)
 	/* button */
 	button = gtk_button_new_with_label (_("Ok"));
 	GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-	gtk_widget_grab_default (button);
 	gtk_signal_connect_object (GTK_OBJECT (button), "clicked",
 				   (GtkSignalFunc) gtk_widget_destroy,
 				   (gpointer) window);
@@ -109,6 +108,7 @@ display_dialog (const char *pixname, const char *message, const char *title)
 
 	/* window */
 	gtk_widget_show_all (window);
+	gtk_widget_grab_default (button);
 
 	gtk_main ();
 
@@ -219,7 +219,7 @@ get_pw (const char *title, const char *message, const char *prompt,
 
 	/* ok_button */
 	ok_button = gtk_button_new_with_label (_("Ok"));
-	gtk_signal_connect (GTK_OBJECT (ok_button), "clicked", set_pw, entry);
+	gtk_signal_connect (GTK_OBJECT (ok_button), "clicked", GTK_SIGNAL_FUNC(set_pw), entry);
 	gtk_signal_connect_object (GTK_OBJECT (ok_button), "clicked",
 				   (GtkSignalFunc) gtk_widget_hide,
 				   (gpointer) window);
@@ -230,7 +230,6 @@ get_pw (const char *title, const char *message, const char *prompt,
 	/* cancel_button */
 	cancel_button = gtk_button_new_with_label (_("Cancel"));
 	GTK_WIDGET_SET_FLAGS (cancel_button, GTK_CAN_DEFAULT);
-	gtk_widget_grab_default (cancel_button);
 	gtk_signal_connect_object (GTK_OBJECT (cancel_button), "clicked",
 				   (GtkSignalFunc) gtk_widget_hide,
 				   (gpointer) window);
@@ -269,6 +268,7 @@ get_pw (const char *title, const char *message, const char *prompt,
 			  cancel_button, 1, 1, 5);
 	gtk_widget_show_all (window);
 
+	gtk_widget_grab_default (cancel_button);
 	grab_focus (window);
 	gtk_main ();
 	ungrab_focus ();
