@@ -2,7 +2,7 @@
 
 Name: userpasswd
 Version: 0.2.7
-Release: alt1
+Release: alt3
 
 Group: System/Configuration/Other
 Summary: The graphical tool for changing password
@@ -43,6 +43,12 @@ graphical tool for changing password.
 %_datadir/pixmaps/*
 
 %changelog
+* Thu Feb 26 2004 Dmitry V. Levin <ldv@altlinux.org> 0.2.7-alt3
+- Rebuilt.
+
+* Thu May 08 2003 Stanislav Ievlev <inger@altlinux.ru> 0.2.7-alt2
+- more beautiful icons
+
 * Wed Feb 05 2003 Dmitry V. Levin <ldv@altlinux.org> 0.2.7-alt1
 - Set dialog type to GTK_WINDOW_POPUP.
 - Activate passwd entry widget by default.
