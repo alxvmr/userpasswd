@@ -1,0 +1,1 @@
+?package(usermode): needs="x11" section="Configuration/Other" title="Change Password" icon="password.png" command="userpasswd" longtitle="Change your password" 
