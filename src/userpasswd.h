@@ -21,8 +21,16 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
 
-#ifndef __USERPASSWD_H__
-#define __USERPASSWD_H__
+#ifndef USERPASSWD_H__
+#define USERPASSWD_H__
+
+#ifndef PACKAGE
+  #define PACKAGE "userpasswd"
+#endif
+
+#ifndef LOCALEDIR
+  #define LOCALEDIR "/usr/share/locale"
+#endif
 
 #define _(arg) gettext(arg)
 
@@ -46,4 +54,4 @@ char   *get_new_pw ();
 void    display_message (const char *message, const char *title);
 void    display_error (const char *message, const char *title);
 
-#endif /* __USERPASSWD_H__ */
+#endif /* USERPASSWD_H__ */
