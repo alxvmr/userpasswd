@@ -20,8 +20,8 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
 
-CPPFLAGS = $(RPM_OPT_FLAGS) -g -Wall -D_GNU_SOURCE $(shell gtk-config --cflags)
-LDFLAGS = -lgtk -lgdk
+CPPFLAGS = $(RPM_OPT_FLAGS) -D_GNU_SOURCE $(shell pkg-config gtk+-2.0 --cflags)
+LDFLAGS = $(shell pkg-config gtk+-2.0 --libs)
 INSTALL = install
 PACKAGE = userpasswd
 

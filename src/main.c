@@ -43,8 +43,9 @@ main (int argc, const char *argv[])
 	if (unlockpt (master) < 0)
 		error (EXIT_FAILURE, errno, "unlockpt");
 
-	textdomain ("userpasswd");
-	bindtextdomain ("userpasswd", "/usr/share/locale");
+	textdomain (PACKAGE);
+	bindtextdomain (PACKAGE, LOCALEDIR);
+	bind_textdomain_codeset (PACKAGE, "UTF-8");
 
 	gtk_set_locale ();
 	gtk_init (&argc, (char ***) &argv);
