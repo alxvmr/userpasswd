@@ -1,12 +1,12 @@
 Name: userpasswd
-Version: 0.2.3
+Version: 0.2.5
 Release: alt1
 
 Group: System/Configuration/Other
 Summary: The graphical tool for changing password
 License: GPL
 
-Source: %name.tar.bz2
+Source: %name-%version.tar.bz2
 
 Conflicts: usermode
 
@@ -15,7 +15,7 @@ Install this package if you would like to provide users with
 graphical tool for changing password.
 
 %prep
-%setup -q -n %name
+%setup -q
 
 %build
 %make_build
@@ -37,6 +37,16 @@ graphical tool for changing password.
 %_datadir/pixmaps/*
 
 %changelog
+* Sat Oct 12 2002 Dmitry V. Levin <ldv@altlinux.org> 0.2.5-alt1
+- 0.2.5 (fixed gtk_widget_grab_default problem).
+
+* Wed Oct 09 2002 Stanislav Ievlev <inger@altlinux.ru> 0.2.4-alt2
+- Rebuilt with gtk 2.1
+
+* Thu Sep 19 2002 Stanislav Ievlev <inger@altlinux.ru> 0.2.4-alt1
+- Moved to gtk2.
+- Added buildrequires.
+
 * Fri Jun 21 2002 Dmitry V. Levin <ldv@altlinux.org> 0.2.3-alt1
 - 0.2.3
 
