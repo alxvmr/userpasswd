@@ -40,6 +40,8 @@
 
 extern const char *__progname;
 
+static int ui_rc;
+
 /*
  * create pixmap
  */
@@ -56,6 +58,14 @@ create_pixmap (GtkWidget * widget, const char *fname)
 	return gtk_pixmap_new (pixmap, mask);
 }
 
+
+static void
+ui_gtk_quit (void)
+{
+	ui_rc = EXIT_FAILURE;
+	gtk_main_quit ();
+}
+
 /*
  * display dialog with some messages
  */
@@ -63,6 +73,8 @@ static void
 display_dialog (const char *pixname, const char *message, const char *title)
 {
 	GtkWidget *window, *hbox, *pix, *label, *button;
+
+	ui_rc = 0;
 
 	if (!message)
 		return;
@@ -74,13 +86,13 @@ display_dialog (const char *pixname, const char *message, const char *title)
 	gtk_window_set_title (GTK_WINDOW (window), title ? : __progname);
 	gtk_window_set_policy (GTK_WINDOW (window), FALSE, FALSE, TRUE);
 	gtk_signal_connect (GTK_OBJECT (window), "destroy",
-			    GTK_SIGNAL_FUNC (gtk_main_quit),
+			    GTK_SIGNAL_FUNC (ui_gtk_quit),
 			    GTK_OBJECT (window));
 	gtk_signal_connect (GTK_OBJECT (window), "delete_event",
-			    GTK_SIGNAL_FUNC (gtk_main_quit),
+			    GTK_SIGNAL_FUNC (ui_gtk_quit),
 			    GTK_OBJECT (window));
 	gtk_signal_connect (GTK_OBJECT (window), "hide",
-			    GTK_SIGNAL_FUNC (gtk_main_quit),
+			    GTK_SIGNAL_FUNC (ui_gtk_quit),
 			    GTK_OBJECT (window));
 	gtk_widget_show (window);
 
@@ -195,6 +207,8 @@ get_pw (const char *title, const char *message, const char *prompt,
 #endif
 	}
 
+	ui_rc = 0;
+
 	/* window */
 	window = gtk_dialog_new ();
 	gtk_window_set_policy (GTK_WINDOW (window), FALSE, FALSE, TRUE);
@@ -202,13 +216,13 @@ get_pw (const char *title, const char *message, const char *prompt,
 	gtk_container_set_border_width (GTK_CONTAINER (window), 5);
 	gtk_window_set_title (GTK_WINDOW (window), title);
 	gtk_signal_connect (GTK_OBJECT (window), "destroy",
-			    GTK_SIGNAL_FUNC (gtk_main_quit),
+			    GTK_SIGNAL_FUNC (ui_gtk_quit),
 			    GTK_OBJECT (window));
 	gtk_signal_connect (GTK_OBJECT (window), "delete_event",
-			    GTK_SIGNAL_FUNC (gtk_main_quit),
+			    GTK_SIGNAL_FUNC (ui_gtk_quit),
 			    GTK_OBJECT (window));
 	gtk_signal_connect (GTK_OBJECT (window), "hide",
-			    GTK_SIGNAL_FUNC (gtk_main_quit),
+			    GTK_SIGNAL_FUNC (ui_gtk_quit),
 			    GTK_OBJECT (window));
 	gtk_widget_show (window);
 
@@ -288,7 +302,7 @@ get_current_pw ()
 			     PIXMAPDIR "current.xpm");
 
 	if (!pw)
-		exit (2);
+		exit (ui_rc ?: 2);
 
 	return pw;
 }
@@ -305,13 +319,13 @@ get_new_pw ()
 		      _("Now enter your\nnew password twice"),
 		      _("Enter new password:"), PIXMAPDIR "new.xpm");
 	if (!pw1)
-		exit (2);
+		exit (ui_rc ?: 2);
 
 	pw2 = get_pw (_("Re-type password"),
 		      _("Now enter your\nnew password twice"),
 		      _("Re-type new password:"), PIXMAPDIR "new.xpm");
 	if (!pw2)
-		exit (2);
+		exit (ui_rc ?: 2);
 	if (strcmp (pw1, pw2))
 	{
 		display_error (_
