@@ -288,7 +288,7 @@ get_current_pw ()
 			     PIXMAPDIR "current.xpm");
 
 	if (!pw)
-		exit (EXIT_FAILURE);
+		exit (2);
 
 	return pw;
 }
@@ -305,19 +305,19 @@ get_new_pw ()
 		      _("Now enter your\nnew password twice"),
 		      _("Enter new password:"), PIXMAPDIR "new.xpm");
 	if (!pw1)
-		exit (EXIT_FAILURE);
+		exit (2);
 
 	pw2 = get_pw (_("Re-type password"),
 		      _("Now enter your\nnew password twice"),
 		      _("Re-type new password:"), PIXMAPDIR "new.xpm");
 	if (!pw2)
-		exit (EXIT_FAILURE);
+		exit (2);
 	if (strcmp (pw1, pw2))
 	{
 		display_error (_
 			       ("Sorry, passwords do not match.\nPlease try again."),
 			       0);
-		exit (EXIT_FAILURE);
+		exit (2);
 	}
 	free (pw2);
 	return pw1;
