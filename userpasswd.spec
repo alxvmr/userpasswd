@@ -1,7 +1,7 @@
 # $Id$
 
 Name: userpasswd
-Version: 0.2.6
+Version: 0.2.7
 Release: alt1
 
 Group: System/Configuration/Other
@@ -43,6 +43,10 @@ graphical tool for changing password.
 %_datadir/pixmaps/*
 
 %changelog
+* Wed Feb 05 2003 Dmitry V. Levin <ldv@altlinux.org> 0.2.7-alt1
+- Set dialog type to GTK_WINDOW_POPUP.
+- Activate passwd entry widget by default.
+
 * Mon Jan 27 2003 Dmitry V. Levin <ldv@altlinux.org> 0.2.6-alt1
 - Added loop script for menu.
 
