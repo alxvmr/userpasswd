@@ -6,7 +6,7 @@ Group: System/Configuration/Other
 Summary: The graphical tool for changing password
 License: GPL
 
-Source: %name-%version.tar.bz2
+Source: %name.tar.bz2
 
 Conflicts: usermode
 
