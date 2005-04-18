@@ -2,7 +2,7 @@
 /*
   $Id$
   Copyright (C) 2002,2003  Stanislav Ievlev <inger@altlinux.org>
-  Copyright (C) 2002  Dmitry V. Levin <ldv@altlinux.org>
+  Copyright (C) 2002-2005  Dmitry V. Levin <ldv@altlinux.org>
 
   interface functions for passwd wrapper
 
@@ -27,6 +27,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include <locale.h>
 #include <libintl.h>
@@ -36,18 +37,7 @@
 
 #include "userpasswd.h"
 
-#define PIXMAPDIR "/usr/share/pixmaps/userpasswd-"
-
-extern const char *__progname;
-
-static int ui_rc;
-
-static void
-ui_gtk_quit (void)
-{
-	ui_rc = EXIT_FAILURE;
-	gtk_main_quit ();
-}
+#define PIXMAP_PREFIX "/usr/share/pixmaps/userpasswd-"
 
 /*
  * display dialog with some messages
@@ -55,30 +45,22 @@ ui_gtk_quit (void)
 static void
 display_dialog (const char *pixname, const char *message, const char *title)
 {
-	GtkWidget *window, *hbox, *pix, *label, *button;
-
-	ui_rc = 0;
+	GtkWidget *window, *hbox, *pix, *label;
 
 	if (!message)
 		return;
 
 	/* window */
-	window = gtk_dialog_new ();
-	gtk_object_set (GTK_OBJECT (window), "type", GTK_WINDOW_POPUP, NULL);
-	gtk_container_set_border_width (GTK_CONTAINER (window), 8);
-	gtk_window_set_policy (GTK_WINDOW (window), FALSE, FALSE, TRUE);
-	gtk_window_set_title (GTK_WINDOW (window), title ? : __progname);
-	gtk_window_position (GTK_WINDOW (window), GTK_WIN_POS_CENTER_ALWAYS);
-	gtk_signal_connect (GTK_OBJECT (window), "destroy",
-			    GTK_SIGNAL_FUNC (ui_gtk_quit),
-			    GTK_OBJECT (window));
-	gtk_signal_connect (GTK_OBJECT (window), "delete_event",
-			    GTK_SIGNAL_FUNC (ui_gtk_quit),
-			    GTK_OBJECT (window));
-	gtk_signal_connect (GTK_OBJECT (window), "hide",
-			    GTK_SIGNAL_FUNC (ui_gtk_quit),
-			    GTK_OBJECT (window));
-	gtk_widget_show (window);
+	window = gtk_dialog_new_with_buttons (title ? :
+					      program_invocation_short_name,
+					      NULL, 0, GTK_STOCK_OK,
+					      GTK_RESPONSE_ACCEPT, NULL);
+
+	gtk_window_set_resizable (GTK_WINDOW (window), 0);
+	gtk_window_set_decorated (GTK_WINDOW (window), 1);
+	gtk_window_set_position (GTK_WINDOW (window),
+				 GTK_WIN_POS_CENTER_ALWAYS);
+	gtk_window_set_keep_above (GTK_WINDOW (window), 1);
 
 	/* hbox */
 	hbox = gtk_hbox_new (1, 0);
@@ -93,20 +75,10 @@ display_dialog (const char *pixname, const char *message, const char *title)
 	label = gtk_label_new (message);
 	gtk_box_pack_end (GTK_BOX (hbox), label, 0, 0, 5);
 
-	/* button */
-	button = gtk_button_new_with_label (_("Ok"));
-	GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-	gtk_signal_connect_object (GTK_OBJECT (button), "clicked",
-				   (GtkSignalFunc) gtk_widget_destroy,
-				   (gpointer) window);
-	gtk_box_pack_end (GTK_BOX (GTK_DIALOG (window)->action_area), button,
-			  1, 1, 5);
-
-	/* window */
+	/* run */
 	gtk_widget_show_all (window);
-	gtk_widget_grab_default (button);
-
-	gtk_main ();
+	gtk_dialog_run (GTK_DIALOG (window));
+	gtk_widget_destroy (window);
 
 	return;
 }
@@ -114,13 +86,13 @@ display_dialog (const char *pixname, const char *message, const char *title)
 void
 display_message (const char *message, const char *title)
 {
-	display_dialog (PIXMAPDIR "info.png", message, title);
+	display_dialog (PIXMAP_PREFIX "info.png", message, title);
 }
 
 void
 display_error (const char *message, const char *title)
 {
-	display_dialog (PIXMAPDIR "critical.png", message, title);
+	display_dialog (PIXMAP_PREFIX "critical.png", message, title);
 }
 
 static void
@@ -131,37 +103,60 @@ ungrab_focus (void)
 	gdk_flush ();
 }
 
+volatile static sig_atomic_t timed_out;
+
+void
+alarm_handler (int signo)
+{
+	timed_out = 1;
+}
+
 static void
 grab_focus (GtkWidget * widget)
 {
-	unsigned i, max = 10;
 	GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
+	struct sigaction action;
 
-	for (i = 0; i < max; ++i)
+	action.sa_handler = alarm_handler;
+	action.sa_flags = SA_RESTART;
+	sigemptyset (&action.sa_mask);
+
+	if (sigaction (SIGALRM, &action, 0) < 0)
+		error (EXIT_FAILURE, errno, "sigaction");
+
+	timed_out = 0;
+	alarm (1);
+	while (!timed_out)
 	{
-		if (i)
-			usleep (100000);
-		if (!gdk_pointer_grab (toplevel->window, TRUE, 0, NULL, NULL,
-				       GDK_CURRENT_TIME))
+		if (!gdk_pointer_grab
+		    (toplevel->window, TRUE, 0, NULL, NULL, GDK_CURRENT_TIME))
+		{
+			alarm (0);
+			timed_out = 0;
 			break;
+		}
 	}
 
-	if (i >= max)
+	if (timed_out)
 	{
 		ungrab_focus ();
 		error (EXIT_FAILURE, 0, "Could not grab pointer");
 	}
 
-	for (i = 0; i < max; ++i)
+	timed_out = 0;
+	alarm (1);
+	while (!timed_out)
 	{
-		if (i)
-			usleep (100000);
 		if (!gdk_keyboard_grab
 		    (toplevel->window, FALSE, GDK_CURRENT_TIME))
+		{
+			alarm (0);
+			timed_out = 0;
 			break;
+		}
 	}
 
-	if (i >= max)
+	if (timed_out)
 	{
 		ungrab_focus ();
 		error (EXIT_FAILURE, 0, "Could not grab keyboard");
@@ -175,48 +170,37 @@ static char *
 get_pw (const char *title, const char *message, const char *prompt,
 	const char *pixfile)
 {
-	GtkWidget *window, *ok_button, *cancel_button;
+	GtkWidget *window;
 	GtkWidget *entry, *entry_label, *entry_hbox;
 	GtkWidget *pix, *message_label, *message_hbox;
 
 	char   *pw = 0;
-	void    set_pw (GtkWidget * button, GtkWidget * entry)
+	void    entry_activated (GtkDialog * dialog)
 	{
-		if (asprintf
-		    (&pw, "%s\n", gtk_entry_get_text (GTK_ENTRY (entry))) < 0)
-			error (EXIT_FAILURE, errno, "asprintf");
-		gtk_entry_set_text (GTK_ENTRY (entry), "");
-#ifdef DEBUG
-		printf ("pw entered: %s", pw);
-#endif
+		gtk_dialog_response (dialog, GTK_RESPONSE_ACCEPT);
 	}
 
-	ui_rc = 0;
-
 	/* window */
-	window = gtk_dialog_new ();
-	gtk_object_set (GTK_OBJECT (window), "type", GTK_WINDOW_POPUP, NULL);
+	window = gtk_dialog_new_with_buttons (title ? :
+					      program_invocation_short_name,
+					      NULL, GTK_DIALOG_MODAL,
+					      GTK_STOCK_OK,
+					      GTK_RESPONSE_ACCEPT,
+					      GTK_STOCK_CANCEL,
+					      GTK_RESPONSE_REJECT, NULL);
+
+	gtk_window_set_resizable (GTK_WINDOW (window), 0);
+	gtk_window_set_decorated (GTK_WINDOW (window), 1);
+	gtk_window_set_keep_above (GTK_WINDOW (window), 1);
+	gtk_window_set_position (GTK_WINDOW (window),
+				 GTK_WIN_POS_CENTER_ALWAYS);
 	gtk_container_set_border_width (GTK_CONTAINER (window), 8);
-	gtk_window_set_policy (GTK_WINDOW (window), FALSE, FALSE, TRUE);
-	gtk_window_set_title (GTK_WINDOW (window), title);
-	gtk_window_position (GTK_WINDOW (window), GTK_WIN_POS_CENTER_ALWAYS);
-	gtk_signal_connect (GTK_OBJECT (window), "destroy",
-			    GTK_SIGNAL_FUNC (ui_gtk_quit),
-			    GTK_OBJECT (window));
-	gtk_signal_connect (GTK_OBJECT (window), "delete_event",
-			    GTK_SIGNAL_FUNC (ui_gtk_quit),
-			    GTK_OBJECT (window));
-	gtk_signal_connect (GTK_OBJECT (window), "hide",
-			    GTK_SIGNAL_FUNC (ui_gtk_quit),
-			    GTK_OBJECT (window));
-	gtk_widget_show (window);
 
 	/* message_hbox */
 	message_hbox = gtk_hbox_new (1, 5);
 
 	/* pixmap */
 	pix = gtk_image_new_from_file (pixfile);
-	
 	gtk_box_pack_start (GTK_BOX (message_hbox), pix, 0, 0, 0);
 
 	/* message_label */
@@ -234,45 +218,36 @@ get_pw (const char *title, const char *message, const char *prompt,
 	entry = gtk_entry_new ();
 	gtk_box_pack_end (GTK_BOX (entry_hbox), entry, 0, 0, 5);
 	gtk_entry_set_visibility (GTK_ENTRY (entry), FALSE);
-
-	/* ok_button */
-	ok_button = gtk_button_new_with_label (_("Ok"));
-	gtk_signal_connect (GTK_OBJECT (ok_button), "clicked", GTK_SIGNAL_FUNC(set_pw), entry);
-	gtk_signal_connect_object (GTK_OBJECT (ok_button), "clicked",
-				   (GtkSignalFunc) gtk_widget_hide,
-				   (gpointer) window);
 	gtk_signal_connect_object (GTK_OBJECT (entry), "activate",
-				   (GtkSignalFunc) gtk_button_clicked,
-				   (gpointer) GTK_BUTTON (ok_button));
-
-	/* cancel_button */
-	cancel_button = gtk_button_new_with_label (_("Cancel"));
-	GTK_WIDGET_SET_FLAGS (cancel_button, GTK_CAN_DEFAULT);
-	gtk_signal_connect_object (GTK_OBJECT (cancel_button), "clicked",
-				   (GtkSignalFunc) gtk_widget_hide,
-				   (gpointer) window);
-	gtk_signal_connect_object (GTK_OBJECT (entry), "activate",
-				   (GtkSignalFunc) gtk_button_clicked,
-				   (gpointer) GTK_BUTTON (cancel_button));
+				   (GtkSignalFunc) entry_activated,
+				   (gpointer) GTK_DIALOG (window));
 
 	/* window */
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (window)->vbox), message_hbox,
 			    0, 0, 5);
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (window)->vbox), entry_hbox,
 			    0, 0, 5);
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (window)->action_area),
-			    ok_button, 1, 1, 5);
-	gtk_box_pack_end (GTK_BOX (GTK_DIALOG (window)->action_area),
-			  cancel_button, 1, 1, 5);
-
-
-	gtk_widget_grab_default (cancel_button);
 	gtk_widget_grab_focus (entry);
-	gtk_widget_show_all (window);
+	g_signal_connect (G_OBJECT (window), "map_event",
+			  G_CALLBACK (grab_focus), (gpointer) window);
 
-	grab_focus (window);
-	gtk_main ();
+	gtk_widget_show_all (window);
+	int     rc = gtk_dialog_run (GTK_DIALOG (window));
+
 	ungrab_focus ();
+
+	if (rc == GTK_RESPONSE_ACCEPT)
+	{
+		if (asprintf
+		    (&pw, "%s\n", gtk_entry_get_text (GTK_ENTRY (entry))) < 0)
+			error (EXIT_FAILURE, errno, "asprintf");
+		gtk_entry_set_text (GTK_ENTRY (entry), "");
+#ifdef DEBUG
+		printf ("pw entered: %s", pw);
+#endif
+	}
+
+	gtk_widget_destroy (window);
 
 	return pw;
 }
@@ -286,10 +261,10 @@ get_current_pw ()
 	char   *pw = get_pw (_("Current password"),
 			     _("Please enter your\ncurrent password first"),
 			     _("Enter current password:"),
-			     PIXMAPDIR "keyring.png");
+			     PIXMAP_PREFIX "keyring.png");
 
 	if (!pw)
-		exit (ui_rc ?: 2);
+		exit (2);
 
 	return pw;
 }
@@ -304,15 +279,16 @@ get_new_pw ()
 
 	pw1 = get_pw (_("New password"),
 		      _("Now enter your\nnew password twice"),
-		      _("Enter new password:"), PIXMAPDIR "keyring.png");
+		      _("Enter new password:"), PIXMAP_PREFIX "keyring.png");
 	if (!pw1)
-		exit (ui_rc ?: 2);
+		exit (2);
 
 	pw2 = get_pw (_("Re-type password"),
 		      _("Now enter your\nnew password twice"),
-		      _("Re-type new password:"), PIXMAPDIR "keyring.png");
+		      _("Re-type new password:"),
+		      PIXMAP_PREFIX "keyring.png");
 	if (!pw2)
-		exit (ui_rc ?: 2);
+		exit (2);
 	if (strcmp (pw1, pw2))
 	{
 		display_error (_

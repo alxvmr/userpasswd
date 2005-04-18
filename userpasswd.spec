@@ -1,8 +1,8 @@
 # $Id$
 
 Name: userpasswd
-Version: 0.2.7
-Release: alt3
+Version: 0.2.8
+Release: alt1
 
 Group: System/Configuration/Other
 Summary: The graphical tool for changing password
@@ -12,8 +12,7 @@ Source: %name-%version.tar.bz2
 
 Conflicts: usermode
 
-# Automatically added by buildreq on Sat Oct 12 2002
-BuildRequires: XFree86-devel XFree86-libs fontconfig freetype2-devel glib2-devel libXft-devel libatk-devel libexpat libgtk+2-devel libpango-devel pkgconfig
+BuildRequires: XFree86-devel libgtk+2-devel
 
 %description
 Install this package if you would like to provide users with
@@ -43,6 +42,9 @@ graphical tool for changing password.
 %_datadir/pixmaps/*
 
 %changelog
+* Mon Apr 18 2005 Dmitry V. Levin <ldv@altlinux.org> 0.2.8-alt1
+- Updated ui code for GTK2.
+
 * Thu Feb 26 2004 Dmitry V. Levin <ldv@altlinux.org> 0.2.7-alt3
 - Rebuilt.
 
