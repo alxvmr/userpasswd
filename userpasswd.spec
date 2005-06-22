@@ -1,7 +1,7 @@
 # $Id$
 
 Name: userpasswd
-Version: 0.2.8
+Version: 0.2.8.1
 Release: alt1
 
 Group: System/Configuration/Other
@@ -42,6 +42,9 @@ graphical tool for changing password.
 %_datadir/pixmaps/*
 
 %changelog
+* Wed Jun 22 2005 Dmitry V. Levin <ldv@altlinux.org> 0.2.8.1-alt1
+- Corrected potential bug introduced in previous release.
+
 * Mon Apr 18 2005 Dmitry V. Levin <ldv@altlinux.org> 0.2.8-alt1
 - Updated ui code for GTK2.
 
