@@ -234,8 +234,6 @@ get_pw (const char *title, const char *message, const char *prompt,
 	gtk_widget_show_all (window);
 	int     rc = gtk_dialog_run (GTK_DIALOG (window));
 
-	ungrab_focus ();
-
 	if (rc == GTK_RESPONSE_ACCEPT)
 	{
 		if (asprintf
@@ -248,6 +246,8 @@ get_pw (const char *title, const char *message, const char *prompt,
 	}
 
 	gtk_widget_destroy (window);
+
+	ungrab_focus ();
 
 	return pw;
 }
