@@ -1,7 +1,7 @@
 #
 # $Id$
 # Copyright (C) 2002  Stanislav Ievlev <inger@altlinux.org>
-# Copyright (C) 2002  Dmitry V. Levin <ldv@altlinux.org>
+# Copyright (C) 2002, 2005  Dmitry V. Levin <ldv@altlinux.org>
 # 
 # Makefile for sources
 #
@@ -17,7 +17,7 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
 CPPFLAGS = $(RPM_OPT_FLAGS) -D_GNU_SOURCE $(shell pkg-config gtk+-2.0 --cflags)
@@ -29,8 +29,8 @@ SRC = child.c conv.c main.c parent.c ui.c
 OBJ = $(SRC:.c=.o)
 DEP = $(SRC:.c=.d)
 
-bindir = $(RPM_BUILD_ROOT)/usr/bin
-libdir = $(RPM_BUILD_ROOT)/usr/lib
+bindir = /usr/bin
+datadir = /usr/share
 
 .PHONY:	all install clean
 
@@ -40,8 +40,8 @@ $(PACKAGE): $(OBJ)
 	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
 install: all
-	$(INSTALL) -pD -m755 $(PACKAGE) $(bindir)/$(PACKAGE)
-	$(INSTALL) -pD -m755 loop.sh $(libdir)/$(PACKAGE)/loop
+	$(INSTALL) -pD -m755 $(PACKAGE) $(RPM_BUILD_ROOT)$(bindir)/$(PACKAGE)
+	$(INSTALL) -pD -m755 loop.sh $(RPM_BUILD_ROOT)$(datadir)/$(PACKAGE)/loop
 
 clean:
 	$(RM) $(DEP) $(OBJ) $(PACKAGE) *~
