@@ -1,7 +1,7 @@
 # $Id$
 
 Name: userpasswd
-Version: 0.2.8.1
+Version: 0.2.8.2
 Release: alt1
 
 Group: System/Configuration/Other
@@ -37,11 +37,14 @@ graphical tool for changing password.
 
 %files -f %name.lang
 %_bindir/*
-%_libdir/%name
+%_datadir/%name
 %_menudir/*
 %_datadir/pixmaps/*
 
 %changelog
+* Mon Nov 21 2005 Dmitry V. Levin <ldv@altlinux.org> 0.2.8.2-alt1
+- Relocated %_libdir/%name to %_datadir/%name (fixes #8506).
+
 * Wed Jun 22 2005 Dmitry V. Levin <ldv@altlinux.org> 0.2.8.1-alt1
 - Corrected potential bug introduced in previous release.
 
