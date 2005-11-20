@@ -1,7 +1,7 @@
 #
 # $Id$
 # Copyright (C) 2002  Stanislav Ievlev <inger@altlinux.org>
-# Copyright (C) 2002  Dmitry V. Levin <ldv@altlinux.org>
+# Copyright (C) 2002, 2005  Dmitry V. Levin <ldv@altlinux.org>
 # 
 # Makefile for pofiles
 #
@@ -17,7 +17,7 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
 INSTALL = /usr/bin/install
@@ -31,15 +31,16 @@ CATALOGS = ru
 MOFILES = $(CATALOGS:=.mo)
 SOURCES = $(wildcard ../src/*.c)
 
-localedir = $(RPM_BUILD_ROOT)/usr/share/locale
+localedir = /usr/share/locale
 
 .PHONY:	all install clean update
 
 all: $(MOFILES)
 
 install:
-	@for n in $(CATALOGS); \
-		do $(INSTALL) -vpD -m644 $$n.mo $(localedir)/$$n/LC_MESSAGES/$(PACKAGE).mo; \
+	@for n in $(CATALOGS); do \
+		$(INSTALL) -vpD -m644 $$n.mo \
+		    $(RPM_BUILD_ROOT)$(localedir)/$$n/LC_MESSAGES/$(PACKAGE).mo; \
 	done
 
 clean: 

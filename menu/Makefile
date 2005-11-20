@@ -1,7 +1,7 @@
 #
 # $Id$
 # Copyright (C) 2002  Stanislav Ievlev <inger@altlinux.org>
-# Copyright (C) 2002  Dmitry V. Levin <ldv@altlinux.org>
+# Copyright (C) 2002, 2005  Dmitry V. Levin <ldv@altlinux.org>
 # 
 # Makefile for menus
 #
@@ -17,16 +17,16 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
 INSTALL = install
 
-menudir = $(RPM_BUILD_ROOT)/usr/lib/menu
+menudir = /usr/lib/menu
 
 .PHONY:	all install clean
 
 all clean: 
 
 install:
-	$(INSTALL) -pD -m644 userpasswd $(menudir)/userpasswd
+	$(INSTALL) -pD -m644 userpasswd $(RPM_BUILD_ROOT)$(menudir)/userpasswd

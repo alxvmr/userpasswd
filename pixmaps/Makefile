@@ -1,7 +1,7 @@
 #
 # $Id$
 # Copyright (C) 2002  Stanislav Ievlev <inger@altlinux.org>
-# Copyright (C) 2002  Dmitry V. Levin <ldv@altlinux.org>
+# Copyright (C) 2002, 2005  Dmitry V. Levin <ldv@altlinux.org>
 # 
 # Makefile for pixmaps
 #
@@ -17,12 +17,12 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
 INSTALL = install
 
-datadir = $(RPM_BUILD_ROOT)/usr/share
+datadir = /usr/share
 
 .PHONY:	all install clean
 
@@ -30,5 +30,6 @@ all clean:
 
 install:
 	for f in *.png; do \
-		$(INSTALL) -pD -m644 "$$f" "$(datadir)/pixmaps/userpasswd-$$f"; \
+		$(INSTALL) -pD -m644 "$$f" \
+		    "$(RPM_BUILD_ROOT)$(datadir)/pixmaps/userpasswd-$$f"; \
 	done
