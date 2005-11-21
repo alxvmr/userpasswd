@@ -25,7 +25,7 @@ graphical tool for changing password.
 %make_build
 
 %install
-%make_install install
+%make_install install menudir=%_menudir
 
 %find_lang %name
 
