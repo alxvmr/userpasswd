@@ -264,7 +264,7 @@ get_current_pw ()
 			     PIXMAP_PREFIX "keyring.png");
 
 	if (!pw)
-		exit (2);
+		exit (1);
 
 	return pw;
 }
@@ -281,14 +281,15 @@ get_new_pw ()
 		      _("Now enter your\nnew password twice"),
 		      _("Enter new password:"), PIXMAP_PREFIX "keyring.png");
 	if (!pw1)
-		exit (2);
+		exit (1);
 
 	pw2 = get_pw (_("Re-type password"),
 		      _("Now enter your\nnew password twice"),
 		      _("Re-type new password:"),
 		      PIXMAP_PREFIX "keyring.png");
 	if (!pw2)
-		exit (2);
+		exit (1);
+
 	if (strcmp (pw1, pw2))
 	{
 		display_error (_
