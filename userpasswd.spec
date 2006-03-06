@@ -1,7 +1,7 @@
 # $Id$
 
 Name: userpasswd
-Version: 0.2.8.2
+Version: 0.2.9
 Release: alt1
 
 Group: System/Configuration/Other
@@ -12,7 +12,7 @@ Source: %name-%version.tar.bz2
 
 Conflicts: usermode
 
-BuildRequires: XFree86-devel libgtk+2-devel
+BuildRequires: libgtk+2-devel
 
 %description
 Install this package if you would like to provide users with
@@ -42,6 +42,9 @@ graphical tool for changing password.
 %_datadir/pixmaps/*
 
 %changelog
+* Tue Mar 07 2006 Dmitry V. Levin <ldv@altlinux.org> 0.2.9-alt1
+- Fixed build with --as-needed.
+
 * Mon Nov 21 2005 Dmitry V. Levin <ldv@altlinux.org> 0.2.8.2-alt1
 - Relocated %_libdir/%name to %_datadir/%name (fixes #8506).
 
