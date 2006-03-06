@@ -1,7 +1,7 @@
 #
 # $Id$
 # Copyright (C) 2002  Stanislav Ievlev <inger@altlinux.org>
-# Copyright (C) 2002, 2005  Dmitry V. Levin <ldv@altlinux.org>
+# Copyright (C) 2002, 2005, 2006  Dmitry V. Levin <ldv@altlinux.org>
 # 
 # Makefile for sources
 #
@@ -21,7 +21,7 @@
 #
 
 CPPFLAGS = $(RPM_OPT_FLAGS) -D_GNU_SOURCE $(shell pkg-config gtk+-2.0 --cflags)
-LDFLAGS = $(shell pkg-config gtk+-2.0 --libs)
+LDLIBS = $(shell pkg-config gtk+-2.0 --libs)
 INSTALL = install
 PACKAGE = userpasswd
 
@@ -37,7 +37,7 @@ datadir = /usr/share
 all: $(PACKAGE)
 
 $(PACKAGE): $(OBJ)
-	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
+	$(LINK.o) $^ $(LDLIBS) -o $@
 
 install: all
 	$(INSTALL) -pD -m755 $(PACKAGE) $(RPM_BUILD_ROOT)$(bindir)/$(PACKAGE)
