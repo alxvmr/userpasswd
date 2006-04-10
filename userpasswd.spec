@@ -1,5 +1,3 @@
-# $Id$
-
 Name: userpasswd
 Version: 0.2.9
 Release: alt1

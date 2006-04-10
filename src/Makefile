@@ -1,5 +1,4 @@
 #
-# $Id$
 # Copyright (C) 2002  Stanislav Ievlev <inger@altlinux.org>
 # Copyright (C) 2002, 2005, 2006  Dmitry V. Levin <ldv@altlinux.org>
 # 

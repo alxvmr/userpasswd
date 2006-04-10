@@ -1,6 +1,5 @@
 #!/bin/sh
 #
-# $Id$
 # Copyright (C) 2003  Dmitry V. Levin <ldv@altlinux.org>
 #
 # Run userpasswd in loop.

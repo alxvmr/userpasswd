@@ -1,6 +1,5 @@
 
 /*
-  $Id$
   Copyright (C) 2002  Stanislav Ievlev <inger@altlinux.org>
   Copyright (C) 2002  Dmitry V. Levin <ldv@altlinux.org>
 
