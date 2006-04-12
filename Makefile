@@ -20,7 +20,7 @@
 #
 
 ifeq ($(strip $(SUBDIRS)),)
-SUBDIRS = $(shell find -name '[a-z]*' -type d -mindepth 1 -maxdepth 1 |LC_COLLATE=C sort)
+SUBDIRS = $(shell find -mindepth 1 -maxdepth 1 -name '[a-z]*' -type d |LC_COLLATE=C sort)
 endif
 
 .PHONY:	all install clean
