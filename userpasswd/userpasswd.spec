@@ -5,6 +5,7 @@ Release: alt1
 Group: System/Configuration/Other
 Summary: The graphical tool for changing password
 License: GPL
+Packager: Dmitry V. Levin <ldv@altlinux.org>
 
 Source: %name-%version.tar
 
