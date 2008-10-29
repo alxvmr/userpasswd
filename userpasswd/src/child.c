@@ -22,7 +22,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stropts.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -116,23 +115,9 @@ do_child (const char *name)
 	if (slave_r < 0)
 		error (EXIT_FAILURE, errno, "open ro %s", name);
 
-	if (isastream (slave_r))
-	{
-		if (ioctl (slave_r, I_PUSH, "ptem") < 0
-		    || ioctl (slave_r, I_PUSH, "ldterm") < 0)
-			error (EXIT_FAILURE, errno, "ioctl slave_r");
-	}
-
 	slave_w = open (name, O_WRONLY);
 	if (slave_w < 0)
 		error (EXIT_FAILURE, errno, "open rw %s", name);
-
-	if (isastream (slave_w))
-	{
-		if (ioctl (slave_w, I_PUSH, "ptem") < 0
-		    || ioctl (slave_w, I_PUSH, "ldterm") < 0)
-			error (EXIT_FAILURE, errno, "ioctl slave_w");
-	}
 
 	{
 		int     fd[3] = { slave_r, slave_w, slave_w };
