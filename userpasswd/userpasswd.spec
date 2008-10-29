@@ -1,16 +1,15 @@
 Name: userpasswd
-Version: 0.2.9
+Version: 0.2.10
 Release: alt1
 
 Group: System/Configuration/Other
 Summary: The graphical tool for changing password
-License: GPL
+License: GPLv2+
 Packager: Dmitry V. Levin <ldv@altlinux.org>
 
 Source: %name-%version.tar
 
 Conflicts: usermode
-
 BuildRequires: libgtk+2-devel
 
 %description
@@ -41,6 +40,9 @@ graphical tool for changing password.
 %_datadir/pixmaps/*
 
 %changelog
+* Wed Oct 29 2008 Dmitry V. Levin <ldv@altlinux.org> 0.2.10-alt1
+- Fixed build with fresh glibc.
+
 * Tue Mar 07 2006 Dmitry V. Levin <ldv@altlinux.org> 0.2.9-alt1
 - Fixed build with --as-needed.
 
