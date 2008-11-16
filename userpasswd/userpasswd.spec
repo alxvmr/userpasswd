@@ -27,12 +27,6 @@ graphical tool for changing password.
 
 %find_lang %name
 
-%post
-%update_menus
-
-%postun
-%clean_menus
-
 %files -f %name.lang
 %_bindir/*
 %_datadir/%name
