@@ -1,6 +1,6 @@
 Name: userpasswd
 Version: 0.2.10
-Release: alt1
+Release: alt2
 
 Group: System/Configuration/Other
 Summary: The graphical tool for changing password
@@ -34,6 +34,9 @@ graphical tool for changing password.
 %_datadir/pixmaps/*
 
 %changelog
+* Sun Dec 14 2008 Dmitry V. Levin <ldv@altlinux.org> 0.2.10-alt2
+- Removed obsolete %update_menus/%clean_menus calls.
+
 * Wed Oct 29 2008 Dmitry V. Levin <ldv@altlinux.org> 0.2.10-alt1
 - Fixed build with fresh glibc.
 
