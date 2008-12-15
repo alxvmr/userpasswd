@@ -35,7 +35,7 @@ graphical tool for changing password.
 
 %changelog
 * Sun Dec 14 2008 Dmitry V. Levin <ldv@altlinux.org> 0.2.10-alt2
-- Removed obsolete %update_menus/%clean_menus calls.
+- Removed obsolete %%update_menus/%%clean_menus calls.
 
 * Wed Oct 29 2008 Dmitry V. Levin <ldv@altlinux.org> 0.2.10-alt1
 - Fixed build with fresh glibc.
