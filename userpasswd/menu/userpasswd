@@ -1,1 +1,0 @@
-?package(userpasswd): needs="x11" section="Configuration/Other" title="Change Password" icon="password.png" command="/usr/share/userpasswd/loop" longtitle="Change your password"

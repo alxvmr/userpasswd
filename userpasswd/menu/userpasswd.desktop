@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=UserPasswd
+GenericName=Change Password
+Comment=Change your password
+Name[ru]=UserPasswd
+GenericName[ru]=Смена пароля
+Comment[ru]=Изменение личного пароля
+Icon=userpasswd-keyring
+Exec=/usr/share/userpasswd/loop
+Terminal=false
+Categories=Settings;

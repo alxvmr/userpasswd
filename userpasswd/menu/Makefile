@@ -21,11 +21,11 @@
 
 INSTALL = install
 
-menudir = /usr/lib/menu
+menudir = /usr/share/applications
 
 .PHONY:	all install clean
 
 all clean: 
 
 install:
-	$(INSTALL) -pD -m644 userpasswd $(RPM_BUILD_ROOT)$(menudir)/userpasswd
+	$(INSTALL) -pD -m644 userpasswd.desktop $(RPM_BUILD_ROOT)$(menudir)/userpasswd.desktop

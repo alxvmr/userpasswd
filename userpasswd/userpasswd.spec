@@ -1,6 +1,6 @@
 Name: userpasswd
 Version: 0.2.10
-Release: alt2
+Release: alt3
 
 Group: System/Configuration/Other
 Summary: The graphical tool for changing password
@@ -23,17 +23,20 @@ graphical tool for changing password.
 %make_build
 
 %install
-%make_install install menudir=%_menudir
+%make_install install menudir=%_desktopdir
 
 %find_lang %name
 
 %files -f %name.lang
 %_bindir/*
 %_datadir/%name
-%_menudir/*
+%_desktopdir/*
 %_datadir/pixmaps/*
 
 %changelog
+* Wed Sep 09 2009 Sergey V Turchin <zerg@altlinux.org> 0.2.10-alt3
+- using desktop-file for applications menu (closes: 21505)
+
 * Sun Dec 14 2008 Dmitry V. Levin <ldv@altlinux.org> 0.2.10-alt2
 - Removed obsolete %%update_menus/%%clean_menus calls.
 
