@@ -51,6 +51,7 @@ write_loop (int fd, const char *buffer, ssize_t count)
 		offset += block;
 		count -= block;
 	}
+	fdatasync(fd);
 	return offset;
 }
 
