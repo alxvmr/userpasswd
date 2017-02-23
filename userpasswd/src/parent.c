@@ -63,6 +63,7 @@ do_parent (int master)
 	conv_state state = CONV_WAIT_CURRENT;
 	ssize_t count;
 	char   *new_pw = 0;
+	char   *current_pw = 0;
 	char    masterbuf[BUFSIZ];
 
 	/*
@@ -71,6 +72,7 @@ do_parent (int master)
 	while ((count = read (master, masterbuf, sizeof (masterbuf) - 1)) > 0)
 	{
 		static const char str_current[] = "Enter current password:";
+		static const char str_kerberos[] = "Current Kerberos password:";
 		static const char str_new[] = "Enter new password:";
 		static const char str_retype[] = "Re-type new password:";
 
@@ -81,12 +83,10 @@ do_parent (int master)
 		{
 			if (CONV_WAIT_CURRENT == state)
 			{
-				char   *pw = get_current_pw ();
-				size_t  len = strlen (pw);
+				current_pw = get_current_pw ();
+				size_t  len = strlen (current_pw);
 
-				count = write_loop (master, pw, len);
-				memset (pw, 0, len);
-				free (pw);
+				count = write_loop (master, current_pw, len);
 				if (count != len)
 				{
 					error (EXIT_SUCCESS,
@@ -95,12 +95,68 @@ do_parent (int master)
 					return CONV_ERR;
 				}
 				state = CONV_WAIT_NEW;
+			} else if (CONV_GOT_KERBEROS == state)
+			{
+				count = write_loop (master, "\n", 1);
+				if (count != 1)
+				{
+					error (EXIT_SUCCESS,
+					       errno,
+					       "write empty password after kerberos to child");
+					return CONV_ERR;
+				}
+				state = CONV_WAIT_NEW;
+			} else
+			{
+				return CONV_ERR;
+			}
+		} else if (strstr (masterbuf, str_kerberos))
+		{
+			if (CONV_WAIT_CURRENT == state)
+			{
+				current_pw = get_current_pw ();
+				size_t  len = strlen (current_pw);
+
+				count = write_loop (master, current_pw, len);
+				if (count != len)
+				{
+					error (EXIT_SUCCESS,
+					       errno,
+					       "write current kerberos password to child");
+					return CONV_ERR;
+				}
+				state = CONV_GOT_KERBEROS;
+			} else if (CONV_WAIT_NEW == state)
+			{
+				char   *pw = current_pw;
+				size_t  len;
+
+				if (pw == 0) {
+					error (EXIT_SUCCESS,
+					       errno,
+					       "bad current password saved for kerberos");
+					return CONV_ERR;
+				}
+				len = strlen (pw);
+
+				count = write_loop (master, pw, len);
+				if (count != len)
+				{
+					error (EXIT_SUCCESS,
+					       errno,
+					       "write same kerberos password as current to child");
+					return CONV_ERR;
+				}
 			} else
 			{
 				return CONV_ERR;
 			}
 		} else if (strstr (masterbuf, str_new))
 		{
+			if (current_pw != 0) {
+				memset (current_pw, 0, strlen(current_pw));
+				free (current_pw);
+			}
 			if ((CONV_WAIT_CURRENT == state)
 			    || (CONV_WAIT_NEW == state))
 			{
