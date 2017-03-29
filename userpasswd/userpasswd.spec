@@ -1,5 +1,5 @@
 Name: userpasswd
-Version: 0.3.0
+Version: 0.3.1
 Release: alt1%ubt
 
 Group: System/Configuration/Other
@@ -36,6 +36,9 @@ graphical tool for changing password.
 %_datadir/pixmaps/*
 
 %changelog
+* Wed Mar 29 2017 Evgeny Sinelnikov <sin@altlinux.ru> 0.3.1-alt1%ubt
+- Support sssd password with pam_sss
+
 * Thu Feb 23 2017 Evgeny Sinelnikov <sin@altlinux.ru> 0.3.0-alt1%ubt
 - Support Kerberos password with pam_krb5
 
