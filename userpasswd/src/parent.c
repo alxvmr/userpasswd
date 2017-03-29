@@ -73,6 +73,7 @@ do_parent (int master)
 	while ((count = read (master, masterbuf, sizeof (masterbuf) - 1)) > 0)
 	{
 		static const char str_current[] = "Enter current password:";
+		static const char str_sss[] = "Current Password:";
 		static const char str_kerberos[] = "Current Kerberos password:";
 		static const char str_new[] = "Enter new password:";
 		static const char str_retype[] = "Re-type new password:";
@@ -107,6 +108,47 @@ do_parent (int master)
 					return CONV_ERR;
 				}
 				state = CONV_WAIT_NEW;
+			} else
+			{
+				return CONV_ERR;
+			}
+		} else if (strstr (masterbuf, str_sss))
+		{
+			if (CONV_WAIT_CURRENT == state)
+			{
+				current_pw = get_current_pw ();
+				size_t  len = strlen (current_pw);
+
+				count = write_loop (master, current_pw, len);
+				if (count != len)
+				{
+					error (EXIT_SUCCESS,
+					       errno,
+					       "write current sss password to child");
+					return CONV_ERR;
+				}
+				state = CONV_GOT_SSS;
+			} else if (CONV_WAIT_NEW == state)
+			{
+				char   *pw = current_pw;
+				size_t  len;
+
+				if (pw == 0) {
+					error (EXIT_SUCCESS,
+					       errno,
+					       "bad current password saved for sss");
+					return CONV_ERR;
+				}
+				len = strlen (pw);
+
+				count = write_loop (master, pw, len);
+				if (count != len)
+				{
+					error (EXIT_SUCCESS,
+					       errno,
+					       "write same sss password as current to child");
+					return CONV_ERR;
+				}
 			} else
 			{
 				return CONV_ERR;
@@ -157,9 +199,12 @@ do_parent (int master)
 			if (current_pw != 0) {
 				memset (current_pw, 0, strlen(current_pw));
 				free (current_pw);
+				current_pw = 0;
 			}
 			if ((CONV_WAIT_CURRENT == state)
-			    || (CONV_WAIT_NEW == state))
+			    || (CONV_WAIT_NEW == state)
+			    || (CONV_GOT_KERBEROS == state)
+			    || (CONV_GOT_SSS == state))
 			{
 				size_t  len;
 
