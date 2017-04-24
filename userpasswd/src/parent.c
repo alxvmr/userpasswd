@@ -76,7 +76,9 @@ do_parent (int master)
 		static const char str_sss[] = "Current Password:";
 		static const char str_kerberos[] = "Current Kerberos password:";
 		static const char str_new[] = "Enter new password:";
+		static const char str_sss_new[] = "New Password:";
 		static const char str_retype[] = "Re-type new password:";
+		static const char str_sss_retype[] = "Reenter new Password:";
 
 		masterbuf[count] = '\0';
 		write (STDOUT_FILENO, masterbuf, count);
@@ -194,7 +196,7 @@ do_parent (int master)
 			{
 				return CONV_ERR;
 			}
-		} else if (strstr (masterbuf, str_new))
+		} else if (strstr (masterbuf, str_new) || strstr (masterbuf, str_sss_new))
 		{
 			if (current_pw != 0) {
 				memset (current_pw, 0, strlen(current_pw));
@@ -229,7 +231,7 @@ do_parent (int master)
 			{
 				return CONV_ERR;
 			}
-		} else if (strstr (masterbuf, str_retype))
+		} else if (strstr (masterbuf, str_retype) || strstr (masterbuf, str_sss_retype))
 		{
 			if (CONV_WAIT_RETYPE == state)
 			{
