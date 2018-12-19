@@ -162,6 +162,11 @@ grab_focus (GtkWidget * widget)
 	}
 }
 
+void    entry_activated (GtkDialog * dialog)
+{
+	gtk_dialog_response (dialog, GTK_RESPONSE_ACCEPT);
+}
+
 /*
  * ask for password
  */
@@ -174,10 +179,6 @@ get_pw (const char *title, const char *message, const char *prompt,
 	GtkWidget *pix, *message_label, *message_hbox;
 
 	char   *pw = 0;
-	void    entry_activated (GtkDialog * dialog)
-	{
-		gtk_dialog_response (dialog, GTK_RESPONSE_ACCEPT);
-	}
 
 	/* window */
 	window = gtk_dialog_new_with_buttons (title ? :
