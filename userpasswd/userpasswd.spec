@@ -1,5 +1,5 @@
 Name: userpasswd
-Version: 0.3.2
+Version: 0.3.3
 Release: alt1%ubt
 
 Group: System/Configuration/Other
@@ -36,6 +36,9 @@ graphical tool for changing password.
 %_datadir/pixmaps/*
 
 %changelog
+* Mon Sep 11 2017 Michael Shigorin <mike@altlinux.org> 0.3.3-alt1%ubt
+- E2K: avoid a (trivial) nested function
+
 * Mon Apr 24 2017 Evgeny Sinelnikov <sin@altlinux.ru> 0.3.2-alt1%ubt
 - Support for New and Reenter new Password for pam_sss
 
