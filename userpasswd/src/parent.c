@@ -72,7 +72,7 @@ do_parent (int master)
 	 */
 	while ((count = read (master, masterbuf, sizeof (masterbuf) - 1)) > 0)
 	{
-		static const char str_current[] = "Enter current password:";
+		static const char str_current[] = "Current password:";
 		static const char str_sss[] = "Current Password:";
 		static const char str_kerberos[] = "Current Kerberos password:";
 		static const char str_new[] = "Enter new password:";
