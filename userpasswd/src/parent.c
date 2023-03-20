@@ -75,10 +75,13 @@ do_parent (int master)
 		static const char str_current[] = "Current password:";
 		static const char str_sss[] = "Current Password:";
 		static const char str_kerberos[] = "Current Kerberos password:";
+		static const char str_winbind[] = "(current) NT password:";
 		static const char str_new[] = "Enter new password:";
 		static const char str_sss_new[] = "New Password:";
+		static const char str_winbind_new[] = "Enter new NT password:";
 		static const char str_retype[] = "Re-type new password:";
 		static const char str_sss_retype[] = "Reenter new Password:";
+		static const char str_winbind_retype[] = "Retype new NT password:";
 
 		masterbuf[count] = '\0';
 		write (STDOUT_FILENO, masterbuf, count);
@@ -196,7 +199,48 @@ do_parent (int master)
 			{
 				return CONV_ERR;
 			}
-		} else if (strstr (masterbuf, str_new) || strstr (masterbuf, str_sss_new))
+		} else if (strstr (masterbuf, str_winbind))
+		{
+			if (CONV_WAIT_CURRENT == state)
+			{
+				current_pw = get_current_pw ();
+				size_t  len = strlen (current_pw);
+
+				count = write_loop (master, current_pw, len);
+				if (count != len)
+				{
+					error (EXIT_SUCCESS,
+					       errno,
+					       "write current winbind password to child");
+					return CONV_ERR;
+				}
+				state = CONV_GOT_WINBIND;
+			} else if (CONV_WAIT_NEW == state)
+			{
+				char   *pw = current_pw;
+				size_t  len;
+
+				if (pw == 0) {
+					error (EXIT_SUCCESS,
+					       errno,
+					       "bad current password saved for winbind");
+					return CONV_ERR;
+				}
+				len = strlen (pw);
+
+				count = write_loop (master, pw, len);
+				if (count != len)
+				{
+					error (EXIT_SUCCESS,
+					       errno,
+					       "write same winbind password as current to child");
+					return CONV_ERR;
+				}
+			} else
+			{
+				return CONV_ERR;
+			}
+		} else if (strstr (masterbuf, str_new) || strstr (masterbuf, str_sss_new) || strstr (masterbuf, str_winbind_new))
 		{
 			if (current_pw != 0) {
 				memset (current_pw, 0, strlen(current_pw));
@@ -206,7 +250,8 @@ do_parent (int master)
 			if ((CONV_WAIT_CURRENT == state)
 			    || (CONV_WAIT_NEW == state)
 			    || (CONV_GOT_KERBEROS == state)
-			    || (CONV_GOT_SSS == state))
+			    || (CONV_GOT_SSS == state)
+			    || (CONV_GOT_WINBIND == state))
 			{
 				size_t  len;
 
@@ -231,7 +276,7 @@ do_parent (int master)
 			{
 				return CONV_ERR;
 			}
-		} else if (strstr (masterbuf, str_retype) || strstr (masterbuf, str_sss_retype))
+		} else if (strstr (masterbuf, str_retype) || strstr (masterbuf, str_sss_retype) || strstr (masterbuf, str_winbind_retype))
 		{
 			if (CONV_WAIT_RETYPE == state)
 			{
