@@ -32,23 +32,18 @@
 
 #include "userpasswd.h"
 
-static pid_t child;		/* child process PID */
-static int child_rc;		/* child return code */
-
 /*
- * handler to control return status of the child process
+ * returns status of the child process
  */
-static void
-sigchld_handler (int signo)
+static int
+get_child_exit_code (pid_t child)
 {
 	int     status;
-	pid_t   old_child = child;
+	int     child_rc = 0;
 
 	signal (SIGCHLD, SIG_IGN);
 	if (waitpid (child, &status, 0) != child)
 		error (EXIT_FAILURE, errno, "waitpid");
-
-	child = 0;
 
 	if (WIFEXITED (status))
 	{
@@ -56,24 +51,24 @@ sigchld_handler (int signo)
 		{
 #ifdef DEBUG
 			printf ("child %d exited with return code %d.\n",
-				old_child, WEXITSTATUS (status));
+				child, WEXITSTATUS (status));
 #endif
 			child_rc = WEXITSTATUS (status);
-			return;
+			return child_rc;
 		}
 #ifdef DEBUG
-		printf ("child %d exited normally.\n", old_child);
+		printf ("child %d exited normally.\n", child);
 #endif
-		return;
+		return child_rc;
 	}
 
 	if (WIFSIGNALED (status))
 	{
 		error (EXIT_SUCCESS, errno,
-		       "child %d terminated with signal %d.\n", old_child,
+		       "child %d terminated with signal %d.\n", child,
 		       WTERMSIG (status));
 		child_rc = 128 + WTERMSIG (status);
-		return;
+		return child_rc;
 	}
 }
 
@@ -92,18 +87,18 @@ do_conv (int master)
 	printf ("ptsname: %s\n", name);
 #endif
 
-	signal (SIGCHLD, sigchld_handler);
-
-	child = fork ();
+	pid_t child = fork ();
 	if (child < 0)
 		error (EXIT_FAILURE, errno, "fork");
 	if (!child)
 	{
-		signal (SIGCHLD, SIG_IGN);
 		do_child (name);
 	}
 
-	switch (do_parent (master))
+	conv_state state = do_parent (master);
+	int child_rc = get_child_exit_code(child);
+
+	switch (state)
 	{
 		case CONV_WAIT_CURRENT:
 			display_error (_("System configuration error."), 0);
