@@ -41,7 +41,6 @@ get_child_exit_code (pid_t child)
 	int     status;
 	int     child_rc = 0;
 
-	signal (SIGCHLD, SIG_IGN);
 	if (waitpid (child, &status, 0) != child)
 		error (EXIT_FAILURE, errno, "waitpid");
 
@@ -96,7 +95,7 @@ do_conv (int master)
 	}
 
 	conv_state state = do_parent (master);
-	int child_rc = get_child_exit_code(child);
+	int child_rc = 0;
 
 	switch (state)
 	{
@@ -113,6 +112,7 @@ do_conv (int master)
 				       0);
 			return 2;
 		case CONV_DONE:
+			child_rc = get_child_exit_code(child);
 			if (!child_rc)
 			{
 				display_message (_
@@ -126,5 +126,5 @@ do_conv (int master)
 					 0);
 			break;
 	}
-	return child_rc ? : EXIT_FAILURE;
+	return EXIT_FAILURE;
 }
