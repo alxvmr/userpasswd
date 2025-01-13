@@ -67,11 +67,15 @@ static void
 cb_check_password_button (GtkWidget *widget,
                           GtkWidget *lbox)
 {
+    GtkListBoxRow *row_input = gtk_list_box_get_row_at_index (GTK_LIST_BOX (lbox), 0);
+    const gchar *current_password = NULL;
+    current_password = gtk_editable_get_text (GTK_EDITABLE (row_input));
+    g_print ("Current password = %s\n", current_password);
+
     // тут логика отправки текущего пароля в passwd
     // если успешно, то запрашиваем новый пароль
 
     // все ли ок с памятью?
-    GtkListBoxRow *row_input = gtk_list_box_get_row_at_index (GTK_LIST_BOX (lbox), 0);
     gtk_list_box_remove (GTK_LIST_BOX (lbox), GTK_WIDGET (row_input));
 
     GtkListBoxRow *row_button = gtk_list_box_get_row_at_index (GTK_LIST_BOX (lbox), 0);
