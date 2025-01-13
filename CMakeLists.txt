@@ -1,11 +1,15 @@
 cmake_minimum_required(VERSION 3.5.0)
-project(HelloAdwaita VERSION 0.1.0 LANGUAGES C)
+project(userpasswd VERSION 0.1.0 LANGUAGES C)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK REQUIRED gtk4)
 pkg_check_modules(ADWAITAA REQUIRED libadwaita-1)
 
 add_executable(userpasswd gui/userpasswd.c)
+
+add_subdirectory(backend)
 
 target_include_directories(
     userpasswd PRIVATE
