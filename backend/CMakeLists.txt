@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 3.5.0)
 project(pam_helper VERSION 0.1.0 LANGUAGES C)
 
 set(SOURCE_FILES_PAM_HELPER
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/pam_helper.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/pam_helper_json.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/translate.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/passwduser.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/source/pam_helper.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/source/pam_helper_json.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/source/translate.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/source/passwduser.c
 )
 
 find_package(PkgConfig REQUIRED)
