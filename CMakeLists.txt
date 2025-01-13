@@ -5,7 +5,7 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK REQUIRED gtk4)
 pkg_check_modules(ADWAITAA REQUIRED libadwaita-1)
 
-add_executable(userpasswd userpasswd.c)
+add_executable(userpasswd gui/userpasswd.c)
 
 target_include_directories(
     userpasswd PRIVATE
