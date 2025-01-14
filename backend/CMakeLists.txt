@@ -5,7 +5,6 @@ set(SOURCE_FILES_PAM_HELPER
     ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/source/pam_helper.c
     ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/source/pam_helper_json.c
     ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/source/translate.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/source/passwduser.c
 )
 
 find_package(PkgConfig REQUIRED)

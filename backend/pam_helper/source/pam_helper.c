@@ -1,5 +1,4 @@
 #include <security/pam_appl.h>
-#include "../include/passwduser.h"
 #include "../include/pam_helper_json.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -30,15 +29,46 @@ static inline int getstate(const char *msg) {
     return PAM_SKIPASS;
 }
 
+gchar *
+get_data_from_parent (int type_data)
+{
+    gchar *buf = NULL;
+    gchar *data_input = NULL;
+    gchar *key = "current_password";
+    size_t size = 0;
+
+    if (type_data == PAM_NEWPASS) {
+        key = "new_password";
+    }
+
+    JsonNode *output_json = init_json_node_output (key);
+    print_json (output_json);
+
+    if (getline(&buf, &size, stdin) != -1) {
+        buf[strcspn(buf, "\n")] = 0;
+    } else {
+        g_printerr ("Input error");
+    }
+
+    JsonNode *input_node = string_to_json (buf);
+    JsonObject *input_object = json_node_get_object (input_node);
+    JsonNode *input_member = json_object_get_member (input_object, key);
+    if (json_node_get_node_type (input_member) != JSON_NODE_NULL) {
+        data_input = g_strdup (json_node_get_string (input_member));
+    }
+
+    json_node_unref (input_member);
+    json_node_unref (output_json);
+
+    return data_input;
+}
+
 int
 non_interactive_conv (int                        num_msg,
                       const struct pam_message **msgm,
                       struct pam_response      **response,
                       void                      *appdata_ptr)
 {
-    PasswdUser *user = (PasswdUser *) appdata_ptr;
-    g_assert (user != NULL);
-
     struct pam_response *resp = NULL;
     const struct pam_message *message;
     const gchar *answ = NULL;
@@ -66,11 +96,16 @@ non_interactive_conv (int                        num_msg,
             case PAM_PROMPT_ECHO_ON:
             case PAM_PROMPT_ECHO_OFF:
                 switch (getstate(message->msg)) {
+                    /* TODO: add NULL check*/
                     case PAM_OLDPASS:
-                        answ = g_strdup (user->old_passwd);
+                        gchar *old_passwd = get_data_from_parent (PAM_OLDPASS);
+                        answ = g_strdup (old_passwd);
+                        g_free (old_passwd);
                         break;
                     case PAM_NEWPASS:
-                        answ = g_strdup (user->new_passwd);
+                        gchar *new_passwd = get_data_from_parent (PAM_NEWPASS);
+                        answ = g_strdup (new_passwd);
+                        g_free (new_passwd);
                         break;
                     case PAM_SKIPASS:
                         answ = NULL;
@@ -111,16 +146,16 @@ wrapped_pam_end (pam_handle_t *pamh, int retval, JsonObject *object)
 }
 
 int
-setup_pam (PasswdUser *user, JsonNode *root)
+setup_pam (gchar* user_name, JsonNode *root)
 {
-    g_assert (user != NULL);
+    g_assert (user_name != NULL);
 
     pam_handle_t *pamh = NULL;
-    struct pam_conv conv = { non_interactive_conv, user };
+    struct pam_conv conv = { non_interactive_conv };
     int retval;
     JsonObject *object = json_node_get_object (root);
 
-    retval = pam_start (PASSWD_SERVICE, user->user_name, &conv, &pamh);
+    retval = pam_start (PASSWD_SERVICE, user_name, &conv, &pamh);
     set_member_pam (object, "pam_start", retval, pamh);
 
     if (retval != PAM_SUCCESS) {
@@ -183,23 +218,12 @@ void g_print_no_convert(const gchar *buf)
 int main (int argc, char *argv[]) {
     g_set_print_handler(g_print_no_convert);
 
-    PasswdUser *user = NULL;
     int res;
     
     JsonNode *root = init_json_node ();
     JsonObject *object = json_node_get_object(root);
 
     g_assert (object != NULL);
-
-    if (argc != 3) {
-        json_object_set_string_member(object, "main_error", "Not enough arguments");
-        print_json (root);
-
-        clear_json_object (object);
-        json_node_free (root);
-
-        return 1;
-    }
 
     gchar *username = get_username ();
     if (!username) {
@@ -212,16 +236,14 @@ int main (int argc, char *argv[]) {
         return 1;
     }
 
-    user = passwd_user_new (username, argv[1], argv[2]);
-    json_object_set_string_member(object, "user_name", user->user_name);
+    json_object_set_string_member(object, "user_name", username);
 
-    res = setup_pam (user, root);
+    res = setup_pam (username, root);
 
     clear_json_object (object);
     json_node_free (root);
 
     g_free(CONV_ERROR);
 
-    g_object_unref (user);
     return 0;
 }

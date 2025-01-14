@@ -51,6 +51,19 @@ init_json_node ()
     return root;
 }
 
+JsonNode*
+init_json_node_output (gchar *key)
+{
+    JsonNode *root = json_node_new (JSON_NODE_OBJECT);
+    JsonObject *object = json_object_new ();
+
+    json_object_set_member (object, key, json_node_new(JSON_NODE_NULL));
+    json_node_init (root, JSON_NODE_OBJECT);
+    json_node_set_object (root, object);
+
+    return root;
+}
+
 gchar *
 get_string_from_json_node (JsonNode *root)
 {
@@ -61,6 +74,30 @@ get_string_from_json_node (JsonNode *root)
     g_object_unref (generator);
 
     return json_string;
+}
+
+JsonNode*
+string_to_json (gchar *buf)
+{
+    JsonParser *parser = json_parser_new ();
+    GError *error = NULL;
+
+    if (!json_parser_load_from_data (parser, buf, -1, &error))
+    {
+        g_printerr ("Json parsing error: %s\n", error->message);
+        g_error_free (error);
+        g_object_unref (parser);
+        return NULL;
+    }
+
+    JsonNode *root = json_parser_get_root (parser);
+
+    /* TODO: Figure out how to clear the parser without losing the root pointer */
+
+    // g_object_ref (root);
+    // g_object_unref (parser);
+
+    return root;
 }
 
 void
