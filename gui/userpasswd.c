@@ -1,6 +1,7 @@
 #include <adwaita.h>
 #include <gtk/gtk.h>
 #include <glib.h>
+#include "manipulcation_pwd.h"
 
 static void
 show_about (GSimpleAction *action,
@@ -71,6 +72,7 @@ cb_check_password_button (GtkWidget *widget,
     const gchar *current_password = NULL;
     current_password = gtk_editable_get_text (GTK_EDITABLE (row_input));
     g_print ("Current password = %s\n", current_password);
+    create_pipe (current_password, "123", "123");
 
     // тут логика отправки текущего пароля в passwd
     // если успешно, то запрашиваем новый пароль
