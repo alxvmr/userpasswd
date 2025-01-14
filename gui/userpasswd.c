@@ -15,7 +15,7 @@ show_about (GSimpleAction *action,
 
     adw_show_about_dialog (GTK_WIDGET (gtk_application_get_active_window (userdata)),
                            "application_name", "userpasswd",
-                           "application-icon", "org.example.userpasswd",
+                           "application-icon", "consolehelper-keyring",
                            "version", "0.0.1",
                            "copyright", "© 2025 BaseALT",
                            "issue-url", "https://github.com/alxvmr/userpasswd/issues",
