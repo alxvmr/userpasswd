@@ -69,6 +69,8 @@ non_interactive_conv (int                        num_msg,
                       struct pam_response      **response,
                       void                      *appdata_ptr)
 {
+    JsonNode *root = (JsonNode *) appdata_ptr;
+    JsonObject *log_object = json_node_get_object (root);
     struct pam_response *resp = NULL;
     const struct pam_message *message;
     const gchar *answ = NULL;
@@ -86,6 +88,8 @@ non_interactive_conv (int                        num_msg,
         switch (message->msg_style) {
             case PAM_TEXT_INFO:
             /*TODO: Add collection of information messages for debugging*/
+                json_object_set_string_member (log_object, "pam_conv", message->msg);
+                print_json (root);
                 return PAM_SUCCESS;
             case PAM_ERROR_MSG:
                 if (CONV_ERROR) {
@@ -151,9 +155,9 @@ setup_pam (gchar* user_name, JsonNode *root)
     g_assert (user_name != NULL);
 
     pam_handle_t *pamh = NULL;
-    struct pam_conv conv = { non_interactive_conv };
     int retval;
     JsonObject *object = json_node_get_object (root);
+    struct pam_conv conv = { non_interactive_conv, root};
 
     retval = pam_start (PASSWD_SERVICE, user_name, &conv, &pamh);
     set_member_pam (object, "pam_start", retval, pamh);
