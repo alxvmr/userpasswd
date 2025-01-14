@@ -29,12 +29,17 @@ init_json_node ()
     json_object_set_member (object, "pam_chauthtok", json_node_new(JSON_NODE_NULL));
     json_object_set_member (object, "pam_conv", json_node_new(JSON_NODE_NULL));
     json_object_set_member (object, "pam_end", json_node_new(JSON_NODE_NULL));
+    json_object_set_string_member (object, "type", "output");
     // TODO: добавлять пароли в json?
 
     members = json_object_get_members (object);
     for (GList *l = members; l != NULL; l = l->next) {
         const gchar *key = (const gchar *) l->data;
-        if (g_strcmp0 (key, "user_name") && g_strcmp0 (key, "main_error") && g_strcmp0 (key, "pam_conv")) {
+        if (g_strcmp0 (key, "user_name") 
+            && g_strcmp0 (key, "main_error") 
+            && g_strcmp0 (key, "pam_conv") 
+            && g_strcmp0 (key, "type")) 
+        {
             JsonObject *nested = json_object_new ();
             json_object_set_member (nested, "pam_status_code", json_node_new(JSON_NODE_NULL));
             json_object_set_member (nested, "pam_status_mess_en", json_node_new(JSON_NODE_NULL));
@@ -58,6 +63,7 @@ init_json_node_output (gchar *key)
     JsonObject *object = json_object_new ();
 
     json_object_set_member (object, key, json_node_new(JSON_NODE_NULL));
+    json_object_set_string_member (object, "type", "input");
     json_node_init (root, JSON_NODE_OBJECT);
     json_node_set_object (root, object);
 
