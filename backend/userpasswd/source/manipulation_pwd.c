@@ -67,7 +67,7 @@ string_to_json (gchar *buf)
 }
 
 rcHelper*
-get_rc (GList *outputs)
+get_rc (gchar *req)
 {
     rcHelper *rc = g_new (rcHelper, 1);
     init_rcHelper (rc);
@@ -77,15 +77,13 @@ get_rc (GList *outputs)
     JsonNode *conv_node = NULL;
     gint pam_status_code = 0;
 
-    GList *last_element = g_list_last (outputs);
-
-    if (last_element == NULL)
+    if (req == NULL)
     {
         g_printerr ("Error processing pam_helper output");
         return rc;
     }
 
-    JsonNode *last_answer_node = (JsonNode *) last_element->data;
+    JsonNode *last_answer_node = string_to_json (req);
     JsonObject *last_answer = json_node_get_object (last_answer_node);
 
     user_name_node = json_object_get_member (last_answer, "user_name");
@@ -96,9 +94,6 @@ get_rc (GList *outputs)
     main_error_node = json_object_get_member (last_answer, "main_error");
     if (json_node_get_node_type (main_error_node) != JSON_NODE_NULL) {
         rc->error_message_en = g_strdup (json_node_get_string (main_error_node));
-
-        g_list_free_full (last_element, (GDestroyNotify)json_node_unref);
-        return rc;
     }
 
     GList *nested = NULL;
@@ -129,13 +124,11 @@ get_rc (GList *outputs)
                 rc->error_message_ru = g_strdup (json_node_get_string (mess_ru_node));
             }
 
-            g_list_free_full (last_element, (GDestroyNotify)json_node_unref);
             g_list_free_full (nested, g_free);
             return rc;
         }
     }
     
-    g_list_free_full (last_element, (GDestroyNotify)json_node_unref);
     g_list_free_full (nested, g_free);
 
     rc->rc = TRUE;
@@ -167,6 +160,26 @@ get_response (gchar *req,
     return NULL;
 }
 
+gchar *
+remove_substring (gchar *original, gchar *substr) {
+    gchar *result;
+    gchar *pos;
+    gsize original_len = strlen (original);
+    gsize substr_len = strlen (substr);
+
+    pos = g_strstr_len (original, original_len, substr);
+    if (pos == NULL) {
+        return g_strdup (original);
+    }
+
+    gsize result_len = original_len - substr_len;
+    result = g_malloc (result_len + 1);
+    g_strlcpy (result, original, pos - original + 1);
+    g_strlcpy (result, pos + substr_len, result_len + 1);
+
+    return result;
+}
+
 void create_pipe (gchar *current_password,
                   gchar *new_password,
                   gchar *retype_password)
@@ -178,6 +191,9 @@ void create_pipe (gchar *current_password,
     GInputStream *instream = NULL;
     GOutputStream *outstream = NULL;
     gchar buffer[2048];
+    gchar *last_req_from_child = NULL;
+    rcHelper *rc = NULL;
+    gchar *acc_data = NULL;
 
     /* TODO: check new password */
     /* TODO: add timeout*/
@@ -197,6 +213,8 @@ void create_pipe (gchar *current_password,
     instream = g_subprocess_get_stdout_pipe (subprocess);
     outstream = g_subprocess_get_stdin_pipe (subprocess);
 
+    acc_data = g_strdup ("");
+
     while (TRUE) {
         gssize bytes_read = g_input_stream_read (instream, buffer, sizeof(buffer) - 1, NULL, &error);
         if (bytes_read < 0) {
@@ -207,11 +225,20 @@ void create_pipe (gchar *current_password,
             break;
         }
 
-        buffer[bytes_read] = '\0';
+        gboolean isIncomplete = TRUE;
+        acc_data = g_strconcat (acc_data, buffer, NULL);
 
-        gchar **lines = g_strsplit (buffer, "\n", -1);
+        if (buffer[bytes_read - 1] != '\n') {
+            isIncomplete = FALSE;
+        }
+
+        gchar **lines = g_strsplit (acc_data, "\n", -1);
 
         for (gint i = 0; lines[i] != NULL; i++) {
+            if (isIncomplete == FALSE && lines[i+1] == NULL) {
+                break;
+            }
+            acc_data = remove_substring (acc_data, lines[i]);
             // g_print ("Child: %s\n", lines[i]);
             if (g_utf8_strlen (lines[i], -1) != 0) {
                 gchar *resp = get_response (lines[i], current_password, new_password);
@@ -224,12 +251,18 @@ void create_pipe (gchar *current_password,
                         g_error_free (error);
                         break;
                     }
+                    continue;
                 }
+                last_req_from_child = g_strdup (lines[i]);
             }
         }
         g_strfreev (lines);
         memset (buffer, 0, sizeof(buffer));
     }
+    g_free (acc_data);
+
+    rc = get_rc (last_req_from_child);
+    print_rcHelper (rc);
 
     g_input_stream_close (instream, NULL, &error);
     if (error) {
