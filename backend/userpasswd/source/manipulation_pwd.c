@@ -142,6 +142,31 @@ get_rc (GList *outputs)
     return rc;
 }
 
+gchar*
+get_response (gchar *req,
+              gchar *current_password,
+              gchar *new_password)
+{
+    JsonNode *req_node = string_to_json (req);
+    if (req_node != NULL) {
+        JsonObject *object = json_node_get_object (req_node);
+        const gchar *type = json_object_get_string_member (object, "type");
+
+        if (g_strcmp0 (type, "input") == 0) {
+            if (json_object_has_member (object, "new_password")) {
+                return g_strdup_printf ("{\"%s\":\"%s\"}\n", "new_password", new_password);
+            }
+            else {
+                if (json_object_has_member (object, "current_password")) {
+                    return g_strdup_printf ("{\"%s\":\"%s\"}\n", "current_password", current_password);
+                }
+            }
+        }
+        json_node_unref (req_node);
+    }
+    return NULL;
+}
+
 void create_pipe (gchar *current_password,
                   gchar *new_password,
                   gchar *retype_password)
@@ -150,12 +175,15 @@ void create_pipe (gchar *current_password,
     GError *error = NULL;
     g_autofree gchar *stdout_buf = NULL;
     GList *output_data = NULL;
+    GInputStream *instream = NULL;
+    GOutputStream *outstream = NULL;
+    gchar buffer[2048];
 
     /* TODO: check new password */
     /* TODO: add timeout*/
 
     subprocess = g_subprocess_new (
-        G_SUBPROCESS_FLAGS_STDOUT_PIPE,
+        G_SUBPROCESS_FLAGS_STDIN_PIPE | G_SUBPROCESS_FLAGS_STDOUT_PIPE,
         &error,
         "./bin/pam_helper", current_password, new_password, NULL
     );
@@ -166,24 +194,55 @@ void create_pipe (gchar *current_password,
         return;
     }
 
-    GList *answer_list = NULL;
+    instream = g_subprocess_get_stdout_pipe (subprocess);
+    outstream = g_subprocess_get_stdin_pipe (subprocess);
 
-    if (g_subprocess_communicate_utf8 (subprocess, NULL, NULL, &stdout_buf, NULL, NULL)){
-        // Если вернулся true, то процесс завершился
-        // TODO: добавить err и проверку статуса завершения процесса
+    while (TRUE) {
+        gssize bytes_read = g_input_stream_read (instream, buffer, sizeof(buffer) - 1, NULL, &error);
+        if (bytes_read < 0) {
+            g_printerr("Error reading from subprocess stdout: %s\n", error->message);
+            g_error_free(error);
+            break;
+        } else if (bytes_read == 0) {
+            break;
+        }
 
-        gchar **lines = g_strsplit (stdout_buf, "\n", -1);
+        buffer[bytes_read] = '\0';
+
+        gchar **lines = g_strsplit (buffer, "\n", -1);
 
         for (gint i = 0; lines[i] != NULL; i++) {
+            // g_print ("Child: %s\n", lines[i]);
             if (g_utf8_strlen (lines[i], -1) != 0) {
-                answer_list = g_list_append (answer_list, string_to_json(lines[i]));
+                gchar *resp = get_response (lines[i], current_password, new_password);
+                if (resp != NULL) {
+                    // g_print ("Response: %s", resp);
+                    g_output_stream_write_all (outstream, resp, strlen(resp), NULL, NULL, &error);
+                    g_free (resp);
+                    if (error) {
+                        g_printerr ("Error writing to subprocess stdin: %s\n", error->message);
+                        g_error_free (error);
+                        break;
+                    }
+                }
             }
         }
         g_strfreev (lines);
+        memset (buffer, 0, sizeof(buffer));
     }
 
-    rcHelper *rc = get_rc (answer_list);
-    print_rcHelper (rc);
-
+    g_input_stream_close (instream, NULL, &error);
+    if (error) {
+        g_printerr ("Error close input stream: %s\n", error->message);
+        g_error_free (error);
+        exit (1);
+    }
+    g_output_stream_close (outstream, NULL, &error);
+    if (error) {
+        g_printerr ("Error close output stream: %s\n", error->message);
+        g_error_free (error);
+        exit (1);
+    }
+    g_subprocess_wait_check (subprocess, NULL, &error);
     g_object_unref (subprocess);
 }

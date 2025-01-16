@@ -34,6 +34,7 @@ get_data_from_parent (int type_data)
 {
     gchar *buf = NULL;
     gchar *data_input = NULL;
+    JsonNode *output_json = NULL;
     gchar *key = "current_password";
     size_t size = 0;
 
@@ -41,8 +42,9 @@ get_data_from_parent (int type_data)
         key = "new_password";
     }
 
-    JsonNode *output_json = init_json_node_output (key);
+    output_json = init_json_node_output (key);
     print_json (output_json);
+    fflush (stdout);
 
     if (getline(&buf, &size, stdin) != -1) {
         buf[strcspn(buf, "\n")] = 0;
@@ -59,6 +61,7 @@ get_data_from_parent (int type_data)
 
     json_node_unref (input_member);
     json_node_unref (output_json);
+    free (buf);
 
     return data_input;
 }
