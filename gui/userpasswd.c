@@ -3,6 +3,29 @@
 #include <glib.h>
 #include "manipulcation_pwd.h"
 
+#define USERPASSWD_TYPE_APP (userpasswd_app_get_type())
+G_DECLARE_FINAL_TYPE (UserpasswdApp, userpasswd_app, USERPASSWD, APP, AdwApplication)
+
+struct _UserpasswdApp {
+    AdwApplication parent_instance;
+
+    gchar *current_password;
+    gchar *new_password;
+    gchar *retype_new_password;
+    GSubprocess *subprocess;
+    GInputStream *instream;
+    GOutputStream *outstream;
+};
+
+enum {
+    REQ_NEW_PASSWORD,
+    LAST_SIGNAL
+};
+
+static guint userpasswd_app_signals[LAST_SIGNAL];
+
+G_DEFINE_TYPE (UserpasswdApp, userpasswd_app, ADW_TYPE_APPLICATION);
+
 static void
 show_about (GSimpleAction *action,
             GVariant      *parameter,
@@ -72,7 +95,7 @@ cb_check_password_button (GtkWidget *widget,
     const gchar *current_password = NULL;
     current_password = gtk_editable_get_text (GTK_EDITABLE (row_input));
     g_print ("Current password = %s\n", current_password);
-    create_pipe (current_password, "123", "123");
+    // create_pipe (current_password, "123", "123");
 
     // тут логика отправки текущего пароля в passwd
     // если успешно, то запрашиваем новый пароль
@@ -117,17 +140,17 @@ create_menu (GtkApplication *app,
 }
 
 static void
-cb_activate (GtkApplication *app,
-             gpointer        user_data)
-{
-    GtkWidget *window = adw_application_window_new (app);
+userpasswd_app_activate (GApplication *app) {
+    g_assert (GTK_IS_APPLICATION (app));
+
+    GtkWidget *window = adw_application_window_new (GTK_APPLICATION (app));
     GtkWidget *toolbar_view = adw_toolbar_view_new ();
     GtkWidget *header_bar = adw_header_bar_new ();
 
     gtk_window_set_title (GTK_WINDOW (window), "userpasswd");
     gtk_window_set_default_size (GTK_WINDOW (window), 600, 300);
 
-    create_menu (app, header_bar);
+    create_menu (GTK_APPLICATION (app), header_bar);
     adw_toolbar_view_add_top_bar (ADW_TOOLBAR_VIEW (toolbar_view), header_bar);
 
     GtkWidget *vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
@@ -156,14 +179,47 @@ cb_activate (GtkApplication *app,
     gtk_window_present (GTK_WINDOW (window));
 }
 
+static void
+userpasswd_app_class_init (UserpasswdAppClass *class)
+{
+    GApplicationClass *app_class = G_APPLICATION_CLASS (class);
+
+    userpasswd_app_signals[REQ_NEW_PASSWORD] = g_signal_new (
+        "request-new-password",
+        G_TYPE_FROM_CLASS (class),
+        G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
+        0,
+        NULL,
+        NULL,
+        g_cclosure_marshal_VOID__INT,
+        G_TYPE_NONE,
+        1,
+        G_TYPE_INT
+    );
+
+    G_APPLICATION_CLASS (app_class)->activate = userpasswd_app_activate;
+}
+
+UserpasswdApp *
+userpasswd_app_new (const char *application_id, GApplicationFlags *flags)
+{
+    return g_object_new (userpasswd_app_get_type(),
+                         "application-id",
+                         application_id,
+                         "flags",
+                         flags,
+                         NULL);
+}
+
+static void
+userpasswd_app_init (UserpasswdApp *self) {}
+
 int
 main (int     argc,
       char  **argv)
 {
-    AdwApplication *app = adw_application_new ("org.example.userpasswd", G_APPLICATION_DEFAULT_FLAGS);
+    UserpasswdApp *app = userpasswd_app_new ("org.example.userpasswd", G_APPLICATION_DEFAULT_FLAGS);
     int status = 0;
-
-    g_signal_connect (app, "activate", G_CALLBACK (cb_activate), NULL);
     
     status = g_application_run (G_APPLICATION (app), argc, argv);
 
