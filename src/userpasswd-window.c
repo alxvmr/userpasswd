@@ -1,24 +1,5 @@
 #include "userpasswd-window.h"
 
-struct _UserpasswdWindow {
-    AdwApplicationWindow parent_instance;
-
-    GtkWidget *window;
-    GtkWidget *container; //vbox
-    GtkWidget *header_bar;
-    GtkWidget *toolbar;
-
-    AdwPasswordEntryRow *current_password_row;
-    AdwPasswordEntryRow *new_password_row;
-    AdwPasswordEntryRow *repeat_new_password_row;
-    GtkWidget *check_password_button;
-    GtkWidget *change_password_button;
-
-    GtkWidget *status;
-    GtkWidget *info;
-
-};
-
 G_DEFINE_FINAL_TYPE (UserpasswdWindow, userpasswd_window, ADW_TYPE_APPLICATION_WINDOW)
 
 void
@@ -46,7 +27,12 @@ userpasswd_window_init (UserpasswdWindow *self)
     gtk_window_set_title (GTK_WINDOW (self), "userpasswd");
     gtk_window_set_default_size (GTK_WINDOW (self), 600, 300);
 
-    //create_menu ()
+    /* create menu */
+    self->menu = g_menu_new ();
+    self->menu_button = gtk_menu_button_new ();
+    gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (self->menu_button), G_MENU_MODEL (self->menu));
+    adw_header_bar_pack_start (ADW_HEADER_BAR (self->header_bar), self->menu_button);
+    adw_toolbar_view_add_top_bar (ADW_TOOLBAR_VIEW (self->toolbar), self->header_bar);
 
     self->container = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_set_margin_bottom (self->container, 15);

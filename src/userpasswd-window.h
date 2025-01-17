@@ -10,6 +10,26 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (UserpasswdWindow, userpasswd_window, USERPASSWD, WINDOW, AdwApplicationWindow)
 
+typedef struct _UserpasswdWindow {
+    AdwApplicationWindow parent_instance;
+
+    GtkWidget *container; //vbox
+    GMenu *menu;
+    GtkWidget *menu_button;
+    GtkWidget *header_bar;
+    GtkWidget *toolbar;
+
+    AdwPasswordEntryRow *current_password_row;
+    AdwPasswordEntryRow *new_password_row;
+    AdwPasswordEntryRow *repeat_new_password_row;
+    GtkWidget *check_password_button;
+    GtkWidget *change_password_button;
+
+    GtkWidget *status;
+    GtkWidget *info;
+
+} UserpasswdWindow;
+
 G_END_DECLS
 
 #endif

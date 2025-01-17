@@ -4,6 +4,7 @@
 struct _UserpasswdApp {
     AdwApplication parent_instance;
 
+    UserpasswdWindow *window;
     gchar *current_password;
     gchar *new_password;
     gchar *retype_new_password;
@@ -63,19 +64,21 @@ userpasswd_app_quit_action (GSimpleAction *action,
 
 static void
 userpasswd_app_activate (GApplication *app) {
-    GtkWindow *window;
-
+    
     g_assert (USERPASSWD_IS_APP (app));
 
-    window = gtk_application_get_active_window (GTK_APPLICATION (app));
+    USERPASSWD_APP (app)->window = USERPASSWD_WINDOW (gtk_application_get_active_window (GTK_APPLICATION (app)));
 
-    if (window == NULL) {
-        window = g_object_new (USERPASSWD_TYPE_WINDOW,
-                               "application", app,
-                               NULL);
+    if (USERPASSWD_APP (app)->window == NULL) {
+        USERPASSWD_APP (app)->window = g_object_new (USERPASSWD_TYPE_WINDOW,
+                                                     "application", app,
+                                                     NULL);
     }
 
-    gtk_window_present (GTK_WINDOW (window));
+    g_menu_append (USERPASSWD_APP (app)->window->menu, "About", "app.about");
+    g_menu_append (USERPASSWD_APP (app)->window->menu, "Quit", "app.quit");
+
+    gtk_window_present (GTK_WINDOW (USERPASSWD_APP (app)->window));
 }
 
 static void
