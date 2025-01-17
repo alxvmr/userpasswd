@@ -8,13 +8,16 @@ pkg_check_modules(GTK REQUIRED gtk4)
 pkg_check_modules(ADWAITAA REQUIRED libadwaita-1)
 pkg_check_modules(JSON_GLIB json-glib-1.0)
 
-add_executable(userpasswd gui/userpasswd.c backend/userpasswd/source/manipulation_pwd.c)
+set (SOURCES
+    gui/userpasswd-app.c
+    gui/userpasswd-window.c
+)
 
-add_subdirectory(backend)
+add_executable(userpasswd ${SOURCES})
 
 target_include_directories(
     userpasswd PRIVATE
-    backend/userpasswd/include
+    gui
     ${GTK_INCLUDE_DIRS}
     ${ADWAITAA_INCLUDE_DIRS}
     ${JSON_GLIB_INCLUDE_DIRS}
