@@ -2,11 +2,23 @@
 
 G_DEFINE_FINAL_TYPE (UserpasswdWindow, userpasswd_window, ADW_TYPE_APPLICATION_WINDOW)
 
+static void
+userpasswd_window_show_info_status (UserpasswdWindow *self,
+                                    gchar            *status_mess,
+                                    gchar            *info_mess)
+{
+    adw_banner_set_title (ADW_BANNER (self->status), status_mess);
+    gtk_label_set_text (GTK_LABEL (self->info), info_mess);
+    gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->clamp_status));
+    gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->clamp_info));
+}
+
 void
 cb_check_password_button (GtkWidget *button,
                           gpointer   user_data)
 {
     UserpasswdWindow *self = USERPASSWD_WINDOW (user_data);
+    userpasswd_window_show_info_status (self, "Error", "Something wrong...");
     g_print ("Нажали на кнопку\n");
 }
 
@@ -47,6 +59,19 @@ userpasswd_window_init (UserpasswdWindow *self)
 
     self->check_password_button = gtk_button_new_with_label ("Check password");
     g_signal_connect (G_OBJECT (self->check_password_button), "clicked", G_CALLBACK (cb_check_password_button), self);
+
+    self->clamp_status = ADW_CLAMP (adw_clamp_new ());
+    gtk_widget_set_margin_top (GTK_WIDGET (self->clamp_status), 15);
+    self->status = adw_banner_new ("Status mess");
+    adw_banner_set_revealed (ADW_BANNER (self->status), TRUE);
+    adw_clamp_set_child (ADW_CLAMP (self->clamp_status), GTK_WIDGET (self->status));
+    self->clamp_info = ADW_CLAMP (adw_clamp_new ());
+    gtk_widget_set_margin_top (GTK_WIDGET (self->clamp_info), 0);
+    GtkWidget *bottom = adw_expander_row_new ();
+    adw_expander_row_set_subtitle (ADW_EXPANDER_ROW (bottom), "Info");
+    self->info = gtk_label_new ("Information about ...");
+    adw_expander_row_add_row (ADW_EXPANDER_ROW (bottom), self->info);
+    adw_clamp_set_child (ADW_CLAMP (self->clamp_info), GTK_WIDGET (bottom));
 
     gtk_list_box_append (GTK_LIST_BOX (lbox), GTK_WIDGET (self->current_password_row));
     gtk_list_box_append (GTK_LIST_BOX (lbox), self->check_password_button);

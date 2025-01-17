@@ -19,14 +19,16 @@ typedef struct _UserpasswdWindow {
     GtkWidget *header_bar;
     GtkWidget *toolbar;
 
+    GtkWidget *status;
+    AdwClamp *clamp_status;
+    AdwClamp *clamp_info;
+    GtkWidget *info;
+
     AdwPasswordEntryRow *current_password_row;
     AdwPasswordEntryRow *new_password_row;
     AdwPasswordEntryRow *repeat_new_password_row;
     GtkWidget *check_password_button;
     GtkWidget *change_password_button;
-
-    GtkWidget *status;
-    GtkWidget *info;
 
 } UserpasswdWindow;
 
