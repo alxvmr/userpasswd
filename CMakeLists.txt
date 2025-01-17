@@ -9,15 +9,15 @@ pkg_check_modules(ADWAITAA REQUIRED libadwaita-1)
 pkg_check_modules(JSON_GLIB json-glib-1.0)
 
 set (SOURCES
-    gui/userpasswd-app.c
-    gui/userpasswd-window.c
+    src/userpasswd-app.c
+    src/userpasswd-window.c
 )
 
 add_executable(userpasswd ${SOURCES})
 
 target_include_directories(
     userpasswd PRIVATE
-    gui
+    src
     ${GTK_INCLUDE_DIRS}
     ${ADWAITAA_INCLUDE_DIRS}
     ${JSON_GLIB_INCLUDE_DIRS}
