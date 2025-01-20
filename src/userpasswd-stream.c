@@ -42,7 +42,10 @@ userpasswd_stream_communicate (gpointer window,
     // g_assert (stream->instream != NULL);
     // g_assert (stream->outstream != NULL);
 
-    g_signal_emit (stream, userpasswd_stream_signals[CHECK_PASSWD_SUCCESS], 0);
+    // g_signal_emit (stream, userpasswd_stream_signals[CHECK_PASSWD_SUCCESS], 0);
+    
+    gchar *error_message = "{\"step\":\"message\"}";
+    g_signal_emit (stream, userpasswd_stream_signals[CHECK_PASSWD_FAIL], 0, error_message);
 
     // userpasswd_window_success_auth (self->window);
 }
@@ -60,6 +63,19 @@ userpasswd_stream_class_init (UserpasswdStreamClass *class)
         g_cclosure_marshal_VOID__VOID,
         G_TYPE_NONE,
         0
+    );
+
+    userpasswd_stream_signals[CHECK_PASSWD_FAIL] = g_signal_new (
+        "check-passwd-fail",
+        G_TYPE_FROM_CLASS (class),
+        G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
+        0,
+        NULL,
+        NULL,
+        g_cclosure_marshal_VOID__STRING,
+        G_TYPE_NONE,
+        1,
+        G_TYPE_STRING
     );
 }
 

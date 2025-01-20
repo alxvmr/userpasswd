@@ -57,6 +57,14 @@ cb_check_password_success (gpointer *stream,
     g_print ("Пароль прошел проверку\n");
 }
 
+void
+cb_check_password_fail (gpointer *stream,
+                        gchar *error_message,
+                        UserpasswdWindow *window)
+{
+    g_print ("Пароль не прошел проверку\n%s\n", error_message);
+}
+
 static void
 userpasswd_window_class_init (UserpasswdWindowClass *class) {
 
