@@ -68,6 +68,7 @@ userpasswd_app_activate (GApplication *app) {
 
     USERPASSWD_APP (app)->stream = userpasswd_stream_new ("./bin/pam_helper");
     g_signal_connect (USERPASSWD_APP(app)->window, "check-password", G_CALLBACK (userpasswd_stream_communicate), USERPASSWD_APP (app)->stream);
+    g_signal_connect (USERPASSWD_APP (app)->stream, "check-passwd-success", G_CALLBACK (cb_check_password_success), USERPASSWD_APP(app)->window);
 
     g_menu_append (USERPASSWD_APP (app)->window->menu, "About", "app.about");
     g_menu_append (USERPASSWD_APP (app)->window->menu, "Quit", "app.quit");

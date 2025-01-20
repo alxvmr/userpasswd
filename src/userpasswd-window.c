@@ -23,6 +23,18 @@ userpasswd_window_show_info_status (UserpasswdWindow *self,
 }
 
 void
+destroy_check_password_elems (UserpasswdWindow *window)
+{
+    return;
+}
+
+void
+create_change_password_elems (UserpasswdWindow *window)
+{
+    return;
+}
+
+void
 cb_check_password_button (GtkWidget *button,
                           gpointer   user_data)
 {
@@ -33,6 +45,16 @@ cb_check_password_button (GtkWidget *button,
 
     // userpasswd_window_show_info_status (self, "Error", "Something wrong...");
     // g_print ("Нажали на кнопку\n");
+}
+
+void
+cb_check_password_success (gpointer *stream,
+                           UserpasswdWindow *window)
+{
+    destroy_check_password_elems (window);
+    create_change_password_elems (window);
+
+    g_print ("Пароль прошел проверку\n");
 }
 
 static void
