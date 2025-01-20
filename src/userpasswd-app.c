@@ -1,24 +1,16 @@
 #include "userpasswd-window.h"
 #include "userpasswd-app.h"
+#include "userpasswd-stream.h"
 
 struct _UserpasswdApp {
     AdwApplication parent_instance;
 
     UserpasswdWindow *window;
+    UserpasswdStream *stream;
     gchar *current_password;
     gchar *new_password;
     gchar *retype_new_password;
-    GSubprocess *subprocess;
-    GInputStream *instream;
-    GOutputStream *outstream;
 };
-
-enum {
-    REQ_NEW_PASSWORD,
-    LAST_SIGNAL
-};
-
-static guint userpasswd_app_signals[LAST_SIGNAL];
 
 G_DEFINE_TYPE (UserpasswdApp, userpasswd_app, ADW_TYPE_APPLICATION);
 
@@ -64,7 +56,6 @@ userpasswd_app_quit_action (GSimpleAction *action,
 
 static void
 userpasswd_app_activate (GApplication *app) {
-    
     g_assert (USERPASSWD_IS_APP (app));
 
     USERPASSWD_APP (app)->window = USERPASSWD_WINDOW (gtk_application_get_active_window (GTK_APPLICATION (app)));
@@ -74,6 +65,9 @@ userpasswd_app_activate (GApplication *app) {
                                                      "application", app,
                                                      NULL);
     }
+
+    USERPASSWD_APP (app)->stream = userpasswd_stream_new ("./bin/pam_helper");
+    g_signal_connect (USERPASSWD_APP(app)->window, "check-password", G_CALLBACK (userpasswd_stream_communicate), USERPASSWD_APP (app)->stream);
 
     g_menu_append (USERPASSWD_APP (app)->window->menu, "About", "app.about");
     g_menu_append (USERPASSWD_APP (app)->window->menu, "Quit", "app.quit");
@@ -85,19 +79,6 @@ static void
 userpasswd_app_class_init (UserpasswdAppClass *class)
 {
     GApplicationClass *app_class = G_APPLICATION_CLASS (class);
-
-    userpasswd_app_signals[REQ_NEW_PASSWORD] = g_signal_new (
-        "request-new-password",
-        G_TYPE_FROM_CLASS (class),
-        G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
-        0,
-        NULL,
-        NULL,
-        g_cclosure_marshal_VOID__INT,
-        G_TYPE_NONE,
-        1,
-        G_TYPE_INT
-    );
 
     app_class->activate = userpasswd_app_activate;
 }
@@ -137,8 +118,8 @@ main (int     argc,
       char  **argv)
 {
     UserpasswdApp *app = userpasswd_app_new ("org.example.userpasswd", G_APPLICATION_DEFAULT_FLAGS);
-    int status = 0;
     
+    int status = 0;
     status = g_application_run (G_APPLICATION (app), argc, argv);
 
     g_object_unref (app);

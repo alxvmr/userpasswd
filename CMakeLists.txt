@@ -11,6 +11,7 @@ pkg_check_modules(JSON_GLIB json-glib-1.0)
 set (SOURCES
     src/userpasswd-app.c
     src/userpasswd-window.c
+    src/userpasswd-stream.c
 )
 
 add_executable(userpasswd ${SOURCES})

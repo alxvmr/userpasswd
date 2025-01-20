@@ -1,4 +1,13 @@
 #include "userpasswd-window.h"
+#include "userpasswd-stream.h"
+
+enum {
+    CHECK_PWD,
+    CHANGE_PWD,
+    LAST_SIGNAL
+};
+
+static guint userpasswd_window_signals[LAST_SIGNAL];
 
 G_DEFINE_FINAL_TYPE (UserpasswdWindow, userpasswd_window, ADW_TYPE_APPLICATION_WINDOW)
 
@@ -18,12 +27,30 @@ cb_check_password_button (GtkWidget *button,
                           gpointer   user_data)
 {
     UserpasswdWindow *self = USERPASSWD_WINDOW (user_data);
-    userpasswd_window_show_info_status (self, "Error", "Something wrong...");
-    g_print ("Нажали на кнопку\n");
+
+    const gchar *current_password = gtk_editable_get_text (GTK_EDITABLE (self->current_password_row));
+    g_signal_emit (self, userpasswd_window_signals[CHECK_PWD], 0, current_password);
+
+    // userpasswd_window_show_info_status (self, "Error", "Something wrong...");
+    // g_print ("Нажали на кнопку\n");
 }
 
 static void
 userpasswd_window_class_init (UserpasswdWindowClass *class) {
+
+    userpasswd_window_signals[CHECK_PWD] = g_signal_new (
+        "check-password",
+        G_TYPE_FROM_CLASS (class),
+        G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
+        0,
+        NULL,
+        NULL,
+        g_cclosure_marshal_VOID__STRING,
+        G_TYPE_NONE,
+        1,
+        G_TYPE_STRING
+    );
+
     /*
     TODO: - add dispose
           - add finalize
