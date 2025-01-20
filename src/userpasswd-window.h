@@ -14,6 +14,7 @@ typedef struct _UserpasswdWindow {
     AdwApplicationWindow parent_instance;
 
     GtkWidget *container; //vbox
+    GtkWidget *container_password; //lbox
     GMenu *menu;
     GtkWidget *menu_button;
     GtkWidget *header_bar;

@@ -25,13 +25,15 @@ userpasswd_window_show_info_status (UserpasswdWindow *self,
 void
 destroy_check_password_elems (UserpasswdWindow *window)
 {
-    return;
+    gtk_list_box_remove_all (GTK_LIST_BOX (window->container_password));
 }
 
 void
 create_change_password_elems (UserpasswdWindow *window)
 {
-    return;
+    gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->new_password_row));
+    gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->repeat_new_password_row));
+    gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->change_password_button));
 }
 
 void
@@ -109,13 +111,19 @@ userpasswd_window_init (UserpasswdWindow *self)
     AdwClamp *clamp = ADW_CLAMP (adw_clamp_new());
     gtk_widget_set_margin_top (GTK_WIDGET (clamp), 15);
 
-    GtkWidget *lbox = gtk_list_box_new ();
+    self->container_password = gtk_list_box_new ();
 
     self->current_password_row = ADW_PASSWORD_ENTRY_ROW (adw_password_entry_row_new ());
     adw_preferences_row_set_title (ADW_PREFERENCES_ROW (self->current_password_row), "Current password");
 
     self->check_password_button = gtk_button_new_with_label ("Check password");
     g_signal_connect (G_OBJECT (self->check_password_button), "clicked", G_CALLBACK (cb_check_password_button), self);
+
+    self->new_password_row = ADW_PASSWORD_ENTRY_ROW (adw_password_entry_row_new ());
+    adw_preferences_row_set_title (ADW_PREFERENCES_ROW (self->new_password_row), "New password");
+    self->repeat_new_password_row = ADW_PASSWORD_ENTRY_ROW (adw_password_entry_row_new ());
+    adw_preferences_row_set_title (ADW_PREFERENCES_ROW (self->repeat_new_password_row), "Repeat new password");
+    self->change_password_button = gtk_button_new_with_label ("Change password");
 
     self->clamp_status = ADW_CLAMP (adw_clamp_new ());
     gtk_widget_set_margin_top (GTK_WIDGET (self->clamp_status), 15);
@@ -130,10 +138,10 @@ userpasswd_window_init (UserpasswdWindow *self)
     adw_expander_row_add_row (ADW_EXPANDER_ROW (bottom), self->info);
     adw_clamp_set_child (ADW_CLAMP (self->clamp_info), GTK_WIDGET (bottom));
 
-    gtk_list_box_append (GTK_LIST_BOX (lbox), GTK_WIDGET (self->current_password_row));
-    gtk_list_box_append (GTK_LIST_BOX (lbox), self->check_password_button);
+    gtk_list_box_append (GTK_LIST_BOX (self->container_password), GTK_WIDGET (self->current_password_row));
+    gtk_list_box_append (GTK_LIST_BOX (self->container_password), self->check_password_button);
 
-    adw_clamp_set_child (clamp, GTK_WIDGET (lbox));
+    adw_clamp_set_child (clamp, GTK_WIDGET (self->container_password));
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->toolbar));
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (clamp));
     adw_application_window_set_content (ADW_APPLICATION_WINDOW (self), self->container);

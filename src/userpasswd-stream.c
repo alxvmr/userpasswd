@@ -44,8 +44,7 @@ userpasswd_stream_communicate (gpointer window,
 
     // g_signal_emit (stream, userpasswd_stream_signals[CHECK_PASSWD_SUCCESS], 0);
     
-    gchar *error_message = "{\"step\":\"message\"}";
-    g_signal_emit (stream, userpasswd_stream_signals[CHECK_PASSWD_FAIL], 0, error_message);
+    g_signal_emit (stream, userpasswd_stream_signals[CHECK_PASSWD_SUCCESS], 0);
 
     // userpasswd_window_success_auth (self->window);
 }
