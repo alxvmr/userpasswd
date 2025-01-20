@@ -16,8 +16,11 @@ set (SOURCES
 
 add_executable(userpasswd ${SOURCES})
 
+add_subdirectory(src/pam_helper)
+
 target_include_directories(
     userpasswd PRIVATE
+    src/pam_helper/include
     src
     ${GTK_INCLUDE_DIRS}
     ${ADWAITAA_INCLUDE_DIRS}
