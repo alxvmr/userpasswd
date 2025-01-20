@@ -29,15 +29,12 @@ userpasswd_stream_communicate (gpointer window,
                                gchar *current_password,
                                UserpasswdStream *stream)
 {
-    // userpasswd_stream_create_stream (self);
+    // userpasswd_stream_create_stream (stream);
 
-    // g_assert (self->instream != NULL);
-    // g_assert (self->outstream != NULL);
+    // g_assert (stream->instream != NULL);
+    // g_assert (stream->outstream != NULL);
 
-    g_print ("subprocess_path = %s\n", stream->subprocess_path);
-    g_print ("current_password = %s\n", current_password);
-
-    //userpasswd_window_success_auth (self->window);
+    // userpasswd_window_success_auth (self->window);
 }
 
 static void
