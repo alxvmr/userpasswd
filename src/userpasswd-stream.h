@@ -18,6 +18,8 @@ typedef struct _UserpasswdStream {
     gchar buffer[2];
     gchar *request;
 
+    GList *requests;
+
     gchar *current_password;
     gchar *new_password;
 } UserpasswdStream;

@@ -64,6 +64,24 @@ string_to_json (gchar *buf)
 }
 
 gint
+get_pam_end_status_code (gchar *req)
+{
+    JsonNode *node = string_to_json (req);
+    JsonObject *node_object = json_node_get_object (node);
+    JsonNode *pam_end_node = json_object_get_member (node_object, "pam_end");
+    JsonObject *pam_end_node_object = json_node_get_object (pam_end_node);
+    JsonNode *pam_status_code_node = json_object_get_member (pam_end_node_object, "pam_status_code");
+    gint pam_status_code = -1;
+
+    if (json_node_get_node_type (pam_status_code_node) != JSON_NODE_NULL) {
+        pam_status_code = json_node_get_int (pam_status_code_node);
+    }
+
+    json_node_unref (node);
+    return pam_status_code;
+}
+
+gint
 get_request_type (gchar *req)
 {
     JsonNode *req_node = string_to_json (req);
@@ -104,6 +122,26 @@ get_response (gchar *req,
 }
 
 static void
+on_data_write (GObject      *outstream,
+               GAsyncResult *result,
+               gpointer      user_data)
+{
+    UserpasswdStream *stream = (UserpasswdStream *) user_data;
+    GError *error = NULL;
+    gssize size;
+
+    if (!g_output_stream_write_all_finish (stream->outstream, result, &size, &error)) {
+        if (error) {
+            g_printerr ("Could not send child info: %s\n", error->message);
+            g_error_free (error);
+        }
+        return;
+    }
+
+    g_print ("WRITE DONE\n");
+}
+
+static void
 on_data_reciever (GObject      *instream,
                   GAsyncResult *result, 
                   gpointer      user_data)
@@ -121,6 +159,26 @@ on_data_reciever (GObject      *instream,
     }
 
     if (bytes_read <= 0) {
+        /*
+        TODO: async
+        */
+        gboolean is_exit_success = g_subprocess_wait_check (stream->subprocess, NULL, &error);
+
+        if (error) {
+            g_printerr("Error checking subprocess: %s\n", error->message);
+            g_error_free(error);
+            return;
+        }
+
+        if (is_exit_success) {
+            g_print ("CHILD DIED\n");
+            gint pam_status_code = get_pam_end_status_code (g_list_last(stream->requests)->data);
+            g_print ("PAM CODE: %d\n", pam_status_code);
+            if (pam_status_code != 0) {
+                g_signal_emit (stream, userpasswd_stream_signals[CHECK_PASSWD_FAIL], 0, "error mess");
+            }
+        }
+
         return;
     }
 
@@ -134,9 +192,24 @@ on_data_reciever (GObject      *instream,
 
     if (stream->buffer[bytes_read - 1] == '\n') {
         /* Обработка законченного json дочернего процесса*/
+        stream->requests = g_list_append (stream->requests, g_strdup (stream->request));
         gchar *response = get_response (stream->request, stream->current_password);
+
         g_print ("REQUEST: %s", stream->request);
         g_print ("RESPONSE: %s\n", response);
+
+        if (response != NULL) {
+            g_output_stream_write_all_async (
+                stream->outstream,
+                response,
+                strlen (response),
+                G_PRIORITY_DEFAULT,
+                NULL,
+                on_data_write,
+                stream
+            );
+        }
+
         // g_signal_emit (stream, userpasswd_stream_signals[CHECK_PASSWD_SUCCESS], 0);
 
         g_free (stream->request);
@@ -179,16 +252,8 @@ userpasswd_stream_communicate (gpointer window,
         on_data_reciever,
         stream
     );
-    // g_signal_emit (stream, userpasswd_stream_signals[CHECK_PASSWD_FAIL], 0, "error mess");
-
-    // g_input_stream_read_all_async (stream->instream, buffer, 2048, G_PRIORITY_DEFAULT, )
-
-
-
     // g_signal_emit (stream, userpasswd_stream_signals[CHECK_PASSWD_SUCCESS], 0);
-    g_signal_emit (stream, userpasswd_stream_signals[CHECK_PASSWD_FAIL], 0, "error mess");
-
-    // userpasswd_window_success_auth (self->window);
+    // g_signal_emit (stream, userpasswd_stream_signals[CHECK_PASSWD_FAIL], 0, "error mess");
 }
 
 static void
