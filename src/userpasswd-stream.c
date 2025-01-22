@@ -175,7 +175,7 @@ on_data_reciever (GObject      *instream,
             gint pam_status_code = get_pam_end_status_code (g_list_last(stream->requests)->data);
             g_print ("PAM CODE: %d\n", pam_status_code);
             if (pam_status_code != 0) {
-                g_signal_emit (stream, userpasswd_stream_signals[CHECK_PASSWD_FAIL], 0, "error mess");
+                g_signal_emit (stream, userpasswd_stream_signals[CHECK_PASSWD_FAIL], 0);
             }
         }
 
@@ -278,10 +278,9 @@ userpasswd_stream_class_init (UserpasswdStreamClass *class)
         0,
         NULL,
         NULL,
-        g_cclosure_marshal_VOID__STRING,
+        g_cclosure_marshal_VOID__VOID,
         G_TYPE_NONE,
-        1,
-        G_TYPE_STRING
+        0
     );
 }
 

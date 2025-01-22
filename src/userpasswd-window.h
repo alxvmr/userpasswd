@@ -25,6 +25,8 @@ typedef struct _UserpasswdWindow {
     AdwClamp *clamp_info;
     GtkWidget *info;
 
+    gchar *log_mess;
+
     AdwPasswordEntryRow *current_password_row;
     AdwPasswordEntryRow *new_password_row;
     AdwPasswordEntryRow *repeat_new_password_row;
@@ -34,7 +36,7 @@ typedef struct _UserpasswdWindow {
 } UserpasswdWindow;
 
 void cb_check_password_success (gpointer *stream, UserpasswdWindow *window);
-void cb_check_password_fail (gpointer *stream, gchar *error_message, UserpasswdWindow *window);
+void cb_check_password_fail (gpointer *stream, UserpasswdWindow *window);
 G_END_DECLS
 
 #endif

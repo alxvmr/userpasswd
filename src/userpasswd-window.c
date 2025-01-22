@@ -11,17 +11,6 @@ static guint userpasswd_window_signals[LAST_SIGNAL];
 
 G_DEFINE_FINAL_TYPE (UserpasswdWindow, userpasswd_window, ADW_TYPE_APPLICATION_WINDOW)
 
-static void
-userpasswd_window_show_info_status (UserpasswdWindow *self,
-                                    gchar            *status_mess,
-                                    gchar            *info_mess)
-{
-    adw_banner_set_title (ADW_BANNER (self->status), status_mess);
-    gtk_label_set_text (GTK_LABEL (self->info), info_mess);
-    gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->clamp_status));
-    gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->clamp_info));
-}
-
 void
 destroy_check_password_elems (UserpasswdWindow *window)
 {
@@ -34,6 +23,22 @@ create_change_password_elems (UserpasswdWindow *window)
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->new_password_row));
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->repeat_new_password_row));
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->change_password_button));
+}
+
+static void
+userpasswd_window_show_status (UserpasswdWindow *self,
+                               gchar            *status_mess)
+{
+    adw_banner_set_title (ADW_BANNER (self->status), status_mess);
+    gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->clamp_status));
+}
+
+static void
+userpasswd_window_add_info (UserpasswdWindow *self,
+                            const gchar      *info_mess)
+{
+    gtk_label_set_text (GTK_LABEL (self->info), g_strconcat (gtk_label_get_text (GTK_LABEL (self->info)), info_mess, NULL));
+    gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->clamp_info));
 }
 
 void
@@ -61,11 +66,9 @@ cb_check_password_success (gpointer *stream,
 
 void
 cb_check_password_fail (gpointer *stream,
-                        gchar *error_message,
                         UserpasswdWindow *window)
 {
-    userpasswd_window_show_info_status (window, "error", error_message);
-    g_print ("Пароль не прошел проверку\n%s\n", error_message);
+    userpasswd_window_show_status (window, "Error");
 }
 
 static void
@@ -135,7 +138,7 @@ userpasswd_window_init (UserpasswdWindow *self)
     gtk_widget_set_margin_top (GTK_WIDGET (self->clamp_info), 0);
     GtkWidget *bottom = adw_expander_row_new ();
     adw_expander_row_set_subtitle (ADW_EXPANDER_ROW (bottom), "Info");
-    self->info = gtk_label_new ("Information about ...");
+    self->info = gtk_label_new ("");
     adw_expander_row_add_row (ADW_EXPANDER_ROW (bottom), self->info);
     adw_clamp_set_child (ADW_CLAMP (self->clamp_info), GTK_WIDGET (bottom));
 
