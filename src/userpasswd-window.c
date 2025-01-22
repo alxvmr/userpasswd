@@ -71,6 +71,14 @@ cb_check_password_fail (gpointer *stream,
     userpasswd_window_show_status (window, "Error");
 }
 
+void
+cb_new_log (gpointer         *stream,
+            gchar            *log,
+            UserpasswdWindow *window)
+{
+    userpasswd_window_add_info (window, log);
+}
+
 static void
 userpasswd_window_class_init (UserpasswdWindowClass *class) {
 

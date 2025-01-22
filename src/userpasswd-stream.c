@@ -4,6 +4,7 @@
 enum {
     CHECK_PASSWD_SUCCESS,
     CHECK_PASSWD_FAIL,
+    NEW_LOG,
     LAST_SIGNAL
 };
 
@@ -192,6 +193,7 @@ on_data_reciever (GObject      *instream,
 
     if (stream->buffer[bytes_read - 1] == '\n') {
         /* Обработка законченного json дочернего процесса*/
+        g_signal_emit (stream, userpasswd_stream_signals[NEW_LOG], 0, stream->request);
         stream->requests = g_list_append (stream->requests, g_strdup (stream->request));
         gchar *response = get_response (stream->request, stream->current_password);
 
@@ -281,6 +283,19 @@ userpasswd_stream_class_init (UserpasswdStreamClass *class)
         g_cclosure_marshal_VOID__VOID,
         G_TYPE_NONE,
         0
+    );
+
+    userpasswd_stream_signals[NEW_LOG] = g_signal_new (
+        "new-log",
+        G_TYPE_FROM_CLASS (class),
+        G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
+        0,
+        NULL,
+        NULL,
+        g_cclosure_marshal_VOID__STRING,
+        G_TYPE_NONE,
+        1,
+        G_TYPE_STRING
     );
 }
 

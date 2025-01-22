@@ -37,6 +37,7 @@ typedef struct _UserpasswdWindow {
 
 void cb_check_password_success (gpointer *stream, UserpasswdWindow *window);
 void cb_check_password_fail (gpointer *stream, UserpasswdWindow *window);
+void cb_new_log (gpointer *stream, gchar *log, UserpasswdWindow *window);
 G_END_DECLS
 
 #endif
