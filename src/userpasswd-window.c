@@ -30,7 +30,7 @@ userpasswd_window_show_status (UserpasswdWindow *self,
                                gchar            *status_mess)
 {
     adw_banner_set_title (ADW_BANNER (self->status), status_mess);
-    gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->clamp_status));
+    gtk_widget_set_visible (GTK_WIDGET (self->clamp_status), TRUE);
 }
 
 static void
@@ -139,6 +139,7 @@ userpasswd_window_init (UserpasswdWindow *self)
     self->clamp_status = ADW_CLAMP (adw_clamp_new ());
     gtk_widget_set_margin_top (GTK_WIDGET (self->clamp_status), 15);
     self->status = adw_banner_new ("Status mess");
+    gtk_widget_set_visible (GTK_WIDGET (self->clamp_status), FALSE);
     adw_banner_set_revealed (ADW_BANNER (self->status), TRUE);
     adw_clamp_set_child (ADW_CLAMP (self->clamp_status), GTK_WIDGET (self->status));
     self->clamp_info = ADW_CLAMP (adw_clamp_new ());
@@ -163,6 +164,7 @@ userpasswd_window_init (UserpasswdWindow *self)
     adw_clamp_set_child (clamp, GTK_WIDGET (self->container_password));
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->toolbar));
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (clamp));
+    gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->clamp_status));
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->clamp_info));
     adw_application_window_set_content (ADW_APPLICATION_WINDOW (self), self->container);
 
