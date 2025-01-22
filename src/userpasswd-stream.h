@@ -15,10 +15,15 @@ typedef struct _UserpasswdStream {
     GSubprocess *subprocess;
     GInputStream *instream;
     GOutputStream *outstream;
+    gchar buffer[2];
+    gchar *request;
+
+    gchar *current_password;
+    gchar *new_password;
 } UserpasswdStream;
 
 UserpasswdStream* userpasswd_stream_new (gchar *subprocess_path);
-void userpasswd_stream_communicate (gpointer window, gchar *current_password, UserpasswdStream *stream);
+void userpasswd_stream_communicate (gpointer window, const gchar *current_password, UserpasswdStream *stream);
 
 G_END_DECLS
 

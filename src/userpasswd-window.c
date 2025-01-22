@@ -64,6 +64,7 @@ cb_check_password_fail (gpointer *stream,
                         gchar *error_message,
                         UserpasswdWindow *window)
 {
+    userpasswd_window_show_info_status (window, "error", error_message);
     g_print ("Пароль не прошел проверку\n%s\n", error_message);
 }
 
