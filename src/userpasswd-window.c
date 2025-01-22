@@ -38,7 +38,6 @@ userpasswd_window_add_info (UserpasswdWindow *self,
                             const gchar      *info_mess)
 {
     gtk_label_set_text (GTK_LABEL (self->info), g_strconcat (gtk_label_get_text (GTK_LABEL (self->info)), info_mess, NULL));
-    gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->clamp_info));
 }
 
 void
@@ -147,6 +146,8 @@ userpasswd_window_init (UserpasswdWindow *self)
     GtkWidget *bottom = adw_expander_row_new ();
     adw_expander_row_set_subtitle (ADW_EXPANDER_ROW (bottom), "Info");
     self->info = gtk_label_new ("");
+    gtk_label_set_wrap (GTK_LABEL (self->info), TRUE);
+
     adw_expander_row_add_row (ADW_EXPANDER_ROW (bottom), self->info);
     adw_clamp_set_child (ADW_CLAMP (self->clamp_info), GTK_WIDGET (bottom));
 
@@ -156,6 +157,7 @@ userpasswd_window_init (UserpasswdWindow *self)
     adw_clamp_set_child (clamp, GTK_WIDGET (self->container_password));
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->toolbar));
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (clamp));
+    gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->clamp_info));
     adw_application_window_set_content (ADW_APPLICATION_WINDOW (self), self->container);
 
     gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (self), TRUE);
