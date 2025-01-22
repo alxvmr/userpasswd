@@ -148,7 +148,13 @@ userpasswd_window_init (UserpasswdWindow *self)
     self->info = gtk_label_new ("");
     gtk_label_set_wrap (GTK_LABEL (self->info), TRUE);
 
-    adw_expander_row_add_row (ADW_EXPANDER_ROW (bottom), self->info);
+    GtkBox *scrolled_info_box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+    gtk_box_append (scrolled_info_box, GTK_WIDGET (self->info));
+    GtkWidget *scrolled_window = gtk_scrolled_window_new ();
+    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_NEVER);
+    gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scrolled_window), GTK_WIDGET (scrolled_info_box));
+
+    adw_expander_row_add_row (ADW_EXPANDER_ROW (bottom), GTK_WIDGET (scrolled_window));
     adw_clamp_set_child (ADW_CLAMP (self->clamp_info), GTK_WIDGET (bottom));
 
     gtk_list_box_append (GTK_LIST_BOX (self->container_password), GTK_WIDGET (self->current_password_row));
