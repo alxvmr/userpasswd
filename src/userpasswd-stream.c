@@ -141,6 +141,27 @@ on_data_write (GObject      *outstream,
 }
 
 void
+on_new_password_reciever (gpointer          window,
+                          const gchar      *new_password,
+                          UserpasswdStream *stream)
+{
+    stream->new_password = g_strdup (new_password);
+    gchar *response = get_response (stream->current_step, stream->new_password);
+
+    if (response != NULL) {
+        g_output_stream_write_all_async (
+            stream->outstream,
+            response,
+            strlen (response),
+            G_PRIORITY_DEFAULT,
+            NULL,
+            on_data_write,
+            stream
+        );
+    }
+}
+
+void
 on_password_reciever (gpointer          window,
                       const gchar      *current_password,
                       UserpasswdStream *stream)

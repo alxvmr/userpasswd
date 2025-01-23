@@ -50,7 +50,7 @@ cb_change_password_button (GtkWidget *button,
     const gchar *repeat_new_password = gtk_editable_get_text (GTK_EDITABLE (self->repeat_new_password_row));
 
     if (g_strcmp0 (new_password, repeat_new_password) == 0) {
-        return;
+        g_signal_emit (self, userpasswd_window_signals[CHANGE_PWD], 0, new_password);
     }
     else {
         userpasswd_window_show_status (self, "Passwords don't match");
@@ -121,6 +121,19 @@ userpasswd_window_class_init (UserpasswdWindowClass *class) {
 
     userpasswd_window_signals[CHECK_PWD] = g_signal_new (
         "check-password",
+        G_TYPE_FROM_CLASS (class),
+        G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
+        0,
+        NULL,
+        NULL,
+        g_cclosure_marshal_VOID__STRING,
+        G_TYPE_NONE,
+        1,
+        G_TYPE_STRING
+    );
+
+    userpasswd_window_signals[CHANGE_PWD] = g_signal_new (
+        "change-password",
         G_TYPE_FROM_CLASS (class),
         G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
         0,
