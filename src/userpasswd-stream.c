@@ -2,6 +2,7 @@
 #include <json-glib/json-glib.h>
 
 enum {
+    DRAW_CHECK_PASSWD,
     CHECK_PASSWD_SUCCESS,
     CHECK_PASSWD_FAIL,
     NEW_LOG,
@@ -106,17 +107,14 @@ get_request_type (gchar *req)
 }
 
 gchar*
-get_response (gchar *req,
+get_response (gint   step,
               gchar *data)
 {
-    gint type = get_request_type (req);
-    if (type == CURRENT_PASSWORD) {
+    if (step == CURRENT_PASSWORD) {
         return g_strdup_printf ("{\"%s\":\"%s\"}\n", "current_password", data);
     }
-    else {
-        if (type == NEW_PASSWORD) {
-            return g_strdup_printf ("{\"%s\":\"%s\"}\n", "new_password", data);
-        }
+    if (step == NEW_PASSWORD) {
+        return g_strdup_printf ("{\"%s\":\"%s\"}\n", "new_password", data);
     }
 
     return NULL;
@@ -142,13 +140,33 @@ on_data_write (GObject      *outstream,
     g_print ("WRITE DONE\n");
 }
 
+void
+on_password_reciever (gpointer          window,
+                      const gchar      *current_password,
+                      UserpasswdStream *stream)
+{
+    stream->current_password = g_strdup (current_password);
+    gchar *response = get_response (stream->current_step, stream->current_password);
+
+    if (response != NULL) {
+        g_output_stream_write_all_async (
+            stream->outstream,
+            response,
+            strlen (response),
+            G_PRIORITY_DEFAULT,
+            NULL,
+            on_data_write,
+            stream
+        );
+    }
+}
+
 static void
 on_data_reciever (GObject      *instream,
                   GAsyncResult *result, 
                   gpointer      user_data)
 {
     UserpasswdStream *stream = (UserpasswdStream *) user_data;
-    // g_print ("[RECIEVER] STREAM: %p\n", stream);
     GError *error = NULL;
     gssize bytes_read;
 
@@ -193,27 +211,18 @@ on_data_reciever (GObject      *instream,
 
     if (stream->buffer[bytes_read - 1] == '\n') {
         /* Обработка законченного json дочернего процесса*/
-        g_signal_emit (stream, userpasswd_stream_signals[NEW_LOG], 0, stream->request);
+
         stream->requests = g_list_append (stream->requests, g_strdup (stream->request));
-        gchar *response = get_response (stream->request, stream->current_password);
+        stream->current_step = get_request_type (stream->request);
 
-        g_print ("REQUEST: %s", stream->request);
-        g_print ("RESPONSE: %s\n", response);
-
-        if (response != NULL) {
-            g_output_stream_write_all_async (
-                stream->outstream,
-                response,
-                strlen (response),
-                G_PRIORITY_DEFAULT,
-                NULL,
-                on_data_write,
-                stream
-            );
+        if (stream->current_step == CURRENT_PASSWORD) {
+            g_signal_emit (stream, userpasswd_stream_signals [DRAW_CHECK_PASSWD], 0);
         }
 
-        // g_signal_emit (stream, userpasswd_stream_signals[CHECK_PASSWD_SUCCESS], 0);
-
+        if (stream->current_step == UNKNOWN) {
+            g_signal_emit (stream, userpasswd_stream_signals[NEW_LOG], 0, g_strdup (stream->request));
+        }
+        
         g_free (stream->request);
         stream->request = NULL;
     }
@@ -233,15 +242,12 @@ on_data_reciever (GObject      *instream,
 
 void
 userpasswd_stream_communicate (gpointer window,
-                               const gchar *current_password,
                                UserpasswdStream *stream)
 {
     userpasswd_stream_create_stream (stream);
 
     g_assert (stream->instream != NULL);
     g_assert (stream->outstream != NULL);
-
-    stream->current_password = g_strdup (current_password);
 
     GError *error = NULL;
 
@@ -261,6 +267,18 @@ userpasswd_stream_communicate (gpointer window,
 static void
 userpasswd_stream_class_init (UserpasswdStreamClass *class)
 {
+    userpasswd_stream_signals[DRAW_CHECK_PASSWD] = g_signal_new (
+        "draw-check-passwd",
+        G_TYPE_FROM_CLASS (class),
+        G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
+        0,
+        NULL,
+        NULL,
+        g_cclosure_marshal_VOID__VOID,
+        G_TYPE_NONE,
+        0
+    );
+
     userpasswd_stream_signals[CHECK_PASSWD_SUCCESS] = g_signal_new (
         "check-passwd-success",
         G_TYPE_FROM_CLASS (class),

@@ -24,6 +24,7 @@ typedef struct _UserpasswdWindow {
     AdwClamp *clamp_status;
     AdwClamp *clamp_info;
     GtkWidget *info;
+    GtkWidget *expander_status;
 
     gchar *log_mess;
 
@@ -38,6 +39,7 @@ typedef struct _UserpasswdWindow {
 void cb_check_password_success (gpointer *stream, UserpasswdWindow *window);
 void cb_check_password_fail (gpointer *stream, UserpasswdWindow *window);
 void cb_new_log (gpointer *stream, gchar *log, UserpasswdWindow *window);
+void cb_draw_check_passwd (gpointer *stream, UserpasswdWindow *window);
 G_END_DECLS
 
 #endif

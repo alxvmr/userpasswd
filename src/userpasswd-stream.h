@@ -22,10 +22,13 @@ typedef struct _UserpasswdStream {
 
     gchar *current_password;
     gchar *new_password;
+
+    gint current_step;
 } UserpasswdStream;
 
 UserpasswdStream* userpasswd_stream_new (gchar *subprocess_path);
-void userpasswd_stream_communicate (gpointer window, const gchar *current_password, UserpasswdStream *stream);
+void userpasswd_stream_communicate (gpointer window, UserpasswdStream *stream);
+void on_password_reciever (gpointer window, const gchar *current_password, UserpasswdStream *stream);
 
 G_END_DECLS
 
