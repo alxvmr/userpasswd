@@ -222,6 +222,9 @@ on_data_reciever (GObject      *instream,
             if (pam_status_code != 0) {
                 g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Error");
             }
+            else {
+                g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Success");
+            }
         }
 
         return;
