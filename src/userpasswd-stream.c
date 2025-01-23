@@ -12,6 +12,7 @@ enum {
 enum {
     CURRENT_PASSWORD,
     NEW_PASSWORD,
+    REPEAT_NEW_PASSWORD,
     UNKNOWN
 };
 
@@ -95,10 +96,11 @@ get_request_type (gchar *req)
             if (json_object_has_member (object, "new_password")) {
                 return NEW_PASSWORD;
             }
-            else {
-                if (json_object_has_member (object, "current_password")) {
+            if (json_object_has_member (object, "current_password")) {
                     return CURRENT_PASSWORD;
-                }
+            }
+            if (json_object_has_member (object, "repeat_new_password")) {
+                return REPEAT_NEW_PASSWORD;
             }
         }
         json_node_unref (req_node);
@@ -115,6 +117,9 @@ get_response (gint   step,
     }
     if (step == NEW_PASSWORD) {
         return g_strdup_printf ("{\"%s\":\"%s\"}\n", "new_password", data);
+    }
+    if (step == REPEAT_NEW_PASSWORD) {
+        return g_strdup_printf ("{\"%s\":\"%s\"}\n", "repeat_new_password", data);
     }
 
     return NULL;
@@ -232,7 +237,6 @@ on_data_reciever (GObject      *instream,
 
     if (stream->buffer[bytes_read - 1] == '\n') {
         /* Обработка законченного json дочернего процесса*/
-
         stream->requests = g_list_append (stream->requests, g_strdup (stream->request));
         stream->current_step = get_request_type (stream->request);
 
@@ -242,6 +246,24 @@ on_data_reciever (GObject      *instream,
 
         if (stream->current_step == NEW_PASSWORD) {
             g_signal_emit (stream, userpasswd_stream_signals [DRAW_NEW_PASSWD], 0);
+        }
+
+        if (stream->current_step == REPEAT_NEW_PASSWORD) {
+            gchar *response = get_response (stream->current_step, stream->new_password);
+
+            if (response != NULL) {
+                g_output_stream_write_all_async (
+                    stream->outstream,
+                    response,
+                    strlen (response),
+                    G_PRIORITY_DEFAULT,
+                    NULL,
+                    on_data_write,
+                    stream
+                );
+            }
+
+            g_free (response);
         }
 
         if (stream->current_step == UNKNOWN) {
