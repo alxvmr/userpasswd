@@ -4,7 +4,7 @@
 enum {
     DRAW_CHECK_PASSWD,
     DRAW_NEW_PASSWD,
-    CHECK_PASSWD_FAIL,
+    NEW_STATUS,
     NEW_LOG,
     LAST_SIGNAL
 };
@@ -220,7 +220,7 @@ on_data_reciever (GObject      *instream,
             gint pam_status_code = get_pam_end_status_code (g_list_last(stream->requests)->data);
             g_print ("PAM CODE: %d\n", pam_status_code);
             if (pam_status_code != 0) {
-                g_signal_emit (stream, userpasswd_stream_signals[CHECK_PASSWD_FAIL], 0);
+                g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Error");
             }
         }
 
@@ -238,6 +238,11 @@ on_data_reciever (GObject      *instream,
     if (stream->buffer[bytes_read - 1] == '\n') {
         /* Обработка законченного json дочернего процесса*/
         stream->requests = g_list_append (stream->requests, g_strdup (stream->request));
+
+        if (stream->current_step != -1 && stream->current_step != UNKNOWN) {
+            stream->prev_step = stream->current_step;
+        }
+
         stream->current_step = get_request_type (stream->request);
 
         if (stream->current_step == CURRENT_PASSWORD) {
@@ -245,6 +250,10 @@ on_data_reciever (GObject      *instream,
         }
 
         if (stream->current_step == NEW_PASSWORD) {
+            if (stream->prev_step == NEW_PASSWORD) {
+                g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Weak password");
+            }
+            
             g_signal_emit (stream, userpasswd_stream_signals [DRAW_NEW_PASSWD], 0);
         }
 
@@ -338,16 +347,17 @@ userpasswd_stream_class_init (UserpasswdStreamClass *class)
         0
     );
 
-    userpasswd_stream_signals[CHECK_PASSWD_FAIL] = g_signal_new (
-        "check-passwd-fail",
+    userpasswd_stream_signals[NEW_STATUS] = g_signal_new (
+        "new-status",
         G_TYPE_FROM_CLASS (class),
         G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
         0,
         NULL,
         NULL,
-        g_cclosure_marshal_VOID__VOID,
+        g_cclosure_marshal_VOID__STRING,
         G_TYPE_NONE,
-        0
+        1,
+        G_TYPE_STRING
     );
 
     userpasswd_stream_signals[NEW_LOG] = g_signal_new (
@@ -372,6 +382,8 @@ userpasswd_stream_new (gchar *subprocess_path)
 {
     UserpasswdStream *self = USERPASSWD_STREAM (g_object_new (USERPASSWD_TYPE_STREAM, NULL));
     self->subprocess_path = subprocess_path;
+    self->current_step = -1;
+    self->prev_step = -1;
 
     return self;
 }

@@ -89,10 +89,11 @@ cb_draw_new_passwd (gpointer *stream,
 }
 
 void
-cb_check_password_fail (gpointer *stream,
-                        UserpasswdWindow *window)
+cb_new_status (gpointer         *stream,
+               gchar            *status_mess,
+               UserpasswdWindow *window)
 {
-    userpasswd_window_show_status (window, "Error");
+    userpasswd_window_show_status (window, status_mess);
 }
 
 void

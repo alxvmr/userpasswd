@@ -24,6 +24,7 @@ typedef struct _UserpasswdStream {
     gchar *new_password;
 
     gint current_step;
+    gint prev_step;
 } UserpasswdStream;
 
 UserpasswdStream* userpasswd_stream_new (gchar *subprocess_path);
