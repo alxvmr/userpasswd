@@ -3,7 +3,7 @@
 
 enum {
     DRAW_CHECK_PASSWD,
-    CHECK_PASSWD_SUCCESS,
+    DRAW_NEW_PASSWD,
     CHECK_PASSWD_FAIL,
     NEW_LOG,
     LAST_SIGNAL
@@ -219,6 +219,10 @@ on_data_reciever (GObject      *instream,
             g_signal_emit (stream, userpasswd_stream_signals [DRAW_CHECK_PASSWD], 0);
         }
 
+        if (stream->current_step == NEW_PASSWORD) {
+            g_signal_emit (stream, userpasswd_stream_signals [DRAW_NEW_PASSWD], 0);
+        }
+
         if (stream->current_step == UNKNOWN) {
             g_signal_emit (stream, userpasswd_stream_signals[NEW_LOG], 0, g_strdup (stream->request));
         }
@@ -279,8 +283,8 @@ userpasswd_stream_class_init (UserpasswdStreamClass *class)
         0
     );
 
-    userpasswd_stream_signals[CHECK_PASSWD_SUCCESS] = g_signal_new (
-        "check-passwd-success",
+    userpasswd_stream_signals[DRAW_NEW_PASSWD] = g_signal_new (
+        "draw-new-passwd",
         G_TYPE_FROM_CLASS (class),
         G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
         0,

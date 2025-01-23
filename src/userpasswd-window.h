@@ -36,10 +36,11 @@ typedef struct _UserpasswdWindow {
 
 } UserpasswdWindow;
 
-void cb_check_password_success (gpointer *stream, UserpasswdWindow *window);
 void cb_check_password_fail (gpointer *stream, UserpasswdWindow *window);
 void cb_new_log (gpointer *stream, gchar *log, UserpasswdWindow *window);
 void cb_draw_check_passwd (gpointer *stream, UserpasswdWindow *window);
+void cb_draw_new_passwd (gpointer *stream, UserpasswdWindow *window);
+
 G_END_DECLS
 
 #endif

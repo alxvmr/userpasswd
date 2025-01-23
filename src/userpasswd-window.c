@@ -20,6 +20,15 @@ destroy_check_password_elems (UserpasswdWindow *window)
 void
 create_change_password_elems (UserpasswdWindow *window)
 {
+    window->new_password_row = ADW_PASSWORD_ENTRY_ROW (adw_password_entry_row_new ());
+    adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->new_password_row ), "New password");
+
+    window->repeat_new_password_row = ADW_PASSWORD_ENTRY_ROW (adw_password_entry_row_new ());
+    adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->repeat_new_password_row ), "Repeat new password");
+
+    window->change_password_button = gtk_button_new_with_label ("Change password");
+    // g_signal_connect (G_OBJECT (window->change_password_button), "clicked", G_CALLBACK (cb_change_password_button), window);
+    
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->new_password_row));
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->repeat_new_password_row));
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->change_password_button));
@@ -51,13 +60,11 @@ cb_check_password_button (GtkWidget *button,
 }
 
 void
-cb_check_password_success (gpointer *stream,
-                           UserpasswdWindow *window)
+cb_draw_new_passwd (gpointer *stream,
+                    UserpasswdWindow *window)
 {
     destroy_check_password_elems (window);
     create_change_password_elems (window);
-
-    g_print ("Пароль прошел проверку\n");
 }
 
 void
