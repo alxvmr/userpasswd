@@ -4,9 +4,10 @@
 #include <pwd.h>
 
 #define	PASSWD_SERVICE	"passwd"
-#define PAM_OLDPASS 0
-#define PAM_NEWPASS 1
-#define PAM_SKIPASS 2
+#define PAM_OLDPASS    0
+#define PAM_NEWPASS    1
+#define PAM_REPEATPASS 2
+#define PAM_SKIPASS    3
 
 gchar *CONV_ERROR = NULL;
 
@@ -22,9 +23,9 @@ static inline int getstate(const char *msg) {
     if (!strcmp(msg, "Enter new password: "))
         return PAM_NEWPASS;
     if (!strcmp(msg, "Reenter new Password: "))
-        return PAM_NEWPASS;
+        return PAM_REPEATPASS;
     if (!strcmp(msg, "Re-type new password: "))
-        return PAM_NEWPASS;
+        return PAM_REPEATPASS;
 
     return PAM_SKIPASS;
 }
@@ -40,6 +41,9 @@ get_data_from_parent (int type_data)
 
     if (type_data == PAM_NEWPASS) {
         key = "new_password";
+    }
+    if (type_data == PAM_REPEATPASS) {
+        key = "repeat_new_password";
     }
 
     output_json = init_json_node_output (key);
@@ -104,15 +108,12 @@ non_interactive_conv (int                        num_msg,
             case PAM_PROMPT_ECHO_OFF:
                 switch (getstate(message->msg)) {
                     /* TODO: add NULL check*/
-                    case PAM_OLDPASS:
-                        gchar *old_passwd = get_data_from_parent (PAM_OLDPASS);
-                        answ = g_strdup (old_passwd);
-                        g_free (old_passwd);
-                        break;
                     case PAM_NEWPASS:
-                        gchar *new_passwd = get_data_from_parent (PAM_NEWPASS);
-                        answ = g_strdup (new_passwd);
-                        g_free (new_passwd);
+                    case PAM_REPEATPASS:
+                    case PAM_OLDPASS:
+                        gchar *passwd = get_data_from_parent (getstate(message->msg));
+                        answ = g_strdup (passwd);
+                        g_free (passwd);
                         break;
                     case PAM_SKIPASS:
                         answ = NULL;
