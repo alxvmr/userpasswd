@@ -11,29 +11,6 @@ static guint userpasswd_window_signals[LAST_SIGNAL];
 
 G_DEFINE_FINAL_TYPE (UserpasswdWindow, userpasswd_window, ADW_TYPE_APPLICATION_WINDOW)
 
-void
-destroy_check_password_elems (UserpasswdWindow *window)
-{
-    gtk_list_box_remove_all (GTK_LIST_BOX (window->container_password));
-}
-
-void
-create_change_password_elems (UserpasswdWindow *window)
-{
-    window->new_password_row = ADW_PASSWORD_ENTRY_ROW (adw_password_entry_row_new ());
-    adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->new_password_row ), "New password");
-
-    window->repeat_new_password_row = ADW_PASSWORD_ENTRY_ROW (adw_password_entry_row_new ());
-    adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->repeat_new_password_row ), "Repeat new password");
-
-    window->change_password_button = gtk_button_new_with_label ("Change password");
-    // g_signal_connect (G_OBJECT (window->change_password_button), "clicked", G_CALLBACK (cb_change_password_button), window);
-    
-    gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->new_password_row));
-    gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->repeat_new_password_row));
-    gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->change_password_button));
-}
-
 static void
 userpasswd_window_show_status (UserpasswdWindow *self,
                                gchar            *status_mess)
@@ -57,6 +34,50 @@ cb_check_password_button (GtkWidget *button,
 
     const gchar *current_password = gtk_editable_get_text (GTK_EDITABLE (self->current_password_row));
     g_signal_emit (self, userpasswd_window_signals[CHECK_PWD], 0, current_password);
+}
+
+void
+cb_change_password_button (GtkWidget *button,
+                           gpointer   user_data)
+{
+    UserpasswdWindow *self = USERPASSWD_WINDOW (user_data);
+
+    if (gtk_widget_get_visible (GTK_WIDGET (self->status))) {
+        gtk_widget_set_visible (GTK_WIDGET (self->status), FALSE);
+    }
+
+    const gchar *new_password = gtk_editable_get_text (GTK_EDITABLE (self->new_password_row));
+    const gchar *repeat_new_password = gtk_editable_get_text (GTK_EDITABLE (self->repeat_new_password_row));
+
+    if (g_strcmp0 (new_password, repeat_new_password) == 0) {
+        return;
+    }
+    else {
+        userpasswd_window_show_status (self, "Passwords don't match");
+    }
+}
+
+void
+destroy_check_password_elems (UserpasswdWindow *window)
+{
+    gtk_list_box_remove_all (GTK_LIST_BOX (window->container_password));
+}
+
+void
+create_change_password_elems (UserpasswdWindow *window)
+{
+    window->new_password_row = ADW_PASSWORD_ENTRY_ROW (adw_password_entry_row_new ());
+    adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->new_password_row ), "New password");
+
+    window->repeat_new_password_row = ADW_PASSWORD_ENTRY_ROW (adw_password_entry_row_new ());
+    adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->repeat_new_password_row ), "Repeat new password");
+
+    window->change_password_button = gtk_button_new_with_label ("Change password");
+    g_signal_connect (G_OBJECT (window->change_password_button), "clicked", G_CALLBACK (cb_change_password_button), window);
+    
+    gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->new_password_row));
+    gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->repeat_new_password_row));
+    gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->change_password_button));
 }
 
 void
