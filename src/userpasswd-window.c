@@ -180,16 +180,21 @@ userpasswd_window_init (UserpasswdWindow *self)
     adw_banner_set_revealed (ADW_BANNER (self->status), TRUE);
     gtk_widget_set_margin_top (GTK_WIDGET (self->status), 15);
 
-    self->expander_status = adw_expander_row_new ();
-    adw_expander_row_set_subtitle (ADW_EXPANDER_ROW (self->expander_status), "Info");
     self->info = gtk_label_new ("");
     gtk_label_set_wrap (GTK_LABEL (self->info), TRUE);
-    GtkBox *scrolled_info_box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-    gtk_box_append (scrolled_info_box, GTK_WIDGET (self->info));
+    gtk_label_set_xalign (GTK_LABEL (self->info), 0);
+    gtk_label_set_yalign (GTK_LABEL (self->info), 0);
+
+    self->expander_status = gtk_expander_new ("Info");
+    gtk_widget_set_vexpand (self->expander_status, TRUE);
+
     GtkWidget *scrolled_window = gtk_scrolled_window_new ();
     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scrolled_window), GTK_WIDGET (scrolled_info_box));
-    adw_expander_row_add_row (ADW_EXPANDER_ROW (self->expander_status), GTK_WIDGET (scrolled_window));
+    gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scrolled_window), GTK_WIDGET (self->info));
+    gtk_widget_set_vexpand (scrolled_window, TRUE);
+
+    gtk_expander_set_child (GTK_EXPANDER (self->expander_status), scrolled_window);
+    gtk_widget_set_vexpand (self->expander_status, TRUE);
 
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->toolbar));
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->container_password));
