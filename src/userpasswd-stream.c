@@ -126,6 +126,31 @@ get_response (gint   step,
 }
 
 static void
+stream_free (UserpasswdStream *stream)
+{
+    GError *error_in = NULL;
+    GError *error_out = NULL;
+
+    g_input_stream_close (stream->instream, NULL, &error_in);
+    if (error_in) {
+        g_printerr ("Error close input stream: %s\n", error_in->message);
+        g_error_free (error_in);
+    }
+
+    g_output_stream_close (stream->outstream, NULL, &error_out);
+    if (error_out) {
+        g_printerr ("Error close output stream: %s\n", error_out->message);
+        g_error_free (error_out);
+    }
+
+    g_object_unref (stream->instream);
+    g_object_unref (stream->outstream);
+
+    stream->instream = NULL;
+    stream->outstream = NULL;
+}
+
+static void
 on_data_write (GObject      *outstream,
                GAsyncResult *result,
                gpointer      user_data)
@@ -172,7 +197,7 @@ on_password_reciever (gpointer          window,
                       UserpasswdStream *stream)
 {
     stream->current_password = g_strdup (current_password);
-    gchar *response = get_response (stream->current_step, stream->current_password);
+    gchar *response = get_response (CURRENT_PASSWORD, stream->current_password);
 
     if (response != NULL) {
         g_output_stream_write_all_async (
@@ -204,27 +229,16 @@ on_data_reciever (GObject      *instream,
     }
 
     if (bytes_read <= 0) {
-        /*
-        TODO: async
-        */
-        gboolean is_exit_success = g_subprocess_wait_check (stream->subprocess, NULL, &error);
+        stream_free (stream);
 
-        if (error) {
-            g_printerr("Error checking subprocess: %s\n", error->message);
-            g_error_free(error);
-            return;
+        g_print ("CHILD DIED\n");
+        gint pam_status_code = get_pam_end_status_code (g_list_last(stream->requests)->data);
+        g_print ("PAM CODE: %d\n", pam_status_code);
+        if (pam_status_code != 0) {
+            g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Error");
         }
-
-        if (is_exit_success) {
-            g_print ("CHILD DIED\n");
-            gint pam_status_code = get_pam_end_status_code (g_list_last(stream->requests)->data);
-            g_print ("PAM CODE: %d\n", pam_status_code);
-            if (pam_status_code != 0) {
-                g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Error");
-            }
-            else {
-                g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Success");
-            }
+        else {
+            g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Success");
         }
 
         return;
@@ -240,6 +254,7 @@ on_data_reciever (GObject      *instream,
 
     if (stream->buffer[bytes_read - 1] == '\n') {
         /* Обработка законченного json дочернего процесса*/
+        g_print ("REQUEST: %s", stream->request);
         stream->requests = g_list_append (stream->requests, g_strdup (stream->request));
 
         if (stream->current_step != -1 && stream->current_step != UNKNOWN) {
