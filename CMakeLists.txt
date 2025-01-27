@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.5.0)
 project(userpasswd VERSION 0.1.0 LANGUAGES C)
 
+find_program(GLIB_GENMARSHAL glib-genmarshal PATH_SUFFIXES glib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 find_package(PkgConfig REQUIRED)
@@ -14,7 +15,21 @@ set (SOURCES
     src/userpasswd-stream.c
 )
 
-add_executable(userpasswd ${SOURCES})
+set (MARSHAL_FILE ${CMAKE_CURRENT_SOURCE_DIR}/userpasswd-marshal.list)
+
+message("Generating marshal.h: ${GLIB_GENMARSHAL} ${CMAKE_CURRENT_SOURCE_DIR}/marshal.list --header")
+execute_process(
+    COMMAND ${GLIB_GENMARSHAL} --header ${MARSHAL_FILE}
+    OUTPUT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/userpasswd-marshal.h
+)
+
+message("Generating marshal.c: ${GLIB_GENMARSHAL} ${CMAKE_CURRENT_SOURCE_DIR}/marshal.list --body")
+execute_process(
+    COMMAND ${GLIB_GENMARSHAL} --body ${MARSHAL_FILE}
+    OUTPUT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/userpasswd-marshal.c
+)
+
+add_executable(userpasswd ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/src/userpasswd-marshal.c)
 
 add_subdirectory(src/pam_helper)
 
