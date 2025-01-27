@@ -17,8 +17,7 @@ typedef struct _UserpasswdStream {
     GOutputStream *outstream;
     gchar buffer[2];
     gchar *request;
-
-    GList *requests;
+    gchar *last_request;
 
     gchar *current_password;
     gchar *new_password;

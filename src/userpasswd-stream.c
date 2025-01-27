@@ -14,6 +14,8 @@ enum {
     CURRENT_PASSWORD,
     NEW_PASSWORD,
     REPEAT_NEW_PASSWORD,
+    PAM_STATUS,
+    PAM_CONV,
     UNKNOWN
 };
 
@@ -72,17 +74,63 @@ get_pam_end_status_code (gchar *req)
 {
     JsonNode *node = string_to_json (req);
     JsonObject *node_object = json_node_get_object (node);
-    JsonNode *pam_end_node = json_object_get_member (node_object, "pam_end");
-    JsonObject *pam_end_node_object = json_node_get_object (pam_end_node);
-    JsonNode *pam_status_code_node = json_object_get_member (pam_end_node_object, "pam_status_code");
+    JsonNode *node_pam_status_code = json_object_get_member (node_object, "pam_status_code");
     gint pam_status_code = -1;
 
-    if (json_node_get_node_type (pam_status_code_node) != JSON_NODE_NULL) {
-        pam_status_code = json_node_get_int (pam_status_code_node);
+    if (json_node_get_node_type (node_pam_status_code) != JSON_NODE_NULL) {
+        pam_status_code = json_node_get_int (node_pam_status_code);
     }
 
     json_node_unref (node);
     return pam_status_code;
+}
+
+gchar *
+get_pam_status_format (gchar *req)
+{
+    JsonNode *node = string_to_json (req);
+    JsonObject *node_object = json_node_get_object (node);
+    JsonNode *node_pam_status_code = json_object_get_member (node_object, "pam_status_code");
+    JsonNode *node_pam_status_mess_en = json_object_get_member (node_object, "pam_status_mess_en");
+    JsonNode *node_pam_status_mess_ru = json_object_get_member (node_object, "pam_status_mess_ru");
+
+    gint status_code = -1;
+    gchar *status_mess_en = "NULL";
+    gchar *status_mess_ru = "NULL";
+
+    if (json_node_get_node_type (node_pam_status_code) != JSON_NODE_NULL) {
+        status_code = json_node_get_int (node_pam_status_code);
+    }
+    if (json_node_get_node_type (node_pam_status_mess_en) != JSON_NODE_NULL) {
+        status_mess_en = g_strdup (json_node_get_string (node_pam_status_mess_en));
+    }
+    if (json_node_get_node_type (node_pam_status_mess_ru) != JSON_NODE_NULL) {
+        status_mess_ru = g_strdup (json_node_get_string (node_pam_status_mess_ru));
+    }
+
+    json_node_unref (node);
+
+    return g_strdup_printf ("\n-------\npam_status_code: %d\npam_status_mess_ru: %s\npam_status_mess_en: %s\n",
+                            status_code,
+                            status_mess_ru,
+                            status_mess_en);
+}
+
+gchar*
+get_pam_conv_mess (gchar *req)
+{
+    JsonNode *node = string_to_json (req);
+    JsonObject *node_object = json_node_get_object (node);
+    JsonNode *pam_conv_node = json_object_get_member (node_object, "pam_conv_mess");
+    gchar *mess = NULL;
+
+    if (json_node_get_node_type (pam_conv_node) != JSON_NODE_NULL) {
+        mess = g_strdup (json_node_get_string (pam_conv_node));
+    }
+
+    json_node_unref (node);
+
+    return mess ? mess : "";
 }
 
 gint
@@ -95,16 +143,29 @@ get_request_type (gchar *req)
 
         if (g_strcmp0 (type, "input") == 0) {
             if (json_object_has_member (object, "new_password")) {
+                json_node_unref (req_node);
                 return NEW_PASSWORD;
             }
             if (json_object_has_member (object, "current_password")) {
-                    return CURRENT_PASSWORD;
+                json_node_unref (req_node);
+                return CURRENT_PASSWORD;
             }
             if (json_object_has_member (object, "repeat_new_password")) {
+                json_node_unref (req_node);
                 return REPEAT_NEW_PASSWORD;
             }
         }
-        json_node_unref (req_node);
+
+        const gchar *type_content = json_object_get_string_member (object, "type_content");
+        if (g_strcmp0 (type_content, "pam_status") == 0) {
+            json_node_unref (req_node);
+            return PAM_STATUS;
+        }
+        if (g_strcmp0 (type_content, "pam_conv") == 0) {
+            json_node_unref (req_node);
+            return PAM_CONV;
+        }
+
     }
     return UNKNOWN;
 }
@@ -235,7 +296,7 @@ on_data_reciever (GObject      *instream,
         stream_free (stream);
 
         g_print ("CHILD DIED\n");
-        gint pam_status_code = get_pam_end_status_code (g_list_last(stream->requests)->data);
+        gint pam_status_code = get_pam_end_status_code (stream->last_request);
         g_print ("PAM CODE: %d\n", pam_status_code);
         if (pam_status_code != 0) {
             g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Error", "error");
@@ -257,10 +318,13 @@ on_data_reciever (GObject      *instream,
 
     if (stream->buffer[bytes_read - 1] == '\n') {
         /* Обработка законченного json дочернего процесса*/
+        stream->last_request = g_strdup (stream->request);
         g_print ("REQUEST: %s", stream->request);
-        stream->requests = g_list_append (stream->requests, g_strdup (stream->request));
 
-        if (stream->current_step != -1 && stream->current_step != UNKNOWN) {
+        if (stream->current_step != -1 &&
+            stream->current_step != PAM_CONV &&
+            stream->current_step != PAM_STATUS)
+        {
             stream->prev_step = stream->current_step;
         }
 
@@ -274,7 +338,7 @@ on_data_reciever (GObject      *instream,
             if (stream->prev_step == NEW_PASSWORD) {
                 g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Weak password", "warning");
             }
-            
+
             g_signal_emit (stream, userpasswd_stream_signals [DRAW_NEW_PASSWD], 0);
         }
 
@@ -296,8 +360,22 @@ on_data_reciever (GObject      *instream,
             g_free (response);
         }
 
-        if (stream->current_step == UNKNOWN) {
-            g_signal_emit (stream, userpasswd_stream_signals[NEW_LOG], 0, g_strdup (stream->request));
+        if (stream->current_step == PAM_CONV) {
+            gchar *mess = get_pam_conv_mess (stream->request);
+            g_signal_emit (stream,
+                           userpasswd_stream_signals[NEW_LOG],
+                           0,
+                           mess);
+            g_free (mess);
+        }
+
+        if (stream->current_step == PAM_STATUS) {
+            gchar *mess = get_pam_status_format (stream->request);
+            g_signal_emit (stream,
+                           userpasswd_stream_signals[NEW_LOG],
+                           0,
+                           mess);
+            g_free (mess);
         }
         
         g_free (stream->request);
