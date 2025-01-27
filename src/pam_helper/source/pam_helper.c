@@ -9,8 +9,6 @@
 #define PAM_REPEATPASS 2
 #define PAM_SKIPASS    3
 
-gchar *CONV_ERROR = NULL;
-
 static inline int getstate(const char *msg) {
     /* Interpret possible PAM messages (not including errors) */
     if (!strcmp(msg, "Current Password: "))
@@ -46,7 +44,7 @@ get_data_from_parent (int type_data)
         key = "repeat_new_password";
     }
 
-    output_json = init_json_node_output (key);
+    output_json = init_json_node_input (key);
     print_json (output_json);
     fflush (stdout);
 
@@ -95,14 +93,14 @@ non_interactive_conv (int                        num_msg,
         switch (message->msg_style) {
             case PAM_TEXT_INFO:
             /*TODO: Add collection of information messages for debugging*/
-                json_object_set_string_member (log_object, "pam_conv", message->msg);
+                json_object_set_string_member (log_object, "pam_conv_mess", message->msg);
                 print_json (root);
+
                 return PAM_SUCCESS;
             case PAM_ERROR_MSG:
-                if (CONV_ERROR) {
-                    g_free (CONV_ERROR);
-                }
-                CONV_ERROR = g_strdup (message->msg);
+                json_object_set_string_member (log_object, "pam_conv_mess", message->msg);
+                print_json (root);
+
                 return PAM_CONV_ERR;
             case PAM_PROMPT_ECHO_ON:
             case PAM_PROMPT_ECHO_OFF:
@@ -149,52 +147,45 @@ non_interactive_conv (int                        num_msg,
 int
 wrapped_pam_end (pam_handle_t *pamh, int retval, JsonObject *object)
 {
-    set_member_pam (object, "pam_end", retval, pamh);
+    set_member_pam (object, retval, pamh);
     return pam_end (pamh, retval);
 }
 
 int
-setup_pam (gchar* user_name, JsonNode *root)
+setup_pam (gchar* user_name, JsonNode *node_pam, JsonNode *node_pam_conv)
 {
     g_assert (user_name != NULL);
 
     pam_handle_t *pamh = NULL;
     int retval;
-    JsonObject *object = json_node_get_object (root);
-    struct pam_conv conv = { non_interactive_conv, root};
+    JsonObject *object_pam = json_node_get_object (node_pam);
+    struct pam_conv conv = { non_interactive_conv, node_pam_conv};
 
     retval = pam_start (PASSWD_SERVICE, user_name, &conv, &pamh);
-    set_member_pam (object, "pam_start", retval, pamh);
 
     if (retval != PAM_SUCCESS) {
-        wrapped_pam_end (pamh, retval, object);
-        print_json (root);
+        wrapped_pam_end (pamh, retval, object_pam);
+        print_json (node_pam);
         return retval;
     }
-    print_json (root);
 
     retval = pam_chauthtok (pamh, 0);
-    set_member_pam (object, "pam_chauthtok", retval, pamh);
 
     if (retval != PAM_SUCCESS) {
-        if (CONV_ERROR != NULL) {
-            json_object_set_string_member(object, "pam_conv", CONV_ERROR);
-        }
-        wrapped_pam_end (pamh, retval, object);
-        print_json (root);
-        return retval;
-    }
-    print_json (root);
-
-    wrapped_pam_end (pamh, PAM_SUCCESS, object);
-
-    if (retval != PAM_SUCCESS) {
-        wrapped_pam_end (pamh, retval, object);
-        print_json (root);
+        wrapped_pam_end (pamh, retval, object_pam);
+        print_json (node_pam);
         return retval;
     }
 
-    print_json (root);
+    wrapped_pam_end (pamh, PAM_SUCCESS, object_pam);
+
+    if (retval != PAM_SUCCESS) {
+        wrapped_pam_end (pamh, retval, object_pam);
+        print_json (node_pam);
+        return retval;
+    }
+
+    print_json (node_pam);
 
     return PAM_SUCCESS;
 }
@@ -228,30 +219,33 @@ int main (int argc, char *argv[]) {
 
     int res;
     
-    JsonNode *root = init_json_node ();
-    JsonObject *object = json_node_get_object(root);
+    JsonNode *root_json_pam_conv = init_json_node_pam_conv ();
+    JsonNode *root_json_pam = init_json_node_pam ();
+    JsonObject *object_json_pam_conv = json_node_get_object (root_json_pam_conv);
+    JsonObject *object_json_pam = json_node_get_object (root_json_pam);
 
-    g_assert (object != NULL);
+    g_assert (object_json_pam_conv != NULL);
+    g_assert (object_json_pam != NULL);
 
     gchar *username = get_username ();
     if (!username) {
-        json_object_set_string_member(object, "main_error", "Unable to retrieve username");
-        print_json (root);
+        json_object_set_string_member (object_json_pam, "pam_status_en", "Unable to retrieve username");
+        print_json (root_json_pam);
 
-        clear_json_object (object);
-        json_node_free (root);
+        clear_json_object (object_json_pam);
+        clear_json_object (object_json_pam_conv);
+        json_node_free (root_json_pam);
+        json_node_free (root_json_pam_conv);
 
         return 1;
     }
 
-    json_object_set_string_member(object, "user_name", username);
+    res = setup_pam (username, root_json_pam, root_json_pam_conv);
 
-    res = setup_pam (username, root);
-
-    clear_json_object (object);
-    json_node_free (root);
-
-    g_free(CONV_ERROR);
+    clear_json_object (object_json_pam);
+    clear_json_object (object_json_pam_conv);
+    json_node_free (root_json_pam);
+    json_node_free (root_json_pam_conv);
 
     return 0;
 }
