@@ -72,12 +72,12 @@ create_change_password_elems (UserpasswdWindow *window)
     window->repeat_new_password_row = ADW_PASSWORD_ENTRY_ROW (adw_password_entry_row_new ());
     adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->repeat_new_password_row ), "Repeat new password");
 
-    window->change_password_button = gtk_button_new_with_label ("Change password");
-    g_signal_connect (G_OBJECT (window->change_password_button), "clicked", G_CALLBACK (cb_change_password_button), window);
+    window->button = gtk_button_new_with_label ("Change password");
+    g_signal_connect (G_OBJECT (window->button), "clicked", G_CALLBACK (cb_change_password_button), window);
     
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->new_password_row));
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->repeat_new_password_row));
-    gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->change_password_button));
+    gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->button));
 }
 
 void
@@ -110,11 +110,11 @@ cb_draw_check_passwd (gpointer         *stream,
 {
     window->current_password_row = ADW_PASSWORD_ENTRY_ROW (adw_password_entry_row_new ());
     adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->current_password_row), "Current password");
-    window->check_password_button = gtk_button_new_with_label ("Check password");
-    g_signal_connect (G_OBJECT (window->check_password_button), "clicked", G_CALLBACK (cb_check_password_button), window);
+    window->button = gtk_button_new_with_label ("Check password");
+    g_signal_connect (G_OBJECT (window->button), "clicked", G_CALLBACK (cb_check_password_button), window);
 
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->current_password_row));
-    gtk_list_box_append (GTK_LIST_BOX (window->container_password), window->check_password_button);
+    gtk_list_box_append (GTK_LIST_BOX (window->container_password), window->button);
 }
 
 static void

@@ -55,6 +55,18 @@ userpasswd_app_quit_action (GSimpleAction *action,
 }
 
 static void
+userpasswd_app_press_enter (GSimpleAction *action,
+                            GVariant      *parametr,
+                            gpointer       userdata)
+{
+    UserpasswdApp *self = userdata;
+
+    if (self->window->button != NULL) {
+        g_signal_emit_by_name (self->window->button, "clicked", self);
+    }
+}
+
+static void
 userpasswd_app_activate (GApplication *app) {
     g_assert (USERPASSWD_IS_APP (app));
 
@@ -104,7 +116,8 @@ userpasswd_app_new (const char        *application_id,
 
 static const GActionEntry app_actions[] = {
     {"quit", userpasswd_app_quit_action},
-    {"about", userpasswd_app_about_action}
+    {"about", userpasswd_app_about_action},
+    {"press_enter", userpasswd_app_press_enter}
 };
 
 static void
@@ -118,6 +131,12 @@ userpasswd_app_init (UserpasswdApp *self)
     gtk_application_set_accels_for_action (GTK_APPLICATION (self),
                                            "app.quit",
                                            (const char *[]) { "<primary>q", NULL });
+    /*
+    TODO: is this how a accelerator should be created for a widget?
+    */
+    gtk_application_set_accels_for_action (GTK_APPLICATION (self),
+                                           "app.press_enter",
+                                           (const char *[]) { "Return", NULL});
 }
 
 int
