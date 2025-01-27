@@ -35,7 +35,7 @@ typedef struct _UserpasswdWindow {
 
 } UserpasswdWindow;
 
-void cb_new_status (gpointer *stream, gchar *status_mess, UserpasswdWindow *window);
+void cb_new_status (gpointer *stream, gchar *status_mess, gchar *status_type, UserpasswdWindow *window);
 void cb_new_log (gpointer *stream, gchar *log, UserpasswdWindow *window);
 void cb_draw_check_passwd (gpointer *stream, UserpasswdWindow *window);
 void cb_draw_new_passwd (gpointer *stream, UserpasswdWindow *window);

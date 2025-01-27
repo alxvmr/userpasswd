@@ -1,4 +1,5 @@
 #include "userpasswd-stream.h"
+#include "userpasswd-marshal.h"
 #include <json-glib/json-glib.h>
 
 enum {
@@ -196,6 +197,8 @@ on_password_reciever (gpointer          window,
                       const gchar      *current_password,
                       UserpasswdStream *stream)
 {
+    g_assert (stream->outstream != NULL);
+    
     stream->current_password = g_strdup (current_password);
     gchar *response = get_response (CURRENT_PASSWORD, stream->current_password);
 
@@ -235,10 +238,10 @@ on_data_reciever (GObject      *instream,
         gint pam_status_code = get_pam_end_status_code (g_list_last(stream->requests)->data);
         g_print ("PAM CODE: %d\n", pam_status_code);
         if (pam_status_code != 0) {
-            g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Error");
+            g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Error", "error");
         }
         else {
-            g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Success");
+            g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Success", "success");
         }
 
         return;
@@ -269,7 +272,7 @@ on_data_reciever (GObject      *instream,
 
         if (stream->current_step == NEW_PASSWORD) {
             if (stream->prev_step == NEW_PASSWORD) {
-                g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Weak password");
+                g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Weak password", "warning");
             }
             
             g_signal_emit (stream, userpasswd_stream_signals [DRAW_NEW_PASSWD], 0);
@@ -372,9 +375,10 @@ userpasswd_stream_class_init (UserpasswdStreamClass *class)
         0,
         NULL,
         NULL,
-        g_cclosure_marshal_VOID__STRING,
+        g_cclosure_user_marshal_VOID__STRING_STRING,
         G_TYPE_NONE,
-        1,
+        2,
+        G_TYPE_STRING,
         G_TYPE_STRING
     );
 

@@ -13,9 +13,11 @@ G_DEFINE_FINAL_TYPE (UserpasswdWindow, userpasswd_window, ADW_TYPE_APPLICATION_W
 
 static void
 userpasswd_window_show_status (UserpasswdWindow *self,
-                               gchar            *status_mess)
+                               const gchar      *status_mess,
+                               const gchar      *status_type)
 {
-    adw_banner_set_title (ADW_BANNER (self->status), status_mess);
+    gtk_label_set_text (GTK_LABEL (self->status), status_mess);
+    gtk_widget_set_css_classes (GTK_WIDGET (self->status), &status_type);
     gtk_widget_set_visible (GTK_WIDGET (self->status), TRUE);
 }
 
@@ -53,7 +55,7 @@ cb_change_password_button (GtkWidget *button,
         g_signal_emit (self, userpasswd_window_signals[CHANGE_PWD], 0, new_password);
     }
     else {
-        userpasswd_window_show_status (self, "Passwords don't match");
+        userpasswd_window_show_status (self, "Passwords don't match", "error");
     }
 }
 
@@ -91,9 +93,10 @@ cb_draw_new_passwd (gpointer *stream,
 void
 cb_new_status (gpointer         *stream,
                gchar            *status_mess,
+               gchar            *status_type,
                UserpasswdWindow *window)
 {
-    userpasswd_window_show_status (window, status_mess);
+    userpasswd_window_show_status (window, status_mess, status_type);
 }
 
 void
@@ -177,10 +180,15 @@ userpasswd_window_init (UserpasswdWindow *self)
 
     self->container_password = gtk_list_box_new ();
 
-    self->status = adw_banner_new ("Status mess");
-    gtk_widget_set_visible (GTK_WIDGET (self->status), FALSE);
-    adw_banner_set_revealed (ADW_BANNER (self->status), TRUE);
+    PangoAttrList *attr_list = pango_attr_list_new();
+    PangoAttribute *attr = pango_attr_weight_new(PANGO_WEIGHT_BOLD);
+    pango_attr_list_insert(attr_list, attr);
+
+    self->status = gtk_label_new ("Status mess");
+    gtk_label_set_attributes (GTK_LABEL (self->status), attr_list);
     gtk_widget_set_margin_top (GTK_WIDGET (self->status), 15);
+    gtk_widget_add_css_class (GTK_WIDGET (self->status), "error");
+    gtk_widget_set_visible (GTK_WIDGET (self->status), FALSE);
 
     self->info = gtk_label_new ("");
     gtk_label_set_wrap (GTK_LABEL (self->info), TRUE);
