@@ -115,6 +115,8 @@ cb_draw_check_passwd (gpointer         *stream,
 
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->current_password_row));
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), window->button);
+
+    gtk_widget_grab_focus (GTK_WIDGET (window->current_password_row));
 }
 
 static void
