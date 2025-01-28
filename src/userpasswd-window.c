@@ -115,8 +115,8 @@ cb_draw_new_passwd (gpointer *stream,
 
 void
 cb_new_status (gpointer         *stream,
-               gchar            *status_mess,
-               gchar            *status_type,
+               const gchar      *status_mess,
+               const gchar      *status_type,
                UserpasswdWindow *window)
 {
     userpasswd_window_show_status (window, status_mess, status_type);
@@ -124,8 +124,8 @@ cb_new_status (gpointer         *stream,
 
 void
 cb_new_log (gpointer         *stream,
-            gchar            *log,
-            gchar            *sender,
+            const gchar      *log,
+            const gchar      *sender,
             UserpasswdWindow *window)
 {
     userpasswd_window_add_info (window, log, sender);
