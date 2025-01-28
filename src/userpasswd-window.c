@@ -112,6 +112,8 @@ void
 cb_draw_check_passwd (gpointer         *stream,
                       UserpasswdWindow *window)
 {
+    gtk_list_box_remove_all (GTK_LIST_BOX (window->container_password));
+
     window->current_password_row = ADW_PASSWORD_ENTRY_ROW (adw_password_entry_row_new ());
     adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->current_password_row), "Current password");
     window->button = gtk_button_new_with_label ("Check password");

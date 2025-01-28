@@ -24,6 +24,25 @@ static guint userpasswd_stream_signals[LAST_SIGNAL];
 G_DEFINE_TYPE (UserpasswdStream, userpasswd_stream, G_TYPE_OBJECT);
 
 static void
+stream_clear_data (UserpasswdStream *self)
+{
+    switch (self->last_input_step) {
+        case (CURRENT_PASSWORD):
+            self->current_password = NULL;
+            break;
+        case (NEW_PASSWORD):
+            self->new_password = NULL;
+            break;
+        default:
+            break;
+    }
+
+    self->current_step = -1;
+    self->prev_step = -1;
+    self->last_input_step = -1;
+}
+
+static void
 userpasswd_stream_create_stream (UserpasswdStream *self)
 {
     GError *error = NULL;
@@ -300,6 +319,8 @@ on_data_reciever (GObject      *instream,
         g_print ("PAM CODE: %d\n", pam_status_code);
         if (pam_status_code != 0) {
             g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Error", "error");
+            stream_clear_data (stream);
+            userpasswd_stream_communicate (NULL, stream);
         }
         else {
             g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Success", "success");
@@ -353,15 +374,24 @@ on_data_reciever (GObject      *instream,
                            "\n");
 
             if (stream->current_step == CURRENT_PASSWORD) {
-                g_signal_emit (stream, userpasswd_stream_signals [DRAW_CHECK_PASSWD], 0);
+                stream->last_input_step = stream->current_step;
+                if (stream->current_password == NULL)
+                    g_signal_emit (stream, userpasswd_stream_signals [DRAW_CHECK_PASSWD], 0);
+                else
+                    on_password_reciever (NULL, stream->current_password, stream);
             }
 
             if (stream->current_step == NEW_PASSWORD) {
+                stream->last_input_step = stream->current_step;
                 if (stream->prev_step == NEW_PASSWORD) {
                     g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Weak password", "warning");
                 }
-
-                g_signal_emit (stream, userpasswd_stream_signals [DRAW_NEW_PASSWD], 0);
+                else {
+                    if (stream->new_password == NULL)
+                    g_signal_emit (stream, userpasswd_stream_signals [DRAW_NEW_PASSWD], 0);
+                    else
+                        on_new_password_reciever (NULL, stream->new_password, stream);
+                }
             }
 
             if (stream->current_step == REPEAT_NEW_PASSWORD) {
@@ -489,6 +519,7 @@ userpasswd_stream_new (gchar *subprocess_path)
     self->subprocess_path = subprocess_path;
     self->current_step = -1;
     self->prev_step = -1;
+    self->last_input_step = -1;
 
     return self;
 }
