@@ -110,7 +110,7 @@ get_pam_status_format (gchar *req)
 
     json_node_unref (node);
 
-    return g_strdup_printf ("\n-------\npam_status_code: %d\npam_status_mess_ru: %s\npam_status_mess_en: %s\n",
+    return g_strdup_printf ("-------\npam_status_code: %d\npam_status_mess_ru: %s\npam_status_mess_en: %s\n",
                             status_code,
                             status_mess_ru,
                             status_mess_en);
@@ -330,52 +330,57 @@ on_data_reciever (GObject      *instream,
 
         stream->current_step = get_request_type (stream->request);
 
-        if (stream->current_step == CURRENT_PASSWORD) {
-            g_signal_emit (stream, userpasswd_stream_signals [DRAW_CHECK_PASSWD], 0);
-        }
-
-        if (stream->current_step == NEW_PASSWORD) {
-            if (stream->prev_step == NEW_PASSWORD) {
-                g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Weak password", "warning");
+        if (stream->current_step == PAM_CONV || stream->current_step == PAM_STATUS) {
+            gchar *mess = NULL;
+            if (stream->current_step == PAM_CONV) {
+                mess = get_pam_conv_mess (stream->request);
+            }
+            else {
+                mess = get_pam_status_format (stream->request);
             }
 
-            g_signal_emit (stream, userpasswd_stream_signals [DRAW_NEW_PASSWD], 0);
-        }
-
-        if (stream->current_step == REPEAT_NEW_PASSWORD) {
-            gchar *response = get_response (stream->current_step, stream->new_password);
-
-            if (response != NULL) {
-                g_output_stream_write_all_async (
-                    stream->outstream,
-                    response,
-                    strlen (response),
-                    G_PRIORITY_DEFAULT,
-                    NULL,
-                    on_data_write,
-                    stream
-                );
+            if (mess != NULL) {
+                g_signal_emit (stream,
+                               userpasswd_stream_signals[NEW_LOG],
+                               0,
+                               mess);
+                g_free (mess);
             }
-
-            g_free (response);
-        }
-
-        if (stream->current_step == PAM_CONV) {
-            gchar *mess = get_pam_conv_mess (stream->request);
+        } else {
             g_signal_emit (stream,
                            userpasswd_stream_signals[NEW_LOG],
                            0,
-                           mess);
-            g_free (mess);
-        }
+                           "\n");
 
-        if (stream->current_step == PAM_STATUS) {
-            gchar *mess = get_pam_status_format (stream->request);
-            g_signal_emit (stream,
-                           userpasswd_stream_signals[NEW_LOG],
-                           0,
-                           mess);
-            g_free (mess);
+            if (stream->current_step == CURRENT_PASSWORD) {
+                g_signal_emit (stream, userpasswd_stream_signals [DRAW_CHECK_PASSWD], 0);
+            }
+
+            if (stream->current_step == NEW_PASSWORD) {
+                if (stream->prev_step == NEW_PASSWORD) {
+                    g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Weak password", "warning");
+                }
+
+                g_signal_emit (stream, userpasswd_stream_signals [DRAW_NEW_PASSWD], 0);
+            }
+
+            if (stream->current_step == REPEAT_NEW_PASSWORD) {
+                gchar *response = get_response (stream->current_step, stream->new_password);
+
+                if (response != NULL) {
+                    g_output_stream_write_all_async (
+                        stream->outstream,
+                        response,
+                        strlen (response),
+                        G_PRIORITY_DEFAULT,
+                        NULL,
+                        on_data_write,
+                        stream
+                    );
+                }
+
+                g_free (response);
+            }
         }
         
         g_free (stream->request);

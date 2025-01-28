@@ -25,7 +25,8 @@ static void
 userpasswd_window_add_info (UserpasswdWindow *self,
                             const gchar      *info_mess)
 {
-    gtk_label_set_text (GTK_LABEL (self->info), g_strconcat (gtk_label_get_text (GTK_LABEL (self->info)), info_mess, NULL));
+    const gchar* info_text = gtk_label_get_text (GTK_LABEL (self->info));
+    gtk_label_set_text (GTK_LABEL (self->info), g_strconcat (info_text, info_mess, NULL));
 }
 
 void
