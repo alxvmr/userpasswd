@@ -21,12 +21,40 @@ userpasswd_window_show_status (UserpasswdWindow *self,
     gtk_widget_set_visible (GTK_WIDGET (self->status), TRUE);
 }
 
+gchar*
+create_log (const gchar *log,
+            const gchar *sender)
+{
+    GDateTime *now = g_date_time_new_now_local ();
+    gchar *timestamp = g_date_time_format (now, "%d/%m/%y %H:%M:%S");
+
+    gchar *format_sender = g_strconcat ("[", sender, "]:", NULL);
+    gchar *res = g_strdup_printf ("%-19s%-14s %s\n",
+                                  timestamp,
+                                  format_sender,
+                                  log);
+    if (res[strlen(res)-2] != '\n'){
+        res = g_strconcat (res, "\n", NULL);
+    }
+
+    g_date_time_unref (now);
+    g_free (timestamp);
+    g_free (format_sender);
+
+    return res;
+}
+
 static void
 userpasswd_window_add_info (UserpasswdWindow *self,
-                            const gchar      *info_mess)
+                            const gchar      *info_mess,
+                            const gchar      *sender)
 {
     const gchar* info_text = gtk_label_get_text (GTK_LABEL (self->info));
-    gtk_label_set_text (GTK_LABEL (self->info), g_strconcat (info_text, info_mess, NULL));
+    gtk_label_set_text (GTK_LABEL (self->info),
+                        g_strconcat (info_text,
+                                     create_log (info_mess, sender),
+                                     NULL)
+                        );
 }
 
 void
@@ -103,9 +131,10 @@ cb_new_status (gpointer         *stream,
 void
 cb_new_log (gpointer         *stream,
             gchar            *log,
+            gchar            *sender,
             UserpasswdWindow *window)
 {
-    userpasswd_window_add_info (window, log);
+    userpasswd_window_add_info (window, log, sender);
 }
 
 void

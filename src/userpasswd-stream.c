@@ -105,7 +105,7 @@ get_pam_end_status_code (gchar *req)
 }
 
 gchar *
-get_pam_status_format (gchar *req)
+get_pam_status (gchar *req)
 {
     JsonNode *node = string_to_json (req);
     JsonObject *node_object = json_node_get_object (node);
@@ -129,7 +129,7 @@ get_pam_status_format (gchar *req)
 
     json_node_unref (node);
 
-    return g_strdup_printf ("-------\npam_status_code: %d\npam_status_mess_ru: %s\npam_status_mess_en: %s\n",
+    return g_strdup_printf ("pam_status_code: %d; pam_status_mess_ru: %s; pam_status_mess_en: %s",
                             status_code,
                             status_mess_ru,
                             status_mess_en);
@@ -353,26 +353,25 @@ on_data_reciever (GObject      *instream,
 
         if (stream->current_step == PAM_CONV || stream->current_step == PAM_STATUS) {
             gchar *mess = NULL;
+            gchar *sender = NULL;
             if (stream->current_step == PAM_CONV) {
                 mess = get_pam_conv_mess (stream->request);
+                sender = "pam_conv";
             }
             else {
-                mess = get_pam_status_format (stream->request);
+                mess = get_pam_status (stream->request);
+                sender = "pam_status";
             }
 
             if (mess != NULL) {
                 g_signal_emit (stream,
                                userpasswd_stream_signals[NEW_LOG],
                                0,
-                               mess);
+                               mess,
+                               sender);
                 g_free (mess);
             }
         } else {
-            g_signal_emit (stream,
-                           userpasswd_stream_signals[NEW_LOG],
-                           0,
-                           "\n");
-
             if (stream->current_step == CURRENT_PASSWORD) {
                 stream->last_input_step = stream->current_step;
                 if (stream->current_password == NULL)
@@ -502,9 +501,10 @@ userpasswd_stream_class_init (UserpasswdStreamClass *class)
         0,
         NULL,
         NULL,
-        g_cclosure_marshal_VOID__STRING,
+        g_cclosure_user_marshal_VOID__STRING_STRING,
         G_TYPE_NONE,
-        1,
+        2,
+        G_TYPE_STRING,
         G_TYPE_STRING
     );
 }
