@@ -63,6 +63,10 @@ cb_check_password_button (GtkWidget *button,
 {
     UserpasswdWindow *self = USERPASSWD_WINDOW (user_data);
 
+    if (gtk_widget_get_visible (GTK_WIDGET (self->status))) {
+        gtk_widget_set_visible (GTK_WIDGET (self->status), FALSE);
+    }
+
     const gchar *current_password = gtk_editable_get_text (GTK_EDITABLE (self->current_password_row));
     g_signal_emit (self, userpasswd_window_signals[CHECK_PWD], 0, current_password);
 }
@@ -73,10 +77,6 @@ cb_change_password_button (GtkWidget *button,
 {
     UserpasswdWindow *self = USERPASSWD_WINDOW (user_data);
 
-    if (gtk_widget_get_visible (GTK_WIDGET (self->status))) {
-        gtk_widget_set_visible (GTK_WIDGET (self->status), FALSE);
-    }
-
     const gchar *new_password = gtk_editable_get_text (GTK_EDITABLE (self->new_password_row));
     const gchar *repeat_new_password = gtk_editable_get_text (GTK_EDITABLE (self->repeat_new_password_row));
 
@@ -86,12 +86,6 @@ cb_change_password_button (GtkWidget *button,
     else {
         userpasswd_window_show_status (self, "Passwords don't match", "error");
     }
-}
-
-void
-destroy_check_password_elems (UserpasswdWindow *window)
-{
-    gtk_list_box_remove_all (GTK_LIST_BOX (window->container_password));
 }
 
 void
@@ -115,7 +109,7 @@ void
 cb_draw_new_passwd (gpointer *stream,
                     UserpasswdWindow *window)
 {
-    destroy_check_password_elems (window);
+    gtk_list_box_remove_all (GTK_LIST_BOX (window->container_password));
     create_change_password_elems (window);
 }
 
