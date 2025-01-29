@@ -56,6 +56,8 @@ target_compile_options(
     ${JSON_GLIB_CFLAGS}
 )
 
+install (TARGETS ${PROJECT_NAME} DESTINATION bin)
+
 set(CMAKE_CLEAN_FILES ${PROJECT_NAME})
 include(GNUInstallDirs)
-install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/${PROJECT_NAME}")
+install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/${PROJECT_NAME})")
