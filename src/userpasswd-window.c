@@ -217,6 +217,7 @@ userpasswd_window_init (UserpasswdWindow *self)
     gtk_widget_set_visible (GTK_WIDGET (self->status), FALSE);
 
     self->info = gtk_label_new ("");
+    gtk_label_set_selectable (GTK_LABEL (self->info), TRUE);
     gtk_label_set_wrap (GTK_LABEL (self->info), TRUE);
     gtk_label_set_xalign (GTK_LABEL (self->info), 0);
     gtk_label_set_yalign (GTK_LABEL (self->info), 0);
