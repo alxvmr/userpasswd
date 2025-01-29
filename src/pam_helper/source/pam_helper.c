@@ -52,6 +52,7 @@ get_data_from_parent (int type_data)
         buf[strcspn(buf, "\n")] = 0;
     } else {
         g_printerr ("Input error");
+        return NULL;
     }
 
     JsonNode *input_node = string_to_json (buf);
