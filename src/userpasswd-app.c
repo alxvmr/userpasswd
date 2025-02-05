@@ -78,7 +78,7 @@ userpasswd_app_activate (GApplication *app) {
                                                      NULL);
     }
 
-    USERPASSWD_APP (app)->stream = userpasswd_stream_new ("./bin/pam_helper");
+    USERPASSWD_APP (app)->stream = userpasswd_stream_new ("pam_helper");
     g_signal_connect (USERPASSWD_APP(app)->window, "check-password", G_CALLBACK (on_password_reciever), USERPASSWD_APP (app)->stream);
     g_signal_connect (USERPASSWD_APP(app)->window, "change-password", G_CALLBACK (on_new_password_reciever), USERPASSWD_APP (app)->stream);
     g_signal_connect (USERPASSWD_APP (app)->stream, "new-status", G_CALLBACK (cb_new_status), USERPASSWD_APP(app)->window);
