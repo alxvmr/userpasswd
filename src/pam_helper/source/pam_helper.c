@@ -10,19 +10,19 @@
 #define PAM_SKIPASS    3
 
 static inline int getstate(const char *msg) {
-    /* Interpret possible PAM messages (not including errors) */
-    if (!strcmp(msg, "Current Password: "))
-        return PAM_OLDPASS;
-    if (!strcmp(msg, "Current password: "))
+    /* Interpret possible PAM messages (not including errors)
+       TODO: What should be the UI for kerberos and winbind?
+    */
+    if (!strcmp(msg, "Current Password: ") || !strcmp(msg, "Current password: ") ||
+        !strcmp(msg, "Current Kerberos password:") || !strcmp(msg, "(current) NT password:"))
         return PAM_OLDPASS;
 
-    if (!strcmp(msg, "New Password: "))
+    if (!strcmp(msg, "New Password: ") || !strcmp(msg, "Enter new password: ") ||
+        !strcmp(msg, "Enter new NT password:"))
         return PAM_NEWPASS;
-    if (!strcmp(msg, "Enter new password: "))
-        return PAM_NEWPASS;
-    if (!strcmp(msg, "Reenter new Password: "))
-        return PAM_REPEATPASS;
-    if (!strcmp(msg, "Re-type new password: "))
+
+    if (!strcmp(msg, "Reenter new Password: ") || !strcmp(msg, "Re-type new password: ") ||
+        !strcmp(msg, "Retype new NT password:"))
         return PAM_REPEATPASS;
 
     return PAM_SKIPASS;
