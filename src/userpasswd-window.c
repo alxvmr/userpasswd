@@ -16,6 +16,7 @@ userpasswd_window_show_status (UserpasswdWindow *self,
                                const gchar      *status_mess,
                                const gchar      *status_type)
 {
+    g_debug ("Start status display");
     gtk_label_set_text (GTK_LABEL (self->status), status_mess);
     gtk_widget_set_css_classes (GTK_WIDGET (self->status), (const gchar *[]) {status_type, NULL});
     gtk_widget_set_visible (GTK_WIDGET (self->status), TRUE);
@@ -25,6 +26,7 @@ gchar*
 create_log (const gchar *log,
             const gchar *sender)
 {
+    g_debug ("Start creating a formatted log");
     GDateTime *now = g_date_time_new_now_local ();
     gchar *timestamp = g_date_time_format (now, "%d/%m/%y %H:%M:%S");
 
@@ -55,12 +57,14 @@ userpasswd_window_add_info (UserpasswdWindow *self,
                                      create_log (info_mess, sender),
                                      NULL)
                         );
+    g_debug ("Formatted log returned and inserting into label");
 }
 
 void
 cb_check_password_button (GtkWidget *button,
                           gpointer   user_data)
 {
+    g_debug ("Start callback on pressing the check password button");
     UserpasswdWindow *self = USERPASSWD_WINDOW (user_data);
 
     if (gtk_widget_get_visible (GTK_WIDGET (self->status))) {
@@ -75,6 +79,7 @@ void
 cb_change_password_button (GtkWidget *button,
                            gpointer   user_data)
 {
+    g_debug ("Start callback on pressing the change password button");
     UserpasswdWindow *self = USERPASSWD_WINDOW (user_data);
 
     const gchar *new_password = gtk_editable_get_text (GTK_EDITABLE (self->new_password_row));
@@ -109,6 +114,7 @@ void
 cb_draw_new_passwd (gpointer *stream,
                     UserpasswdWindow *window)
 {
+    g_debug ("Start callback to draw items for requesting a new password");
     gtk_list_box_remove_all (GTK_LIST_BOX (window->container_password));
     create_change_password_elems (window);
 }
@@ -119,6 +125,7 @@ cb_new_status (gpointer         *stream,
                const gchar      *status_type,
                UserpasswdWindow *window)
 {
+    g_debug ("Start callback to process a new status");
     userpasswd_window_show_status (window, status_mess, status_type);
 }
 
@@ -128,6 +135,7 @@ cb_new_log (gpointer         *stream,
             const gchar      *sender,
             UserpasswdWindow *window)
 {
+    g_debug ("Start callback to process a new log");
     userpasswd_window_add_info (window, log, sender);
 }
 
@@ -135,6 +143,7 @@ void
 cb_draw_check_passwd (gpointer         *stream,
                       UserpasswdWindow *window)
 {
+    g_debug ("Start callback to render items for old password request");
     gtk_list_box_remove_all (GTK_LIST_BOX (window->container_password));
 
     window->current_password_row = ADW_PASSWORD_ENTRY_ROW (adw_password_entry_row_new ());

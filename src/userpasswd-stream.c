@@ -40,6 +40,8 @@ stream_clear_data (UserpasswdStream *self)
     self->current_step = -1;
     self->prev_step = -1;
     self->last_input_step = -1;
+
+    g_debug ("The instance fields of the UserpasswdStream class are reset");
 }
 
 static void
@@ -59,6 +61,8 @@ userpasswd_stream_create_stream (UserpasswdStream *self)
         g_error_free (error);
         return;
     }
+
+    g_debug ("A child process with a read and write channel has been created");
 
     self->instream = g_subprocess_get_stdout_pipe (self->subprocess);
     self->outstream = g_subprocess_get_stdin_pipe (self->subprocess);
@@ -248,7 +252,7 @@ on_data_write (GObject      *outstream,
         return;
     }
 
-    g_print ("WRITE DONE\n");
+    g_debug ("Data given to a child process");
 }
 
 void
@@ -314,9 +318,11 @@ on_data_reciever (GObject      *instream,
     if (bytes_read <= 0) {
         stream_free (stream);
 
-        g_print ("CHILD DIED\n");
+        g_debug ("The child process doesn't request anything, terminate it");
+
         gint pam_status_code = get_pam_end_status_code (stream->last_request);
-        g_print ("PAM CODE: %d\n", pam_status_code);
+
+        g_debug ("PAM_CODE = %d", pam_status_code);
         if (pam_status_code != 0) {
             g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Error", "error");
             stream_clear_data (stream);
@@ -340,7 +346,7 @@ on_data_reciever (GObject      *instream,
     if (stream->buffer[bytes_read - 1] == '\n') {
         /* Обработка законченного json дочернего процесса*/
         stream->last_request = g_strdup (stream->request);
-        g_print ("REQUEST: %s", stream->request);
+        g_debug ("Child process request: %s", stream->request);
 
         if (stream->current_step != -1 &&
             stream->current_step != PAM_CONV &&
@@ -440,6 +446,8 @@ userpasswd_stream_communicate (gpointer window,
 
     GError *error = NULL;
 
+    g_debug ("Start reading a stream");
+
     g_input_stream_read_async (
         stream->instream,
         stream->buffer,
@@ -515,6 +523,7 @@ userpasswd_stream_init (UserpasswdStream *self) {}
 UserpasswdStream *
 userpasswd_stream_new (gchar *subprocess_path)
 {
+    g_debug ("Create an object to work with a child process (UserpasswdStream)");
     UserpasswdStream *self = USERPASSWD_STREAM (g_object_new (USERPASSWD_TYPE_STREAM, NULL));
     self->subprocess_path = subprocess_path;
     self->current_step = -1;

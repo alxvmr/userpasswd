@@ -99,7 +99,7 @@ print_json (JsonNode *root)
 {
     gchar *output = get_string_from_json_node (root);
     g_print ("%s\n", output);
-
+    
     g_free (output);
 }
 
