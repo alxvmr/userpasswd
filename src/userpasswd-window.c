@@ -17,7 +17,7 @@ userpasswd_window_show_status (UserpasswdWindow *self,
                                const gchar      *status_type)
 {
     gtk_label_set_text (GTK_LABEL (self->status), status_mess);
-    gtk_widget_set_css_classes (GTK_WIDGET (self->status), &status_type);
+    gtk_widget_set_css_classes (GTK_WIDGET (self->status), (const gchar *[]) {status_type, NULL});
     gtk_widget_set_visible (GTK_WIDGET (self->status), TRUE);
 }
 
