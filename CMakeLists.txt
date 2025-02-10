@@ -32,6 +32,7 @@ execute_process(
 add_executable(userpasswd ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/src/userpasswd-marshal.c)
 
 add_subdirectory(src/pam_helper)
+add_subdirectory(locales)
 
 target_include_directories(
     userpasswd PRIVATE
