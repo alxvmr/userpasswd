@@ -86,8 +86,8 @@ userpasswd_app_activate (GApplication *app) {
     g_signal_connect (USERPASSWD_APP (app)->stream, "draw-check-passwd", G_CALLBACK (cb_draw_check_passwd), USERPASSWD_APP(app)->window);
     g_signal_connect (USERPASSWD_APP (app)->stream, "draw-new-passwd", G_CALLBACK (cb_draw_new_passwd), USERPASSWD_APP(app)->window);
 
-    g_menu_append (USERPASSWD_APP (app)->window->menu, "About", "app.about");
-    g_menu_append (USERPASSWD_APP (app)->window->menu, "Quit", "app.quit");
+    g_menu_append (USERPASSWD_APP (app)->window->menu, _("About"), "app.about");
+    g_menu_append (USERPASSWD_APP (app)->window->menu, _("Quit"), "app.quit");
 
     gtk_window_present (GTK_WINDOW (USERPASSWD_APP (app)->window));
 
@@ -143,6 +143,10 @@ int
 main (int     argc,
       char  **argv)
 {
+    setlocale (LC_ALL, "");
+    bindtextdomain ("userpasswd", "/usr/share/locale/");
+    textdomain ("userpasswd");
+
     UserpasswdApp *app = userpasswd_app_new ("org.example.userpasswd", G_APPLICATION_DEFAULT_FLAGS);
     
     int status = 0;

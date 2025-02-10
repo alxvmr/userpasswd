@@ -1,0 +1,76 @@
+# Russian translations for PACKAGE package.
+# Copyright (C) 2025 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#  <alxvmr@altlinux.org>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-02-11 13:41+0400\n"
+"PO-Revision-Date: 2025-02-10 12:06+0400\n"
+"Last-Translator:  <alxvmr@altlinux.org>\n"
+"Language-Team: Russian <gnu@d07.ru>\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: src/userpasswd-app.c:89
+msgid "About"
+msgstr "О приложении"
+
+#: src/userpasswd-app.c:90
+msgid "Quit"
+msgstr "Выйти"
+
+#: src/userpasswd-stream.c:327
+msgid "Error"
+msgstr "Ошибка"
+
+#: src/userpasswd-stream.c:332
+msgid "Success"
+msgstr "Пароль успешно изменен"
+
+#: src/userpasswd-stream.c:392
+msgid "Weak password"
+msgstr "Слабый пароль"
+
+#: src/userpasswd-window.c:92
+msgid "Passwords don't match"
+msgstr "Пароли не совпадают"
+
+#: src/userpasswd-window.c:100
+msgid "New password"
+msgstr "Новый пароль"
+
+#: src/userpasswd-window.c:103
+msgid "Repeat new password"
+msgstr "Повтор нового пароля"
+
+#: src/userpasswd-window.c:105
+msgid "Change password"
+msgstr "Сменить пароль"
+
+#: src/userpasswd-window.c:150
+msgid "Current password"
+msgstr "Текущий пароль"
+
+#: src/userpasswd-window.c:151
+msgid "Check password"
+msgstr "Проверить пароль"
+
+#: src/userpasswd-window.c:234
+msgid "Info"
+msgstr "Информация"
+
+#~ msgid "Language"
+#~ msgstr "Язык"
+
+#~ msgid "Russian"
+#~ msgstr "Русский"
+
+#~ msgid "English"
+#~ msgstr "Английский"

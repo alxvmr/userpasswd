@@ -3,6 +3,10 @@
 #include <adwaita.h>
 #include <gtk/gtk.h>
 #include <glib.h>
+#include <libintl.h>
+#include <locale.h>
+
+#define _(STRING) gettext(STRING)
 
 G_BEGIN_DECLS
 

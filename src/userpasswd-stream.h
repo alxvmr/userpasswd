@@ -1,6 +1,10 @@
 #ifndef USERPASSWDSTREAM_H
 #define USERPASSWDSREAM_H
 #include <gio/gio.h>
+#include <libintl.h>
+#include <locale.h>
+
+#define _(STRING) gettext(STRING)
 
 G_BEGIN_DECLS
 

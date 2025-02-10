@@ -1,0 +1,66 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-02-11 13:41+0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/userpasswd-app.c:89
+msgid "About"
+msgstr ""
+
+#: src/userpasswd-app.c:90
+msgid "Quit"
+msgstr ""
+
+#: src/userpasswd-stream.c:327
+msgid "Error"
+msgstr ""
+
+#: src/userpasswd-stream.c:332
+msgid "Success"
+msgstr ""
+
+#: src/userpasswd-stream.c:392
+msgid "Weak password"
+msgstr ""
+
+#: src/userpasswd-window.c:92
+msgid "Passwords don't match"
+msgstr ""
+
+#: src/userpasswd-window.c:100
+msgid "New password"
+msgstr ""
+
+#: src/userpasswd-window.c:103
+msgid "Repeat new password"
+msgstr ""
+
+#: src/userpasswd-window.c:105
+msgid "Change password"
+msgstr ""
+
+#: src/userpasswd-window.c:150
+msgid "Current password"
+msgstr ""
+
+#: src/userpasswd-window.c:151
+msgid "Check password"
+msgstr ""
+
+#: src/userpasswd-window.c:234
+msgid "Info"
+msgstr ""

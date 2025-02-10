@@ -324,12 +324,12 @@ on_data_reciever (GObject      *instream,
 
         g_debug ("PAM_CODE = %d", pam_status_code);
         if (pam_status_code != 0) {
-            g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Error", "error");
+            g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, _("Error"), "error");
             stream_clear_data (stream);
             userpasswd_stream_communicate (NULL, stream);
         }
         else {
-            g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Success", "success");
+            g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, _("Success"), "success");
         }
 
         return;
@@ -389,7 +389,7 @@ on_data_reciever (GObject      *instream,
             if (stream->current_step == NEW_PASSWORD) {
                 stream->last_input_step = stream->current_step;
                 if (stream->prev_step == NEW_PASSWORD) {
-                    g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, "Weak password", "warning");
+                    g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, _("Weak password"), "warning");
                 }
                 else {
                     if (stream->new_password == NULL)

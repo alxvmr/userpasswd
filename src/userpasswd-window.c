@@ -89,7 +89,7 @@ cb_change_password_button (GtkWidget *button,
         g_signal_emit (self, userpasswd_window_signals[CHANGE_PWD], 0, new_password);
     }
     else {
-        userpasswd_window_show_status (self, "Passwords don't match", "error");
+        userpasswd_window_show_status (self, _("Passwords don't match"), "error");
     }
 }
 
@@ -97,12 +97,12 @@ void
 create_change_password_elems (UserpasswdWindow *window)
 {
     window->new_password_row = ADW_PASSWORD_ENTRY_ROW (adw_password_entry_row_new ());
-    adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->new_password_row ), "New password");
+    adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->new_password_row ), _("New password"));
 
     window->repeat_new_password_row = ADW_PASSWORD_ENTRY_ROW (adw_password_entry_row_new ());
-    adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->repeat_new_password_row ), "Repeat new password");
+    adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->repeat_new_password_row ), _("Repeat new password"));
 
-    window->button = gtk_button_new_with_label ("Change password");
+    window->button = gtk_button_new_with_label (_("Change password"));
     g_signal_connect (G_OBJECT (window->button), "clicked", G_CALLBACK (cb_change_password_button), window);
     
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->new_password_row));
@@ -147,8 +147,8 @@ cb_draw_check_passwd (gpointer         *stream,
     gtk_list_box_remove_all (GTK_LIST_BOX (window->container_password));
 
     window->current_password_row = ADW_PASSWORD_ENTRY_ROW (adw_password_entry_row_new ());
-    adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->current_password_row), "Current password");
-    window->button = gtk_button_new_with_label ("Check password");
+    adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->current_password_row), _("Current password"));
+    window->button = gtk_button_new_with_label (_("Check password"));
     g_signal_connect (G_OBJECT (window->button), "clicked", G_CALLBACK (cb_check_password_button), window);
 
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->current_password_row));
@@ -231,7 +231,7 @@ userpasswd_window_init (UserpasswdWindow *self)
     gtk_label_set_xalign (GTK_LABEL (self->info), 0);
     gtk_label_set_yalign (GTK_LABEL (self->info), 0);
 
-    self->expander_status = gtk_expander_new ("Info");
+    self->expander_status = gtk_expander_new (_("Info"));
     gtk_widget_set_vexpand (self->expander_status, TRUE);
 
     GtkWidget *scrolled_window = gtk_scrolled_window_new ();

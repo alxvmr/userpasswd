@@ -1,6 +1,10 @@
 #ifndef USERPASSWDAPP_H
 #define USERPASSWDAPP_H
 #include <adwaita.h>
+#include <locale.h>
+#include <libintl.h>
+
+#define _(STRING) gettext(STRING)
 
 G_BEGIN_DECLS
 
