@@ -34,6 +34,7 @@ chmod g+s %_bindir/pam_helper
 %files
 %_bindir/userpasswd
 %_bindir/pam_helper
+%lang(ru) %_datadir/locale/ru/LC_MESSAGES/userpasswd.mo
 
 %changelog
 * Wed Jan 29 2025 Maria Alexeeva <alxvmr@altlinux.org> 0.0.1-alt1
