@@ -389,7 +389,7 @@ on_data_reciever (GObject      *instream,
             if (stream->current_step == NEW_PASSWORD) {
                 stream->last_input_step = stream->current_step;
                 if (stream->prev_step == NEW_PASSWORD) {
-                    g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, _("Weak password"), "warning");
+                    g_signal_emit (stream, userpasswd_stream_signals[NEW_STATUS], 0, _("Weak password"), "error");
                 }
                 else {
                     if (stream->new_password == NULL)
