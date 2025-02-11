@@ -1,11 +1,11 @@
-Name:    userpasswd
+Name:    userpasswd-gnome
 Version: 0.0.1
 Release: alt1
 
 Summary: Graphical utility for changing user password
 License: GPLv3
 Group:   Other
-Url:     https://github.com/alxvmr/userpasswd
+Url:     https://github.com/alxvmr/userpasswd-gnome
 
 BuildRequires(pre): rpm-macros-cmake
 BuildRequires: ccmake gcc-c++

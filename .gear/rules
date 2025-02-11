@@ -1,2 +1,2 @@
 tar: .
-spec: .gear/userpasswd.spec
+spec: .gear/userpasswd-gnome.spec
