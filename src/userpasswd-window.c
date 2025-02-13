@@ -99,8 +99,18 @@ create_change_password_elems (UserpasswdWindow *window)
     window->new_password_row = ADW_PASSWORD_ENTRY_ROW (adw_password_entry_row_new ());
     adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->new_password_row ), _("New password"));
 
+    /* Take the focus off the suffix */
+    GtkWidget *child = gtk_widget_get_first_child (GTK_WIDGET (window->new_password_row));
+    GtkWidget *g_child = gtk_widget_get_last_child (child);
+    gtk_widget_set_can_focus (g_child, FALSE);
+
     window->repeat_new_password_row = ADW_PASSWORD_ENTRY_ROW (adw_password_entry_row_new ());
     adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->repeat_new_password_row ), _("Repeat new password"));
+
+    /* Take the focus off the suffix */
+    child = gtk_widget_get_first_child (GTK_WIDGET (window->repeat_new_password_row ));
+    g_child = gtk_widget_get_last_child (child);
+    gtk_widget_set_can_focus (g_child, FALSE);
 
     window->button = gtk_button_new_with_label (_("Change password"));
     g_signal_connect (G_OBJECT (window->button), "clicked", G_CALLBACK (cb_change_password_button), window);
@@ -148,6 +158,12 @@ cb_draw_check_passwd (gpointer         *stream,
 
     window->current_password_row = ADW_PASSWORD_ENTRY_ROW (adw_password_entry_row_new ());
     adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->current_password_row), _("Current password"));
+
+    /* Take the focus off the suffix */
+    GtkWidget *child = gtk_widget_get_first_child (GTK_WIDGET (window->current_password_row));
+    GtkWidget *g_child = gtk_widget_get_last_child (child);
+    gtk_widget_set_can_focus (g_child, FALSE);
+
     window->button = gtk_button_new_with_label (_("Check password"));
     g_signal_connect (G_OBJECT (window->button), "clicked", G_CALLBACK (cb_check_password_button), window);
 
