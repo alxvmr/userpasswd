@@ -76,6 +76,14 @@ cb_check_password_button (GtkWidget *button,
 }
 
 void
+clear_container_input_data (UserpasswdWindow *window)
+{
+    gtk_list_box_remove_all (GTK_LIST_BOX (window->container_password));
+    if (window->button)
+        gtk_box_remove (GTK_BOX (window->container_data_input), GTK_WIDGET (window->button));
+}
+
+void
 cb_change_password_button (GtkWidget *button,
                            gpointer   user_data)
 {
@@ -117,7 +125,7 @@ create_change_password_elems (UserpasswdWindow *window)
     
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->new_password_row));
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->repeat_new_password_row));
-    gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->button));
+    gtk_box_append (GTK_BOX (window->container_data_input), GTK_WIDGET (window->button));
 }
 
 void
@@ -125,7 +133,7 @@ cb_draw_new_passwd (gpointer *stream,
                     UserpasswdWindow *window)
 {
     g_debug ("Start callback to draw items for requesting a new password");
-    gtk_list_box_remove_all (GTK_LIST_BOX (window->container_password));
+    clear_container_input_data (window);
     create_change_password_elems (window);
 }
 
@@ -154,7 +162,7 @@ cb_draw_check_passwd (gpointer         *stream,
                       UserpasswdWindow *window)
 {
     g_debug ("Start callback to render items for old password request");
-    gtk_list_box_remove_all (GTK_LIST_BOX (window->container_password));
+    clear_container_input_data (window);
 
     window->current_password_row = ADW_PASSWORD_ENTRY_ROW (adw_password_entry_row_new ());
     adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->current_password_row), _("Current password"));
@@ -168,7 +176,7 @@ cb_draw_check_passwd (gpointer         *stream,
     g_signal_connect (G_OBJECT (window->button), "clicked", G_CALLBACK (cb_check_password_button), window);
 
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->current_password_row));
-    gtk_list_box_append (GTK_LIST_BOX (window->container_password), window->button);
+    gtk_box_append (GTK_BOX (window->container_data_input), GTK_WIDGET (window->button));
 
     gtk_widget_grab_focus (GTK_WIDGET (window->current_password_row));
 }
@@ -213,6 +221,7 @@ userpasswd_window_init (UserpasswdWindow *self)
 {
     self->toolbar = adw_toolbar_view_new ();
     self->header_bar = adw_header_bar_new ();
+    gtk_widget_set_can_focus (self->header_bar, FALSE);
 
     gtk_window_set_title (GTK_WINDOW (self), "userpasswd");
     gtk_window_set_default_size (GTK_WINDOW (self), 600, 300);
@@ -229,6 +238,7 @@ userpasswd_window_init (UserpasswdWindow *self)
     gtk_widget_set_margin_start (self->container, 15);
     gtk_widget_set_margin_end (self->container, 15);
 
+    self->container_data_input = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
     self->container_password = gtk_list_box_new ();
 
     PangoAttrList *attr_list = pango_attr_list_new();
@@ -248,6 +258,7 @@ userpasswd_window_init (UserpasswdWindow *self)
     gtk_label_set_yalign (GTK_LABEL (self->info), 0);
 
     self->expander_status = gtk_expander_new (_("Info"));
+    gtk_widget_set_can_focus (self->expander_status, FALSE);
     gtk_widget_set_vexpand (self->expander_status, TRUE);
 
     GtkWidget *scrolled_window = gtk_scrolled_window_new ();
@@ -259,7 +270,8 @@ userpasswd_window_init (UserpasswdWindow *self)
     gtk_widget_set_vexpand (self->expander_status, TRUE);
 
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->toolbar));
-    gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->container_password));
+    gtk_box_append (GTK_BOX (self->container_data_input), GTK_WIDGET (self->container_password));
+    gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->container_data_input));
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->status));
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->expander_status));
     adw_application_window_set_content (ADW_APPLICATION_WINDOW (self), self->container);

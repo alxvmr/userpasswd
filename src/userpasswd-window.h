@@ -19,6 +19,7 @@ typedef struct _UserpasswdWindow {
 
     GtkWidget *container; //vbox
     GtkWidget *container_password; //lbox
+    GtkWidget *container_data_input;
     GMenu *menu;
     GtkWidget *menu_button;
     GtkWidget *header_bar;
