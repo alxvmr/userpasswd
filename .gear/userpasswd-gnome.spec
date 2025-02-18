@@ -34,6 +34,7 @@ chmod g+s %_bindir/pam_helper
 %files
 %_bindir/userpasswd
 %_bindir/pam_helper
+%_datadir/applications/userpasswd.desktop
 %lang(ru) %_datadir/locale/ru/LC_MESSAGES/userpasswd.mo
 
 %changelog

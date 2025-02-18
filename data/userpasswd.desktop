@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=userpasswd
+Comment=Application for changing the password of the current user
+Icon=userpasswd
+Exec=userpasswd
+Type=Application
+Terminal=False
+Categories=System;

@@ -15,6 +15,9 @@ set (SOURCES
     src/userpasswd-stream.c
 )
 
+set (DESKTOP_FILE
+     data/userpasswd.desktop)
+
 set (MARSHAL_FILE ${CMAKE_CURRENT_SOURCE_DIR}/userpasswd-marshal.list)
 
 message("Generating marshal.h: ${GLIB_GENMARSHAL} ${CMAKE_CURRENT_SOURCE_DIR}/marshal.list --header")
@@ -58,6 +61,8 @@ target_compile_options(
 )
 
 install (TARGETS ${PROJECT_NAME} DESTINATION bin)
+install (FILES ${DESKTOP_FILE} DESTINATION
+         /usr/share/applications)
 
 set(CMAKE_CLEAN_FILES ${PROJECT_NAME})
 include(GNUInstallDirs)
