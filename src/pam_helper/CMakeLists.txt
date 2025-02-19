@@ -20,7 +20,7 @@ target_include_directories(helper PRIVATE ${HEADER_DIR} ${GOBJECT_INCLUDE_DIRS} 
 target_link_libraries(helper PRIVATE ${GOBJECT_LIBRARIES} ${GIO_LIBRARIES} ${PAM_LIBRARIES} ${JSON_GLIB_LIBRARIES})
 target_compile_options(helper PRIVATE ${GOBJECT_CFLAGS} ${GIO_CFLAGS} ${PAM_CFLAGS} ${JSON_GLIB_CFLAGS})
 
-install (TARGETS helper DESTINATION ${CMAKE_INSTALL_LIBDIR}/userpasswd/)
+install (TARGETS helper DESTINATION /usr/lib/userpasswd/)
 
 set(CMAKE_CLEAN_FILES ${PROJECT_NAME})
 include(GNUInstallDirs)

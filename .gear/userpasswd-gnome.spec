@@ -28,12 +28,12 @@ A graphical utility to change your password in GNOME
 %cmake_install
 
 %post
-chown :shadow %_bindir/pam_helper
-chmod g+s %_bindir/pam_helper
+chown :shadow %_libexecdir/userpasswd/helper
+chmod g+s %_libexecdir/userpasswd/helper
 
 %files
 %_bindir/userpasswd
-%_bindir/pam_helper
+%_libexecdir/userpasswd/helper
 %_datadir/applications/userpasswd.desktop
 %lang(ru) %_datadir/locale/ru/LC_MESSAGES/userpasswd.mo
 
