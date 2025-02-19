@@ -240,6 +240,8 @@ userpasswd_window_init (UserpasswdWindow *self)
 
     self->container_data_input = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
     self->container_password = gtk_list_box_new ();
+    gtk_widget_set_css_classes (self->container_password, (const gchar *[]) {"boxed-list", NULL});
+    gtk_widget_set_margin_bottom (self->container_password, 10);
 
     PangoAttrList *attr_list = pango_attr_list_new();
     PangoAttribute *attr = pango_attr_weight_new(PANGO_WEIGHT_BOLD);
@@ -260,6 +262,7 @@ userpasswd_window_init (UserpasswdWindow *self)
     self->expander_status = gtk_expander_new (_("Info"));
     gtk_widget_set_can_focus (self->expander_status, FALSE);
     gtk_widget_set_vexpand (self->expander_status, TRUE);
+    gtk_widget_set_margin_top (self->expander_status, 10);
 
     GtkWidget *scrolled_window = gtk_scrolled_window_new ();
     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
