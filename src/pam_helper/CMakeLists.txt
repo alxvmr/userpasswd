@@ -14,13 +14,13 @@ pkg_check_modules(PAM REQUIRED pam)
 pkg_check_modules(PAM_MISC pam_misc)
 pkg_check_modules(JSON_GLIB json-glib-1.0)
 
-add_executable(pam_helper  ${SOURCE_FILES_PAM_HELPER})
+add_executable(helper  ${SOURCE_FILES_PAM_HELPER})
 
-target_include_directories(pam_helper PRIVATE ${HEADER_DIR} ${GOBJECT_INCLUDE_DIRS} ${GIO_INCLUDE_DIRS} ${PAM_INCLUDE_DIRS} ${JSON_GLIB_DIRS})
-target_link_libraries(pam_helper PRIVATE ${GOBJECT_LIBRARIES} ${GIO_LIBRARIES} ${PAM_LIBRARIES} ${JSON_GLIB_LIBRARIES})
-target_compile_options(pam_helper PRIVATE ${GOBJECT_CFLAGS} ${GIO_CFLAGS} ${PAM_CFLAGS} ${JSON_GLIB_CFLAGS})
+target_include_directories(helper PRIVATE ${HEADER_DIR} ${GOBJECT_INCLUDE_DIRS} ${GIO_INCLUDE_DIRS} ${PAM_INCLUDE_DIRS} ${JSON_GLIB_DIRS})
+target_link_libraries(helper PRIVATE ${GOBJECT_LIBRARIES} ${GIO_LIBRARIES} ${PAM_LIBRARIES} ${JSON_GLIB_LIBRARIES})
+target_compile_options(helper PRIVATE ${GOBJECT_CFLAGS} ${GIO_CFLAGS} ${PAM_CFLAGS} ${JSON_GLIB_CFLAGS})
 
-install (TARGETS ${PROJECT_NAME} DESTINATION bin)
+install (TARGETS helper DESTINATION ${CMAKE_INSTALL_LIBDIR}/userpasswd/)
 
 set(CMAKE_CLEAN_FILES ${PROJECT_NAME})
 include(GNUInstallDirs)

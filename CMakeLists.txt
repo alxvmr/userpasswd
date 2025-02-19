@@ -60,7 +60,7 @@ target_compile_options(
     ${JSON_GLIB_CFLAGS}
 )
 
-install (TARGETS ${PROJECT_NAME} DESTINATION bin)
+install (TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
 install (FILES ${DESKTOP_FILE} DESTINATION
          /usr/share/applications)
 
