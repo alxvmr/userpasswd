@@ -1,8 +1,13 @@
 # Userpasswd-gnome
-A graphical utility to change your password in GNOME.\
-Application are written for use in [ALT](https://getalt.org/en/) distributions.
 > [!WARNING]
 > The app is in development
+
+A graphical utility to change your password in GNOME.\
+Application are written for use in [ALT](https://getalt.org/en/) distributions.
+
+<p align="center">
+    <img src="https://psv4.userapi.com/s/v1/d/Cob6LfOk9A0hinP9Cmrm15Ch5jMap_QengSGRhMKl1ZE2E0mio5Mz8Jyena57II4Qei1GGqafsTCurANjEjHUDpH1cFUb23XyJmlp5UgoWB6zkUzm2dB5g/userpasswd.png">
+</p>
 
 # Dependencies
 ```
