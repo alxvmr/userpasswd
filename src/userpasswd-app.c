@@ -130,7 +130,7 @@ userpasswd_app_init (UserpasswdApp *self)
 
     gtk_application_set_accels_for_action (GTK_APPLICATION (self),
                                            "app.quit",
-                                           (const char *[]) { "<primary>q", NULL });
+                                           (const char *[]) { "Escape", NULL });
     /*
     TODO: is this how a accelerator should be created for a widget?
     */
