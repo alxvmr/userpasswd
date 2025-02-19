@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-19 12:50+0400\n"
+"POT-Creation-Date: 2025-02-19 16:56+0400\n"
 "PO-Revision-Date: 2025-02-10 12:06+0400\n"
 "Last-Translator:  <alxvmr@altlinux.org>\n"
 "Language-Team: Russian <gnu@d07.ru>\n"
@@ -18,35 +18,39 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: src/userpasswd-window.c:100
+#: src/userpasswd-window.c:111
 msgid "Passwords don't match"
 msgstr "Пароли не совпадают"
 
-#: src/userpasswd-window.c:108
+#: src/userpasswd-window.c:119
 msgid "New password"
 msgstr "Новый пароль"
 
-#: src/userpasswd-window.c:116
+#: src/userpasswd-window.c:127
 msgid "Repeat new password"
 msgstr "Повтор нового пароля"
 
-#: src/userpasswd-window.c:123
+#: src/userpasswd-window.c:134
 msgid "Change password"
 msgstr "Сменить пароль"
 
-#: src/userpasswd-window.c:168
+#: src/userpasswd-window.c:164
+msgid "Press the Escape button to exit"
+msgstr "Для выхода нажмите клавишу Escape"
+
+#: src/userpasswd-window.c:190
 msgid "Current password"
 msgstr "Текущий пароль"
 
-#: src/userpasswd-window.c:175
+#: src/userpasswd-window.c:197
 msgid "Check password"
 msgstr "Проверить пароль"
 
-#: src/userpasswd-window.c:233
+#: src/userpasswd-window.c:255
 msgid "<span font='8'>Change password</span>"
 msgstr "<span font='8'>Сменить пароль</span>"
 
-#: src/userpasswd-window.c:271
+#: src/userpasswd-window.c:299
 msgid "Info"
 msgstr "Информация"
 

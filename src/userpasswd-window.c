@@ -14,12 +14,23 @@ G_DEFINE_FINAL_TYPE (UserpasswdWindow, userpasswd_window, ADW_TYPE_APPLICATION_W
 static void
 userpasswd_window_show_status (UserpasswdWindow *self,
                                const gchar      *status_mess,
+                               const gchar      *substatus_mess,
                                const gchar      *status_type)
 {
     g_debug ("Start status display");
-    gtk_label_set_text (GTK_LABEL (self->status), status_mess);
-    gtk_widget_set_css_classes (GTK_WIDGET (self->status), (const gchar *[]) {status_type, NULL});
-    gtk_widget_set_visible (GTK_WIDGET (self->status), TRUE);
+    gtk_label_set_text (GTK_LABEL (self->status_mess), NULL);
+    gtk_label_set_text (GTK_LABEL (self->substatus_mess), NULL);
+    gtk_widget_set_visible (self->substatus_mess, FALSE);
+
+    gtk_label_set_text (GTK_LABEL (self->status_mess), status_mess);
+    gtk_widget_set_css_classes (GTK_WIDGET (self->status_mess), (const gchar *[]) {status_type, NULL});
+
+    if (substatus_mess) {
+        gtk_label_set_markup (GTK_LABEL (self->substatus_mess), substatus_mess);
+        gtk_widget_set_visible (self->substatus_mess, TRUE);
+    }
+
+    gtk_widget_set_visible (GTK_WIDGET (self->status_container), TRUE);
 }
 
 gchar*
@@ -67,8 +78,8 @@ cb_check_password_button (GtkWidget *button,
     g_debug ("Start callback on pressing the check password button");
     UserpasswdWindow *self = USERPASSWD_WINDOW (user_data);
 
-    if (gtk_widget_get_visible (GTK_WIDGET (self->status))) {
-        gtk_widget_set_visible (GTK_WIDGET (self->status), FALSE);
+    if (gtk_widget_get_visible (GTK_WIDGET (self->status_container))) {
+        gtk_widget_set_visible (GTK_WIDGET (self->status_container), FALSE);
     }
 
     const gchar *current_password = gtk_editable_get_text (GTK_EDITABLE (self->current_password_row));
@@ -97,7 +108,7 @@ cb_change_password_button (GtkWidget *button,
         g_signal_emit (self, userpasswd_window_signals[CHANGE_PWD], 0, new_password);
     }
     else {
-        userpasswd_window_show_status (self, _("Passwords don't match"), "error");
+        userpasswd_window_show_status (self, _("Passwords don't match"), NULL, "error");
     }
 }
 
@@ -144,7 +155,18 @@ cb_new_status (gpointer         *stream,
                UserpasswdWindow *window)
 {
     g_debug ("Start callback to process a new status");
-    userpasswd_window_show_status (window, status_mess, status_type);
+    
+    gtk_label_set_text (GTK_LABEL (window->status_mess), status_mess);
+
+    if (!g_strcmp0 (status_type, "success")) {
+        userpasswd_window_show_status (window,
+                                       status_mess,
+                                       _("Press the Escape button to exit"),
+                                       status_type);
+        return;
+    }
+
+    userpasswd_window_show_status (window, status_mess, NULL, status_type);
 }
 
 void
@@ -256,11 +278,17 @@ userpasswd_window_init (UserpasswdWindow *self)
     PangoAttribute *attr = pango_attr_weight_new(PANGO_WEIGHT_BOLD);
     pango_attr_list_insert(attr_list, attr);
 
-    self->status = gtk_label_new ("Status mess");
-    gtk_label_set_attributes (GTK_LABEL (self->status), attr_list);
-    gtk_widget_set_margin_top (GTK_WIDGET (self->status), 15);
-    gtk_widget_add_css_class (GTK_WIDGET (self->status), "error");
-    gtk_widget_set_visible (GTK_WIDGET (self->status), FALSE);
+    self->status_container = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+    gtk_widget_set_margin_top (GTK_WIDGET (self->status_container), 15);
+    gtk_widget_set_visible (GTK_WIDGET (self->status_container), FALSE);
+    self->status_mess = gtk_label_new (NULL);
+    self->substatus_mess = gtk_label_new (NULL);
+
+    gtk_label_set_attributes (GTK_LABEL (self->status_mess), attr_list);
+    pango_attr_list_unref (attr_list);
+
+    gtk_box_append (GTK_BOX (self->status_container), self->status_mess);
+    gtk_box_append (GTK_BOX (self->status_container), self->substatus_mess);
 
     self->info = gtk_label_new ("");
     gtk_label_set_selectable (GTK_LABEL (self->info), TRUE);
@@ -284,7 +312,7 @@ userpasswd_window_init (UserpasswdWindow *self)
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->toolbar));
     gtk_box_append (GTK_BOX (self->container_data_input), GTK_WIDGET (self->container_password));
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->container_data_input));
-    gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->status));
+    gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->status_container));
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->expander_status));
     adw_application_window_set_content (ADW_APPLICATION_WINDOW (self), self->container);
 

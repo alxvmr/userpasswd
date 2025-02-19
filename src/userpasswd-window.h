@@ -25,7 +25,9 @@ typedef struct _UserpasswdWindow {
     GtkWidget *header_bar;
     GtkWidget *toolbar;
 
-    GtkWidget *status;
+    GtkWidget *status_container;
+    GtkWidget *status_mess;
+    GtkWidget *substatus_mess;
     AdwClamp *clamp_status;
     AdwClamp *clamp_info;
     GtkWidget *info;
