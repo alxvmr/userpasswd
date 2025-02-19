@@ -6,7 +6,7 @@ A graphical utility to change your password in GNOME.\
 Application are written for use in [ALT](https://getalt.org/en/) distributions.
 
 <p align="center">
-    <img src="https://psv4.userapi.com/s/v1/d/Cob6LfOk9A0hinP9Cmrm15Ch5jMap_QengSGRhMKl1ZE2E0mio5Mz8Jyena57II4Qei1GGqafsTCurANjEjHUDpH1cFUb23XyJmlp5UgoWB6zkUzm2dB5g/userpasswd.png">
+    <img src="https://psv4.userapi.com/s/v1/d/gv2IEIrIm4q5XcIvYNeZ9J-YoyADrCKGrsgEnscmRiiwoFlKZfWfFzBUHWt1rsuIwfWYI7cjrIGiNFpH5NhTX96N4X_GGrsSd7snRQex0nvh2rjSj3Agwg/IMG_5025.png">
 </p>
 
 # Dependencies
