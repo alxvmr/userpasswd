@@ -220,11 +220,20 @@ static void
 userpasswd_window_init (UserpasswdWindow *self)
 {
     self->toolbar = adw_toolbar_view_new ();
+    gtk_widget_set_margin_bottom (self->toolbar, 10);
     self->header_bar = adw_header_bar_new ();
     gtk_widget_set_can_focus (self->header_bar, FALSE);
 
-    gtk_window_set_title (GTK_WINDOW (self), "userpasswd");
-    gtk_window_set_default_size (GTK_WINDOW (self), 600, 300);
+    gtk_window_set_default_size (GTK_WINDOW (self), 600, 310);
+
+    /* create title and subtitle*/
+    GtkWidget *title_box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+    GtkWidget *title = gtk_label_new ("userpasswd");
+    GtkWidget *subtitle = gtk_label_new (NULL);
+    gtk_label_set_markup (GTK_LABEL (subtitle), _("<span font='8'>Change password</span>"));
+    gtk_box_append (GTK_BOX(title_box), title);
+    gtk_box_append (GTK_BOX(title_box), subtitle);
+    adw_header_bar_set_title_widget (ADW_HEADER_BAR (self->header_bar), title_box);
 
     /* create menu */
     self->menu = g_menu_new ();

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-11 13:41+0400\n"
+"POT-Creation-Date: 2025-02-19 12:50+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,50 +17,34 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/userpasswd-app.c:89
-msgid "About"
-msgstr ""
-
-#: src/userpasswd-app.c:90
-msgid "Quit"
-msgstr ""
-
-#: src/userpasswd-stream.c:327
-msgid "Error"
-msgstr ""
-
-#: src/userpasswd-stream.c:332
-msgid "Success"
-msgstr ""
-
-#: src/userpasswd-stream.c:392
-msgid "Weak password"
-msgstr ""
-
-#: src/userpasswd-window.c:92
+#: src/userpasswd-window.c:100
 msgid "Passwords don't match"
 msgstr ""
 
-#: src/userpasswd-window.c:100
+#: src/userpasswd-window.c:108
 msgid "New password"
 msgstr ""
 
-#: src/userpasswd-window.c:103
+#: src/userpasswd-window.c:116
 msgid "Repeat new password"
 msgstr ""
 
-#: src/userpasswd-window.c:105
+#: src/userpasswd-window.c:123
 msgid "Change password"
 msgstr ""
 
-#: src/userpasswd-window.c:150
+#: src/userpasswd-window.c:168
 msgid "Current password"
 msgstr ""
 
-#: src/userpasswd-window.c:151
+#: src/userpasswd-window.c:175
 msgid "Check password"
 msgstr ""
 
-#: src/userpasswd-window.c:234
+#: src/userpasswd-window.c:233
+msgid "<span font='8'>Change password</span>"
+msgstr ""
+
+#: src/userpasswd-window.c:271
 msgid "Info"
 msgstr ""
