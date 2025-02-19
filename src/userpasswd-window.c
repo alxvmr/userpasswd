@@ -249,7 +249,7 @@ userpasswd_window_init (UserpasswdWindow *self)
     self->header_bar = adw_header_bar_new ();
     gtk_widget_set_can_focus (self->header_bar, FALSE);
 
-    gtk_window_set_default_size (GTK_WINDOW (self), 600, 310);
+    gtk_window_set_default_size (GTK_WINDOW (self), 650, 400);
 
     /* create title and subtitle*/
     GtkWidget *title_box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);

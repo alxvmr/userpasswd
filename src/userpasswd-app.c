@@ -33,10 +33,9 @@ userpasswd_app_about_action (GSimpleAction *action,
 
     adw_show_about_dialog (GTK_WIDGET (window),
                            "application_name", "userpasswd",
-                           "application-icon", "consolehelper-keyring",
                            "version", "0.0.1",
-                           "copyright", "© 2025 BaseALT",
-                           "issue-url", "https://github.com/alxvmr/userpasswd/issues",
+                           "copyright", "Copyright (C) 2025 Maria O. Alexeeva\nalxvmr@altlinux.org",
+                           "issue-url", "https://github.com/alxvmr/userpasswd-gnome/issues",
                            "license-type", GTK_LICENSE_GPL_3_0,
                            "developers", developers,
                            NULL);
