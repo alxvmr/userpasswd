@@ -159,6 +159,9 @@ cb_new_status (gpointer         *stream,
     gtk_label_set_text (GTK_LABEL (window->status_mess), status_mess);
 
     if (!g_strcmp0 (status_type, "success")) {
+        gtk_widget_set_sensitive (window->container_password, FALSE);
+        gtk_widget_set_sensitive (window->button, FALSE);
+
         userpasswd_window_show_status (window,
                                        status_mess,
                                        _("Press the Escape button to exit"),
