@@ -164,6 +164,8 @@ create_change_password_elems (UserpasswdWindow *window)
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->new_password_row));
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), GTK_WIDGET (window->repeat_new_password_row));
     gtk_box_append (GTK_BOX (window->container_data_input), GTK_WIDGET (window->button));
+
+    gtk_widget_grab_focus (GTK_WIDGET (window->new_password_row));
 }
 
 void
