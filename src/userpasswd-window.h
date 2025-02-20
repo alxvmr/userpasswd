@@ -40,6 +40,8 @@ typedef struct _UserpasswdWindow {
     AdwPasswordEntryRow *repeat_new_password_row;
     GtkWidget *button;
 
+    GtkWidget *spinner;
+
 } UserpasswdWindow;
 
 void cb_new_status (gpointer *stream, const gchar *status_mess, const gchar *status_type, UserpasswdWindow *window);

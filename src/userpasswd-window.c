@@ -12,15 +12,34 @@ static guint userpasswd_window_signals[LAST_SIGNAL];
 G_DEFINE_FINAL_TYPE (UserpasswdWindow, userpasswd_window, ADW_TYPE_APPLICATION_WINDOW)
 
 static void
+start_spinner (UserpasswdWindow *self)
+{
+    if (self->spinner) {
+        gtk_widget_set_visible (self->spinner, TRUE);
+        gtk_spinner_start (GTK_SPINNER (self->spinner));
+    }
+}
+
+static void
+stop_spinner (UserpasswdWindow *self)
+{
+    if (self->spinner) {
+        gtk_widget_set_visible (self->spinner, FALSE);
+        gtk_spinner_stop (GTK_SPINNER (self->spinner));
+    }
+}
+
+static void
 userpasswd_window_show_status (UserpasswdWindow *self,
                                const gchar      *status_mess,
                                const gchar      *substatus_mess,
                                const gchar      *status_type)
 {
     g_debug ("Start status display");
+    stop_spinner (self);
+
     gtk_label_set_text (GTK_LABEL (self->status_mess), NULL);
     gtk_label_set_text (GTK_LABEL (self->substatus_mess), NULL);
-    gtk_widget_set_visible (self->substatus_mess, FALSE);
 
     gtk_label_set_text (GTK_LABEL (self->status_mess), status_mess);
     gtk_widget_set_css_classes (GTK_WIDGET (self->status_mess), (const gchar *[]) {status_type, NULL});
@@ -30,7 +49,7 @@ userpasswd_window_show_status (UserpasswdWindow *self,
         gtk_widget_set_visible (self->substatus_mess, TRUE);
     }
 
-    gtk_widget_set_visible (GTK_WIDGET (self->status_container), TRUE);
+    gtk_widget_set_visible (GTK_WIDGET (self->status_mess), TRUE);
 }
 
 gchar*
@@ -77,10 +96,12 @@ cb_check_password_button (GtkWidget *button,
 {
     g_debug ("Start callback on pressing the check password button");
     UserpasswdWindow *self = USERPASSWD_WINDOW (user_data);
+    start_spinner (self);
 
-    if (gtk_widget_get_visible (GTK_WIDGET (self->status_container))) {
-        gtk_widget_set_visible (GTK_WIDGET (self->status_container), FALSE);
-    }
+    if (gtk_widget_get_visible (GTK_WIDGET (self->status_mess)))
+        gtk_widget_set_visible (GTK_WIDGET (self->status_mess), FALSE);
+    if (gtk_widget_get_visible (GTK_WIDGET (self->substatus_mess)))
+        gtk_widget_set_visible (GTK_WIDGET (self->substatus_mess), FALSE);
 
     const gchar *current_password = gtk_editable_get_text (GTK_EDITABLE (self->current_password_row));
     g_signal_emit (self, userpasswd_window_signals[CHECK_PWD], 0, current_password);
@@ -100,6 +121,12 @@ cb_change_password_button (GtkWidget *button,
 {
     g_debug ("Start callback on pressing the change password button");
     UserpasswdWindow *self = USERPASSWD_WINDOW (user_data);
+    start_spinner (self);
+
+    if (gtk_widget_get_visible (GTK_WIDGET (self->status_mess)))
+        gtk_widget_set_visible (GTK_WIDGET (self->status_mess), FALSE);
+    if (gtk_widget_get_visible (GTK_WIDGET (self->substatus_mess)))
+        gtk_widget_set_visible (GTK_WIDGET (self->substatus_mess), FALSE);
 
     const gchar *new_password = gtk_editable_get_text (GTK_EDITABLE (self->new_password_row));
     const gchar *repeat_new_password = gtk_editable_get_text (GTK_EDITABLE (self->repeat_new_password_row));
@@ -144,6 +171,7 @@ cb_draw_new_passwd (gpointer *stream,
                     UserpasswdWindow *window)
 {
     g_debug ("Start callback to draw items for requesting a new password");
+    stop_spinner (window);
     clear_container_input_data (window);
     create_change_password_elems (window);
 }
@@ -161,6 +189,8 @@ cb_new_status (gpointer         *stream,
     if (!g_strcmp0 (status_type, "success")) {
         gtk_widget_set_sensitive (window->container_password, FALSE);
         gtk_widget_set_sensitive (window->button, FALSE);
+
+        g_signal_handlers_disconnect_by_data (window->button, window);
 
         userpasswd_window_show_status (window,
                                        status_mess,
@@ -283,13 +313,19 @@ userpasswd_window_init (UserpasswdWindow *self)
 
     self->status_container = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_set_margin_top (GTK_WIDGET (self->status_container), 15);
-    gtk_widget_set_visible (GTK_WIDGET (self->status_container), FALSE);
+    // gtk_widget_set_visible (GTK_WIDGET (self->status_container), FALSE);
     self->status_mess = gtk_label_new (NULL);
     self->substatus_mess = gtk_label_new (NULL);
+    gtk_widget_set_visible (GTK_WIDGET (self->status_mess), FALSE);
+    gtk_widget_set_visible (GTK_WIDGET (self->substatus_mess), FALSE);
 
     gtk_label_set_attributes (GTK_LABEL (self->status_mess), attr_list);
     pango_attr_list_unref (attr_list);
 
+    self->spinner = gtk_spinner_new ();
+    gtk_widget_set_visible (GTK_WIDGET (self->spinner), FALSE);
+
+    gtk_box_append (GTK_BOX (self->status_container), self->spinner);
     gtk_box_append (GTK_BOX (self->status_container), self->status_mess);
     gtk_box_append (GTK_BOX (self->status_container), self->substatus_mess);
 
