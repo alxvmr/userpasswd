@@ -51,7 +51,12 @@ get_data_from_parent (int type_data)
     if (getline(&buf, &size, stdin) != -1) {
         buf[strcspn(buf, "\n")] = 0;
     } else {
-        g_printerr ("Input error");
+        if (feof(stdin)) {
+            g_debug ("End of file reached\n");
+            exit (0);
+        } else if (ferror(stdin)) {
+            g_printerr ("Input error\n");
+        }
         return NULL;
     }
 
