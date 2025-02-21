@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.12.0)
 project(pam_helper VERSION 0.1.0 LANGUAGES C)
 
 set(SOURCE_FILES_PAM_HELPER
