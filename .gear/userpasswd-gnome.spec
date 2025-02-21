@@ -49,5 +49,5 @@ chmod g+s %_libexecdir/userpasswd/helper
 %lang(ru) %_datadir/locale/ru/LC_MESSAGES/%name.mo
 
 %changelog
-* Wed Jan 29 2025 Maria Alexeeva <alxvmr@altlinux.org> 0.0.1-alt1
+* Fri Feb 21 2025 Maria Alexeeva <alxvmr@altlinux.org> 0.0.1-alt1
 - Initial build for Sisyphus
