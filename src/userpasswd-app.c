@@ -143,8 +143,8 @@ main (int     argc,
       char  **argv)
 {
     setlocale (LC_ALL, "");
-    bindtextdomain ("userpasswd", "/usr/share/locale/");
-    textdomain ("userpasswd");
+    bindtextdomain ("userpasswd-gnome", "/usr/share/locale/");
+    textdomain ("userpasswd-gnome");
 
     UserpasswdApp *app = userpasswd_app_new ("org.example.userpasswd", G_APPLICATION_DEFAULT_FLAGS);
     
