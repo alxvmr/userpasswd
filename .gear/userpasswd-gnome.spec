@@ -13,6 +13,7 @@ BuildRequires(pre): rpm-macros-cmake rpm-macros-alternatives
 BuildRequires: ccmake gcc-c++
 BuildRequires: pkgconfig(gobject-2.0) pkgconfig(gio-2.0) pkgconfig(pam) pkgconfig(pam_misc) pkgconfig(json-glib-1.0)
 BuildRequires: pkgconfig(gtk4) pkgconfig(libadwaita-1)
+Requires: userpasswd-common
 
 Source0: %name-%version.tar
 
