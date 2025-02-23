@@ -21,7 +21,7 @@
 
 rc=
 while :; do
-	/usr/bin/userpasswd "$@"
+	/usr/lib/userpasswd "$@"
 	rc=$?
 	[ $rc = 2 ] || break
 done

@@ -29,7 +29,7 @@ OBJ = $(SRC:.c=.o)
 DEP = $(SRC:.c=.d)
 
 bindir = /usr/bin
-datadir = /usr/share
+libexecdir = /usr/lib
 
 .PHONY:	all install clean
 
@@ -39,8 +39,8 @@ $(PACKAGE): $(OBJ)
 	$(LINK.o) $^ $(LDLIBS) -o $@
 
 install: all
-	$(INSTALL) -pD -m755 $(PACKAGE) $(RPM_BUILD_ROOT)$(bindir)/$(PACKAGE)
-	$(INSTALL) -pD -m755 loop.sh $(RPM_BUILD_ROOT)$(datadir)/$(PACKAGE)/loop
+	$(INSTALL) -pD -m755 loop.sh $(RPM_BUILD_ROOT)$(bindir)/$(PACKAGE)
+	$(INSTALL) -pD -m755 $(PACKAGE) $(RPM_BUILD_ROOT)$(libexecdir)/$(PACKAGE)
 
 clean:
 	$(RM) $(DEP) $(OBJ) $(PACKAGE) *~

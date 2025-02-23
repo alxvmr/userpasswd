@@ -51,8 +51,8 @@ EOF
 %find_lang %name
 
 %files -f %name.lang
-%_bindir/*
-%_datadir/%name
+%_bindir/%binary_name
+%_libexecdir/%name
 %_datadir/pixmaps/*
 %_altdir/%binary_name
 
