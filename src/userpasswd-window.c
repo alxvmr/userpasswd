@@ -179,6 +179,14 @@ create_change_password_elems (UserpasswdWindow *window)
     
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), window->new_password_row);
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), window->repeat_new_password_row);
+#ifndef USE_ADWAITA
+    gtk_widget_set_focusable (GTK_WIDGET (
+                                gtk_list_box_get_row_at_index (GTK_LIST_BOX (window->container_password), 0)),
+                              FALSE);
+    gtk_widget_set_focusable (GTK_WIDGET (
+                                gtk_list_box_get_row_at_index (GTK_LIST_BOX (window->container_password), 1)),
+                              FALSE);
+#endif
     gtk_box_append (GTK_BOX (window->container_data_input), GTK_WIDGET (window->button));
 
     gtk_widget_grab_focus (window->new_password_row);
@@ -255,6 +263,11 @@ cb_draw_check_passwd (gpointer         *stream,
     g_signal_connect (G_OBJECT (window->button), "clicked", G_CALLBACK (cb_check_password_button), window);
 
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), window->current_password_row);
+#ifndef USE_ADWAITA
+    gtk_widget_set_focusable (GTK_WIDGET (
+                                gtk_list_box_get_row_at_index (GTK_LIST_BOX (window->container_password), 0) ),
+                              FALSE);
+#endif
     gtk_box_append (GTK_BOX (window->container_data_input), GTK_WIDGET (window->button));
 
     gtk_widget_grab_focus (window->current_password_row);
