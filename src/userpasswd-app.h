@@ -1,6 +1,8 @@
 #ifndef USERPASSWDAPP_H
 #define USERPASSWDAPP_H
+#ifdef USE_ADWAITA
 #include <adwaita.h>
+#endif
 #include <locale.h>
 #include <libintl.h>
 
