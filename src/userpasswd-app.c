@@ -49,13 +49,14 @@ userpasswd_app_about_action (GSimpleAction *action,
                            "developers", developers,
                            NULL);
 #else
-    gtk_show_about_dialog (GTK_WIDGET (window),
+    gtk_show_about_dialog (window,
                            "program-name", "userpasswd",
                            "version", "0.0.1",
+                           "logo-icon-name", "userpasswd-keyring",
                            "copyright", "Copyright (C) 2025 Maria O. Alexeeva\nalxvmr@altlinux.org",
                            "website", "https://github.com/alxvmr/userpasswd-gnome",
-                           "license", GTK_LICENSE_GPL_3_0,
-                           "authors", developers,
+                           "website-label", "https://github.com/alxvmr/userpasswd-gnome",
+                           "license-type", GTK_LICENSE_GPL_3_0,
                            NULL);
 #endif
 }
