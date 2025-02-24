@@ -1,6 +1,8 @@
 #ifndef USERPASSWDWINDOW_H
 #define USERPASSWDWINDOW_H
+#ifdef USE_ADWAITA
 #include <adwaita.h>
+#endif
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <libintl.h>
@@ -12,10 +14,18 @@ G_BEGIN_DECLS
 
 #define USERPASSWD_TYPE_WINDOW (userpasswd_window_get_type ())
 
+#ifdef USE_ADWAITA
 G_DECLARE_FINAL_TYPE (UserpasswdWindow, userpasswd_window, USERPASSWD, WINDOW, AdwApplicationWindow)
+#else
+G_DECLARE_FINAL_TYPE (UserpasswdWindow, userpasswd_window, USERPASSWD, WINDOW, GtkApplicationWindow)
+#endif
 
 typedef struct _UserpasswdWindow {
+#ifdef USE_ADWAITA
     AdwApplicationWindow parent_instance;
+#else
+    GtkApplicationWindow parent_instance;
+#endif
 
     GtkWidget *container; //vbox
     GtkWidget *container_password; //lbox

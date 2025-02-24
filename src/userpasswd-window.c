@@ -9,7 +9,11 @@ enum {
 
 static guint userpasswd_window_signals[LAST_SIGNAL];
 
+#ifdef USE_ADWAITA
 G_DEFINE_FINAL_TYPE (UserpasswdWindow, userpasswd_window, ADW_TYPE_APPLICATION_WINDOW)
+#else
+G_DEFINE_FINAL_TYPE (UserpasswdWindow, userpasswd_window, GTK_TYPE_APPLICATION_WINDOW)
+#endif
 
 static void
 start_spinner (UserpasswdWindow *self)
@@ -142,6 +146,7 @@ cb_change_password_button (GtkWidget *button,
 void
 create_change_password_elems (UserpasswdWindow *window)
 {
+#ifdef USE_ADWAITA
     window->new_password_row = adw_password_entry_row_new ();
     adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->new_password_row ), _("New password"));
 
@@ -149,14 +154,24 @@ create_change_password_elems (UserpasswdWindow *window)
     GtkWidget *child = gtk_widget_get_first_child (window->new_password_row);
     GtkWidget *g_child = gtk_widget_get_last_child (child);
     gtk_widget_set_can_focus (g_child, FALSE);
+#else
+    window->new_password_row = gtk_password_entry_new ();
+    gtk_password_entry_set_show_peek_icon (GTK_PASSWORD_ENTRY (window->new_password_row), TRUE);
+    g_object_set (window->new_password_row, "placeholder-text", _("New password"), NULL);
+#endif
 
+#ifdef USE_ADWAITA
     window->repeat_new_password_row = adw_password_entry_row_new ();
     adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->repeat_new_password_row ), _("Repeat new password"));
-
     /* Take the focus off the suffix */
     child = gtk_widget_get_first_child (window->repeat_new_password_row);
     g_child = gtk_widget_get_last_child (child);
     gtk_widget_set_can_focus (g_child, FALSE);
+#else
+    window->repeat_new_password_row = gtk_password_entry_new ();
+    gtk_password_entry_set_show_peek_icon (GTK_PASSWORD_ENTRY (window->repeat_new_password_row), TRUE);
+    g_object_set (window->repeat_new_password_row, "placeholder-text", _("Repeat new password"), NULL);
+#endif
 
     window->button = gtk_button_new_with_label (_("Change password"));
     g_signal_connect (G_OBJECT (window->button), "clicked", G_CALLBACK (cb_change_password_button), window);
@@ -221,13 +236,18 @@ cb_draw_check_passwd (gpointer         *stream,
     g_debug ("Start callback to render items for old password request");
     clear_container_input_data (window);
 
+#ifdef USE_ADWAITA
     window->current_password_row = adw_password_entry_row_new ();
     adw_preferences_row_set_title (ADW_PREFERENCES_ROW (window->current_password_row), _("Current password"));
-
     /* Take the focus off the suffix */
     GtkWidget *child = gtk_widget_get_first_child (window->current_password_row);
     GtkWidget *g_child = gtk_widget_get_last_child (child);
     gtk_widget_set_can_focus (g_child, FALSE);
+#else
+    window->current_password_row = gtk_password_entry_new ();
+    gtk_password_entry_set_show_peek_icon (GTK_PASSWORD_ENTRY (window->current_password_row), TRUE);
+    g_object_set (window->current_password_row, "placeholder-text", _("Current password"), NULL);
+#endif
 
     window->button = gtk_button_new_with_label (_("Check password"));
     g_signal_connect (G_OBJECT (window->button), "clicked", G_CALLBACK (cb_check_password_button), window);
@@ -276,12 +296,17 @@ userpasswd_window_class_init (UserpasswdWindowClass *class) {
 static void
 userpasswd_window_init (UserpasswdWindow *self)
 {
+#ifdef USE_ADWAITA
     self->toolbar = adw_toolbar_view_new ();
-    gtk_widget_set_margin_bottom (self->toolbar, 10);
     self->header_bar = adw_header_bar_new ();
-    gtk_widget_set_can_focus (self->header_bar, FALSE);
-
+    gtk_widget_set_margin_bottom (self->toolbar, 10);
+#else
+    self->toolbar = NULL;
+    self->header_bar = gtk_header_bar_new ();
+    gtk_window_set_titlebar (GTK_WINDOW (self), self->header_bar);
+#endif
     gtk_window_set_default_size (GTK_WINDOW (self), 650, 400);
+    gtk_widget_set_can_focus (self->header_bar, FALSE);
 
     /* create title and subtitle*/
     GtkWidget *title_box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
@@ -290,23 +315,42 @@ userpasswd_window_init (UserpasswdWindow *self)
     gtk_label_set_markup (GTK_LABEL (subtitle), _("<span font='8'>Change password</span>"));
     gtk_box_append (GTK_BOX(title_box), title);
     gtk_box_append (GTK_BOX(title_box), subtitle);
+#ifdef USE_ADWAITA
     adw_header_bar_set_title_widget (ADW_HEADER_BAR (self->header_bar), title_box);
+#endif
 
     /* create menu */
     self->menu = g_menu_new ();
     self->menu_button = gtk_menu_button_new ();
     gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (self->menu_button), G_MENU_MODEL (self->menu));
+
+#ifdef USE_ADWAITA
     adw_header_bar_pack_start (ADW_HEADER_BAR (self->header_bar), self->menu_button);
     adw_toolbar_view_add_top_bar (ADW_TOOLBAR_VIEW (self->toolbar), self->header_bar);
+#else
+    gtk_header_bar_pack_start (GTK_HEADER_BAR (self->header_bar), self->menu_button);
+#endif
 
     self->container = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+#ifndef USE_ADWAITA
+    gtk_widget_set_margin_top(self->container, 15);
+#endif
     gtk_widget_set_margin_bottom (self->container, 15);
     gtk_widget_set_margin_start (self->container, 15);
     gtk_widget_set_margin_end (self->container, 15);
 
     self->container_data_input = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
     self->container_password = gtk_list_box_new ();
+#ifdef USE_ADWAITA
     gtk_widget_set_css_classes (self->container_password, (const gchar *[]) {"boxed-list", NULL});
+#else
+    GtkCssProvider *css_provider = gtk_css_provider_new ();
+    gtk_css_provider_load_from_path (css_provider, "../data/css/style.css");
+    gtk_style_context_add_provider_for_display (gdk_display_get_default(),
+                                                GTK_STYLE_PROVIDER (css_provider),
+                                                GTK_STYLE_PROVIDER_PRIORITY_USER);
+    g_object_unref (css_provider);
+#endif
     gtk_widget_set_margin_bottom (self->container_password, 10);
 
     PangoAttrList *attr_list = pango_attr_list_new();
@@ -350,12 +394,17 @@ userpasswd_window_init (UserpasswdWindow *self)
     gtk_expander_set_child (GTK_EXPANDER (self->expander_status), scrolled_window);
     gtk_widget_set_vexpand (self->expander_status, TRUE);
 
+#ifdef USE_ADWAITA
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->toolbar));
+#endif
     gtk_box_append (GTK_BOX (self->container_data_input), GTK_WIDGET (self->container_password));
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->container_data_input));
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->status_container));
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->expander_status));
+#ifdef USE_ADWAITA
     adw_application_window_set_content (ADW_APPLICATION_WINDOW (self), self->container);
-
+#else
+    gtk_window_set_child (GTK_WINDOW (self), self->container);
+#endif
     gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (self), TRUE);
 }
