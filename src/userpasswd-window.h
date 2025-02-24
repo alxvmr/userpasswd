@@ -33,9 +33,9 @@ typedef struct _UserpasswdWindow {
 
     gchar *log_mess;
 
-    AdwPasswordEntryRow *current_password_row;
-    AdwPasswordEntryRow *new_password_row;
-    AdwPasswordEntryRow *repeat_new_password_row;
+    GtkWidget *current_password_row;
+    GtkWidget *new_password_row;
+    GtkWidget *repeat_new_password_row;
     GtkWidget *button;
 
     GtkWidget *spinner;
