@@ -290,6 +290,7 @@ userpasswd_window_init (UserpasswdWindow *self)
     /* create menu */
     self->menu = g_menu_new ();
     self->menu_button = gtk_menu_button_new ();
+    gtk_menu_button_set_icon_name (GTK_MENU_BUTTON (self->menu_button), "open-menu-symbolic");
     gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (self->menu_button), G_MENU_MODEL (self->menu));
     adw_header_bar_pack_start (ADW_HEADER_BAR (self->header_bar), self->menu_button);
     adw_toolbar_view_add_top_bar (ADW_TOOLBAR_VIEW (self->toolbar), self->header_bar);
