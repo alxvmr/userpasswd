@@ -299,6 +299,9 @@ userpasswd_window_init (UserpasswdWindow *self)
     adw_header_bar_pack_start (ADW_HEADER_BAR (self->header_bar), self->menu_button);
     adw_toolbar_view_add_top_bar (ADW_TOOLBAR_VIEW (self->toolbar), self->header_bar);
 
+    g_menu_append (self->menu, _("About"), "app.about");
+    g_menu_append (self->menu, _("Quit"), "app.quit");
+
     self->container = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_set_margin_bottom (self->container, 15);
     gtk_widget_set_margin_start (self->container, 15);

@@ -75,9 +75,6 @@ userpasswd_app_activate (GApplication *app) {
         USERPASSWD_APP (app)->window = g_object_new (USERPASSWD_TYPE_WINDOW,
                                                      "application", app,
                                                      NULL);
-
-        g_menu_append (USERPASSWD_APP (app)->window->menu, _("About"), "app.about");
-        g_menu_append (USERPASSWD_APP (app)->window->menu, _("Quit"), "app.quit");
     }
 
     gtk_window_present (GTK_WINDOW (USERPASSWD_APP (app)->window));
