@@ -298,6 +298,8 @@ userpasswd_window_init (UserpasswdWindow *self)
     g_menu_append (self->menu, _("About"), "app.about");
     g_menu_append (self->menu, _("Quit"), "app.quit");
 
+    GtkWidget *clamp = adw_clamp_new ();
+
     self->container = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_set_margin_bottom (self->container, 15);
     gtk_widget_set_margin_start (self->container, 15);
@@ -349,12 +351,13 @@ userpasswd_window_init (UserpasswdWindow *self)
     gtk_expander_set_child (GTK_EXPANDER (self->expander_status), scrolled_window);
     gtk_widget_set_vexpand (self->expander_status, TRUE);
 
-    gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->toolbar));
     gtk_box_append (GTK_BOX (self->container_data_input), GTK_WIDGET (self->container_password));
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->container_data_input));
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->status_container));
     gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->expander_status));
-    adw_application_window_set_content (ADW_APPLICATION_WINDOW (self), self->container);
+    adw_clamp_set_child (ADW_CLAMP(clamp), self->container);
+    adw_toolbar_view_set_content (ADW_TOOLBAR_VIEW (self->toolbar), clamp);
+    adw_application_window_set_content (ADW_APPLICATION_WINDOW (self), self->toolbar);
 
     gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (self), TRUE);
 }
