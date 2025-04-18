@@ -146,6 +146,7 @@ main (int     argc,
     textdomain ("userpasswd-gnome");
 
     UserpasswdApp *app = userpasswd_app_new ("org.example.userpasswd", G_APPLICATION_DEFAULT_FLAGS);
+    g_set_application_name ("UserPasswd");
     
     int status = 0;
     status = g_application_run (G_APPLICATION (app), argc, argv);
