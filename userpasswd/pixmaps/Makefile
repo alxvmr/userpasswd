@@ -28,7 +28,12 @@ datadir = /usr/share
 all clean: 
 
 install:
-	for f in *.png; do \
-		$(INSTALL) -pD -m644 "$$f" \
-		    "$(RPM_BUILD_ROOT)$(datadir)/pixmaps/userpasswd-$$f"; \
+	for f in *.png *.svg; do \
+		if [[ "$$f" == *.svg ]]; then \
+			$(INSTALL) -pD -m644 "$$f" \
+			    "$(RPM_BUILD_ROOT)$(datadir)/pixmaps/$$f"; \
+		else \
+			$(INSTALL) -pD -m644 "$$f" \
+			"$(RPM_BUILD_ROOT)$(datadir)/pixmaps/userpasswd-$$f"; \
+		fi; \
 	done
