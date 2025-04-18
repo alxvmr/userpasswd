@@ -3,8 +3,8 @@
 %define binary_name userpasswd-legacy
 
 Name: userpasswd
-Version: 0.3.6
-Release: alt4
+Version: 0.3.7
+Release: alt1
 
 Group: System/Configuration/Other
 Summary: The graphical tool for changing password
@@ -27,6 +27,7 @@ graphical tool for changing password.
 Summary: Desktop file for userpasswd
 Group: System/Configuration/Other
 Conflicts: %name < 0.3.6-alt3
+BuildArch: noarch
 
 %description common
 The package provides a .desktop file
@@ -53,14 +54,17 @@ EOF
 %_bindir/%binary_name
 %_libexecdir/%binary_name
 %_datadir/pixmaps/*
-%exclude %_datadir/pixmaps/userpasswd-keyring.png
+%exclude %_datadir/pixmaps/%name.svg
 %_altdir/%binary_name
 
 %files common
 %_desktopdir/%name.desktop
-%_datadir/pixmaps/userpasswd-keyring.png
+%_datadir/pixmaps/%name.svg
 
 %changelog
+* Fri Apr 18 2025 Maria Alexeeva <alxvmr@altlinux.org> 0.3.7-alt1
+- Updated the application icon
+
 * Mon Feb 24 2025 Maria Alexeeva <alxvmr@altlinux.org> 0.3.6-alt4
 - Changed the userpasswd name in /usr/lib and in /usr/bin to
   userpasswd-legacy to make the alternatives work
