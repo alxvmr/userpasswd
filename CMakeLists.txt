@@ -18,6 +18,8 @@ set (SOURCES
 set (DESKTOP_FILE
      data/userpasswd.desktop)
 
+file(GLOB ICONS_FILES "data/icons/*")
+
 set (MARSHAL_FILE ${CMAKE_CURRENT_SOURCE_DIR}/userpasswd-marshal.list)
 
 message("Generating marshal.h: ${GLIB_GENMARSHAL} ${CMAKE_CURRENT_SOURCE_DIR}/marshal.list --header")
@@ -63,6 +65,7 @@ target_compile_options(
 install (TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
 install (FILES ${DESKTOP_FILE} DESTINATION
          /usr/share/applications)
+install(FILES ${ICONS_FILES} DESTINATION /usr/share/pixmaps)
 
 set(CMAKE_CLEAN_FILES ${PROJECT_NAME})
 include(GNUInstallDirs)
