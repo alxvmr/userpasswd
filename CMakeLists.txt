@@ -64,8 +64,8 @@ target_compile_options(
 
 install (TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
 install (FILES ${DESKTOP_FILE} DESTINATION
-         /usr/share/applications)
-install(FILES ${ICONS_FILES} DESTINATION /usr/share/pixmaps)
+         ${CMAKE_INSTALL_DATADIR}/applications)
+install(FILES ${ICONS_FILES} DESTINATION ${CMAKE_INSTALL_DATADIR}/pixmaps)
 
 set(CMAKE_CLEAN_FILES ${PROJECT_NAME})
 include(GNUInstallDirs)
