@@ -9,7 +9,6 @@ Release: alt4
 Group: System/Configuration/Other
 Summary: The graphical tool for changing password
 License: GPLv2+
-Packager: Dmitry V. Levin <ldv@altlinux.org>
 
 Source: %name-%version.tar
 
@@ -63,17 +62,20 @@ EOF
 
 %changelog
 * Mon Feb 24 2025 Maria Alexeeva <alxvmr@altlinux.org> 0.3.6-alt4
-- The userpasswd name in /usr/lib and in /usr/bin has been changed to
-  userpasswd-legacy
+- Changed the userpasswd name in /usr/lib and in /usr/bin to
+  userpasswd-legacy to make the alternatives work
 
 * Mon Feb 24 2025 Evgeny Sinelnikov <sin@altlinux.org> 0.3.6-alt3
 - Replace /usr/share/userpasswd/loop to /usr/bin as default behaviour
 - Replace userpasswd-keyring icon to common subpackage
 
 * Thu Feb 20 2025 Maria Alexeeva <alxvmr@altlinux.org> 0.3.6-alt2
-- Add alternatives
-- Add common subpackage
-- Add conflict with userpasswd < 0.3.6-alt2
+- Added an alternatives file to work correctly with the userpasswd-gnome package.
+  If the userpasswd-gnome package is installed, userpasswd will reference the 
+  userpasswd-gnome according to priorities.
+- .desktop file and application icons moved to the userpasswd-common package
+  for use with userpasswd-gnome
+- Added conflict with userpasswd < 0.3.6-alt3 in userpasswd-common
 
 * Thu Jan 09 2025 Maria Alexeeva <alxvmr@altlinux.org> 0.3.6-alt1
 - Fixed regression with hang on waitpid (Closes: #52549)
