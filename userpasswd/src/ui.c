@@ -55,6 +55,7 @@ display_dialog (const char *pixname, const char *message, const char *title)
 					      NULL, 0, GTK_STOCK_OK,
 					      GTK_RESPONSE_ACCEPT, NULL);
 
+	gtk_window_set_wmclass (GTK_WINDOW (window), "org.altlinux.userpasswd", "org.altlinux.userpasswd");
 	gtk_window_set_resizable (GTK_WINDOW (window), 0);
 	gtk_window_set_decorated (GTK_WINDOW (window), 1);
 	gtk_window_set_position (GTK_WINDOW (window),
@@ -189,6 +190,7 @@ get_pw (const char *title, const char *message, const char *prompt,
 					      GTK_STOCK_CANCEL,
 					      GTK_RESPONSE_REJECT, NULL);
 
+	gtk_window_set_wmclass (GTK_WINDOW (window), "org.altlinux.userpasswd", "org.altlinux.userpasswd");
 	gtk_window_set_resizable (GTK_WINDOW (window), 0);
 	gtk_window_set_decorated (GTK_WINDOW (window), 1);
 	gtk_window_set_keep_above (GTK_WINDOW (window), 1);
