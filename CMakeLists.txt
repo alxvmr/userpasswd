@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.5.0)
 project(userpasswd VERSION 0.1.0 LANGUAGES C)
 
+include(GNUInstallDirs)
+
 find_program(GLIB_GENMARSHAL glib-genmarshal PATH_SUFFIXES glib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
@@ -76,7 +78,3 @@ install (TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
 install (FILES ${DESKTOP_FILE} DESTINATION
          ${CMAKE_INSTALL_DATADIR}/applications)
 install(FILES ${ICONS_FILES} DESTINATION ${CMAKE_INSTALL_DATADIR}/pixmaps)
-
-set(CMAKE_CLEAN_FILES ${PROJECT_NAME})
-include(GNUInstallDirs)
-install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/${PROJECT_NAME})")

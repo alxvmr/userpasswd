@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.5.0)
 project(pam_helper VERSION 0.1.0 LANGUAGES C)
 
+include(GNUInstallDirs)
+
 set(SOURCE_FILES_PAM_HELPER
     ${CMAKE_CURRENT_SOURCE_DIR}/source/pam_helper.c
     ${CMAKE_CURRENT_SOURCE_DIR}/source/pam_helper_json.c
@@ -21,8 +23,3 @@ target_link_libraries(helper PRIVATE ${GOBJECT_LIBRARIES} ${GIO_LIBRARIES} ${PAM
 target_compile_options(helper PRIVATE ${GOBJECT_CFLAGS} ${GIO_CFLAGS} ${PAM_CFLAGS} ${JSON_GLIB_CFLAGS})
 
 install (TARGETS helper DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/userpasswd/)
-
-set(CMAKE_CLEAN_FILES ${PROJECT_NAME})
-include(GNUInstallDirs)
-install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/${PROJECT_NAME})")
-
