@@ -356,6 +356,9 @@ userpasswd_window_init (UserpasswdWindow *self)
     g_menu_append (self->menu, _("Quit"), "app.quit");
 
     self->container = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+#ifndef USE_ADWAITA
+    gtk_widget_set_margin_top (self->container, 15);
+#endif
     gtk_widget_set_margin_bottom (self->container, 15);
     gtk_widget_set_margin_start (self->container, 15);
     gtk_widget_set_margin_end (self->container, 15);
@@ -364,6 +367,13 @@ userpasswd_window_init (UserpasswdWindow *self)
     self->container_password = gtk_list_box_new ();
 #ifdef USE_ADWAITA
     gtk_widget_set_css_classes (self->container_password, (const gchar *[]) {"boxed-list", NULL});
+#else
+    GtkCssProvider *css_provider = gtk_css_provider_new ();
+    gtk_css_provider_load_from_path (css_provider, "../data/css/style.css");
+    gtk_style_context_add_provider_for_display (gdk_display_get_default(),
+                                                GTK_STYLE_PROVIDER (css_provider),
+                                                GTK_STYLE_PROVIDER_PRIORITY_USER);
+    g_object_unref (css_provider);
 #endif
     gtk_widget_set_margin_bottom (self->container_password, 10);
 
