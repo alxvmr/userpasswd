@@ -3,7 +3,11 @@
 #include "userpasswd-stream.h"
 
 struct _UserpasswdApp {
+#ifdef USE_ADWAITA
     AdwApplication parent_instance;
+#else
+    GtkApplication parent_instance;
+#endif
 
     UserpasswdWindow *window;
     UserpasswdStream *stream;
@@ -12,7 +16,11 @@ struct _UserpasswdApp {
     gchar *retype_new_password;
 };
 
-G_DEFINE_TYPE (UserpasswdApp, userpasswd_app, ADW_TYPE_APPLICATION);
+#ifdef USE_ADWAITA
+    G_DEFINE_TYPE (UserpasswdApp, userpasswd_app, ADW_TYPE_APPLICATION);
+#else
+    G_DEFINE_TYPE (UserpasswdApp, userpasswd_app, GTK_TYPE_APPLICATION);
+#endif
 
 static void
 userpasswd_app_about_action (GSimpleAction *action,
@@ -30,7 +38,8 @@ userpasswd_app_about_action (GSimpleAction *action,
     g_assert (USERPASSWD_IS_APP (self));
 
     window = gtk_application_get_active_window (GTK_APPLICATION (self));
-
+    
+#ifdef USE_ADWAITA
     adw_show_about_dialog (GTK_WIDGET (window),
                            "application_name", "userpasswd",
                            "version", "0.0.2",
@@ -39,6 +48,17 @@ userpasswd_app_about_action (GSimpleAction *action,
                            "license-type", GTK_LICENSE_GPL_3_0,
                            "developers", developers,
                            NULL);
+#else
+    gtk_show_about_dialog (window,
+                           "program-name", "userpasswd",
+                           "version", "0.0.2",
+                           "logo-icon-name", "userpasswd-keyring",
+                           "copyright", "Copyright (C) 2025 Maria O. Alexeeva\nalxvmr@altlinux.org",
+                           "website", "https://github.com/alxvmr/userpasswd-gnome",
+                           "website-label", "https://github.com/alxvmr/userpasswd-gnome",
+                           "license-type", GTK_LICENSE_GPL_3_0,
+                           NULL);
+#endif
 }
 
 static void
