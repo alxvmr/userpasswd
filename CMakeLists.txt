@@ -27,8 +27,6 @@ set (SOURCES
 set (DESKTOP_FILE
      data/userpasswd.desktop)
 
-file(GLOB ICONS_FILES "data/icons/*")
-
 set (MARSHAL_FILE ${CMAKE_CURRENT_SOURCE_DIR}/userpasswd-marshal.list)
 
 message("Generating marshal.h: ${GLIB_GENMARSHAL} ${CMAKE_CURRENT_SOURCE_DIR}/marshal.list --header")
@@ -77,4 +75,8 @@ target_compile_options(
 install (TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
 install (FILES ${DESKTOP_FILE} DESTINATION
          ${CMAKE_INSTALL_DATADIR}/applications)
-install(FILES ${ICONS_FILES} DESTINATION ${CMAKE_INSTALL_DATADIR}/pixmaps)
+install(FILES data/icons/org.altlinux.userpasswd.Devel.svg 
+              data/icons/org.altlinux.userpasswd.svg
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps)
+install(FILES data/icons/org.altlinux.userpasswd-symbolic.svg
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/symbolic/apps)
