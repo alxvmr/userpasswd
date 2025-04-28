@@ -10,5 +10,4 @@ Comment[ru]=Изменение личного пароля
 Icon=userpasswd
 Exec=/usr/bin/userpasswd
 Terminal=false
-StartupWMClass=org.altlinux.userpasswd
 Categories=Settings;

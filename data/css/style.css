@@ -1,0 +1,8 @@
+list row {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+label.success {
+    color: #15772e;
+}

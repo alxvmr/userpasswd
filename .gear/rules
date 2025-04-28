@@ -1,2 +1,2 @@
-spec: userpasswd/userpasswd.spec
-tar: userpasswd
+tar: .
+spec: .gear/userpasswd.spec
