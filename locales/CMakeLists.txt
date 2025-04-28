@@ -1,4 +1,4 @@
-set (DOMAIN userpasswd-gnome)
+set (DOMAIN userpasswd)
 set (LINGUAS ru)
 set (MO_FILES)
 
