@@ -13,6 +13,7 @@ static guint userpasswd_window_signals[LAST_SIGNAL];
     G_DEFINE_FINAL_TYPE (UserpasswdWindow, userpasswd_window, ADW_TYPE_APPLICATION_WINDOW)
 #else
     G_DEFINE_FINAL_TYPE (UserpasswdWindow, userpasswd_window, GTK_TYPE_APPLICATION_WINDOW)
+    #define DATA_PATH "/usr/share/userpasswd/data/"
 #endif
 
 static void
@@ -369,7 +370,7 @@ userpasswd_window_init (UserpasswdWindow *self)
     gtk_widget_set_css_classes (self->container_password, (const gchar *[]) {"boxed-list", NULL});
 #else
     GtkCssProvider *css_provider = gtk_css_provider_new ();
-    gtk_css_provider_load_from_path (css_provider, "../data/css/style.css");
+    gtk_css_provider_load_from_path (css_provider, DATA_PATH "css/style.css");
     gtk_style_context_add_provider_for_display (gdk_display_get_default(),
                                                 GTK_STYLE_PROVIDER (css_provider),
                                                 GTK_STYLE_PROVIDER_PRIORITY_USER);
