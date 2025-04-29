@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/org/altlinux/userpasswd">
+    <file preprocess="xml-stripblanks">ui/userpasswd-gnome-window.ui</file>
+  </gresource>
+</gresources>
