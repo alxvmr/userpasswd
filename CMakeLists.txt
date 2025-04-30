@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.5.0)
+
+#=====================
 project(userpasswd VERSION 0.1.0 LANGUAGES C)
+set(VERSION 1.0.0)
+#=====================
 
 include(GNUInstallDirs)
 
@@ -12,6 +16,7 @@ option (USE_ADWAITA "Use Adwaita theme" ON)
 if (USE_ADWAITA)
     add_definitions(-DUSE_ADWAITA)
 endif()
+add_definitions(-DVERSION=\"${VERSION}\")
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK REQUIRED gtk4)
