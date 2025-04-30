@@ -43,39 +43,35 @@ execute_process(
     OUTPUT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/userpasswd-marshal.c
 )
 
-if (USE_ADWAITA)
-    set(RESOURCE_XML data/userpasswd.gresource.xml)
-    set(RESOURCE_BINARY userpasswd.gresource.c)
+set(RESOURCE_XML data/userpasswd.gresource.xml)
+set(RESOURCE_BINARY userpasswd.gresource.c)
 
-    add_custom_command(
-        OUTPUT ${RESOURCE_BINARY}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMAND ${GLIB_COMPILE_RESOURCES}
-        ARGS
-            --target ${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE_BINARY}
-            --sourcedir ${CMAKE_CURRENT_SOURCE_DIR}/data
-            --generate-source
-            ${RESOURCE_XML}
-        VERBATIM
-        MAIN_DEPENDENCY ${RESOURCE_XML}
-        DEPENDS
-            data/ui/userpasswd-gnome-window.ui
-    )
+add_custom_command(
+    OUTPUT ${RESOURCE_BINARY}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND ${GLIB_COMPILE_RESOURCES}
+    ARGS
+        --target ${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE_BINARY}
+        --sourcedir ${CMAKE_CURRENT_SOURCE_DIR}/data
+        --generate-source
+        ${RESOURCE_XML}
+    VERBATIM
+    MAIN_DEPENDENCY ${RESOURCE_XML}
+    DEPENDS
+        data/ui/userpasswd-gnome-window.ui
+)
 
-    add_custom_target(
-        userpasswd-resource
-        DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE_BINARY}
-    )
+add_custom_target(
+    userpasswd-resource
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE_BINARY}
+)
 
-    add_executable(userpasswd ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/src/userpasswd-marshal.c ${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE_BINARY})
-    set_source_files_properties (
-        ${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE_BINARY}
-        PROPERTIES GENERATED TRUE
-    )
-    add_dependencies (${PROJECT_NAME} userpasswd-resource)
-else ()
-    add_executable(userpasswd ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/src/userpasswd-marshal.c)
-endif ()
+add_executable(userpasswd ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/src/userpasswd-marshal.c ${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE_BINARY})
+set_source_files_properties (
+    ${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE_BINARY}
+    PROPERTIES GENERATED TRUE
+)
+add_dependencies (${PROJECT_NAME} userpasswd-resource)
 
 add_subdirectory(src/pam_helper)
 add_subdirectory(locales)
