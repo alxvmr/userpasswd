@@ -110,5 +110,3 @@ install(FILES data/icons/org.altlinux.userpasswd.Devel.svg
         DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps)
 install(FILES data/icons/org.altlinux.userpasswd-symbolic.svg
         DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/symbolic/apps)
-install(FILES data/css/style.css
-        DESTINATION ${CMAKE_INSTALL_DATADIR}/userpasswd/data/css)
