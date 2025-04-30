@@ -281,14 +281,11 @@ userpasswd_window_class_init (UserpasswdWindowClass *class)
     gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class),
                                                "/org/altlinux/userpasswd/ui/userpasswd-gnome-window.ui");
 
-    gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, toolbar);
-    gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, status_container);
     gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, status_mess);
     gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, substatus_mess);
     gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, info);
     gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, spinner);
     gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, menu_button);
-    gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, container);
     gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, container_data_input);
     gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, container_password);
 #endif
