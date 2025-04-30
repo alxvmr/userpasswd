@@ -279,7 +279,11 @@ userpasswd_window_class_init (UserpasswdWindowClass *class)
 {
 #ifdef USE_ADWAITA
     gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class),
-                                               "/org/altlinux/userpasswd/ui/userpasswd-gnome-window.ui");
+                                               "/org/altlinux/userpasswd/userpasswd-gnome-window.ui");
+#else
+    gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class),
+                                               "/org/altlinux/userpasswd/userpasswd-gtk-window.ui");
+#endif
 
     gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, status_mess);
     gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, substatus_mess);
@@ -288,7 +292,6 @@ userpasswd_window_class_init (UserpasswdWindowClass *class)
     gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, menu_button);
     gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, container_data_input);
     gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, container_password);
-#endif
 
     userpasswd_window_signals[CHECK_PWD] = g_signal_new (
         "check-password",
@@ -325,112 +328,24 @@ userpasswd_window_class_init (UserpasswdWindowClass *class)
 static void
 userpasswd_window_init (UserpasswdWindow *self)
 {
-#ifdef USE_ADWAITA
     gtk_widget_init_template (GTK_WIDGET (self));
-#else
-    self->toolbar = NULL;
-    self->header_bar = gtk_header_bar_new ();
-    gtk_window_set_titlebar (GTK_WINDOW (self), self->header_bar);
-    gtk_widget_set_can_focus (self->header_bar, FALSE);
-#endif
 
-    gtk_window_set_default_size (GTK_WINDOW (self), 650, 400);
-
-    /* create title and subtitle*/
-#ifndef USE_ADWAITA
-    GtkWidget *title_box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-    gtk_widget_set_valign (title_box, GTK_ALIGN_CENTER);
-    GtkWidget *title = gtk_label_new ("userpasswd");
-    GtkWidget *subtitle = gtk_label_new (NULL);
-    gtk_label_set_markup (GTK_LABEL (subtitle), _("<span font='8'>Change password</span>"));
-    gtk_box_append (GTK_BOX(title_box), title);
-    gtk_box_append (GTK_BOX(title_box), subtitle);
-    gtk_header_bar_set_title_widget (GTK_HEADER_BAR (self->header_bar), title_box);
-
-    /* create menu */
-    self->menu_button = gtk_menu_button_new ();
-    gtk_menu_button_set_icon_name (GTK_MENU_BUTTON (self->menu_button), "open-menu-symbolic");
-#endif
-
-    self->menu = g_menu_new ();
-    gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (self->menu_button), G_MENU_MODEL (self->menu));
-
-#ifndef USE_ADWAITA
-    gtk_header_bar_pack_start (GTK_HEADER_BAR (self->header_bar), self->menu_button);
-#endif
-
-    g_menu_append (self->menu, _("About"), "app.about");
-    g_menu_append (self->menu, _("Quit"), "app.quit");
-
-#ifndef USE_ADWAITA
-    self->container = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-    gtk_widget_set_margin_top (self->container, 15);
-    gtk_widget_set_margin_bottom (self->container, 15);
-    gtk_widget_set_margin_start (self->container, 15);
-    gtk_widget_set_margin_end (self->container, 15);
-
-    self->container_data_input = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-    self->container_password = gtk_list_box_new ();
-#endif
-    
 #ifndef USE_ADWAITA
     GtkCssProvider *css_provider = gtk_css_provider_new ();
-    gtk_css_provider_load_from_path (css_provider, DATA_PATH "css/style.css");
+    gtk_css_provider_load_from_resource (css_provider, "/org/altlinux/userpasswd/style.css");
     gtk_style_context_add_provider_for_display (gdk_display_get_default(),
                                                 GTK_STYLE_PROVIDER (css_provider),
                                                 GTK_STYLE_PROVIDER_PRIORITY_USER);
     g_object_unref (css_provider);
-
-    gtk_widget_set_margin_bottom (self->container_password, 10);
-
-    PangoAttrList *attr_list = pango_attr_list_new();
-    PangoAttribute *attr = pango_attr_weight_new(PANGO_WEIGHT_BOLD);
-    pango_attr_list_insert(attr_list, attr);
-
-    self->status_container = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-    gtk_widget_set_margin_top (GTK_WIDGET (self->status_container), 15);
-    // gtk_widget_set_visible (GTK_WIDGET (self->status_container), FALSE);
-    self->status_mess = gtk_label_new (NULL);
-    self->substatus_mess = gtk_label_new (NULL);
-    gtk_widget_set_visible (GTK_WIDGET (self->status_mess), FALSE);
-    gtk_widget_set_visible (GTK_WIDGET (self->substatus_mess), FALSE);
-
-    gtk_label_set_attributes (GTK_LABEL (self->status_mess), attr_list);
-    pango_attr_list_unref (attr_list);
-
-    self->spinner = gtk_spinner_new ();
-    gtk_widget_set_visible (GTK_WIDGET (self->spinner), FALSE);
-
-    gtk_box_append (GTK_BOX (self->status_container), self->spinner);
-    gtk_box_append (GTK_BOX (self->status_container), self->status_mess);
-    gtk_box_append (GTK_BOX (self->status_container), self->substatus_mess);
-
-    self->info = gtk_label_new ("");
-    gtk_label_set_selectable (GTK_LABEL (self->info), TRUE);
-    gtk_label_set_wrap (GTK_LABEL (self->info), TRUE);
-    gtk_label_set_xalign (GTK_LABEL (self->info), 0);
-    gtk_label_set_yalign (GTK_LABEL (self->info), 0);
-
-    self->expander_status = gtk_expander_new (_("Info"));
-    gtk_widget_set_can_focus (self->expander_status, FALSE);
-    gtk_widget_set_vexpand (self->expander_status, TRUE);
-    gtk_widget_set_margin_top (self->expander_status, 10);
-
-    GtkWidget *scrolled_window = gtk_scrolled_window_new ();
-    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scrolled_window), GTK_WIDGET (self->info));
-    gtk_widget_set_vexpand (scrolled_window, TRUE);
-
-    gtk_expander_set_child (GTK_EXPANDER (self->expander_status), scrolled_window);
-    gtk_widget_set_vexpand (self->expander_status, TRUE);
-
-    gtk_box_append (GTK_BOX (self->container_data_input), GTK_WIDGET (self->container_password));
-    gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->container_data_input));
-    gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->status_container));
-    gtk_box_append (GTK_BOX (self->container), GTK_WIDGET (self->expander_status));
-
-    gtk_window_set_child (GTK_WINDOW (self), self->container);
 #endif
+
+    gtk_window_set_default_size (GTK_WINDOW (self), 650, 400);
+
+    self->menu = g_menu_new ();
+    gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (self->menu_button), G_MENU_MODEL (self->menu));
+
+    g_menu_append (self->menu, _("About"), "app.about");
+    g_menu_append (self->menu, _("Quit"), "app.quit");
 
     gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (self), TRUE);
 }
