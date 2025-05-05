@@ -8,7 +8,7 @@ Release: alt1
 
 Group: System/Configuration/Other
 Summary: The graphical tool for changing password
-License: GPLv2+
+License: GPLv3+
 
 Source: %name-%version.tar
 
