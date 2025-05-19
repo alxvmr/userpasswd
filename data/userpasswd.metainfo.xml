@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.altlinux.userpasswd</id>
+  
+  <name>UserPasswd</name>
+  <summary>Graphical utility for changing user password</summary>
+  
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>touch</control>
+  </supports>
+  
+  <description>
+    <p>
+      A graphical password reset utility for GNOME that uses the Adwaita library for the interface.
+    </p>
+  </description>
+  
+  <launchable type="desktop-id">userpasswd.desktop</launchable>
+  <developer id="org.altlinux.alxvmr">
+    <name>Maria Alexeeva</name>
+    <name xml:lang="ru">Мария Алексеева</name>
+  </developer>
+  <content_rating type="oars-1.1"></content_rating>
+  <url type="homepage">https://github.com/alxvmr/userpasswd</url>
+  <url type="bugtracker">https://bugzilla.altlinux.org</url>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://psv4.userapi.com/s/v1/d/oL6xmP45lyDhruCNGIDXi_GLyn8sX2d3VsEAsD5Fwgaf7IfOckmUTrShrvGN-DYGXtygniSdQjKd9EXeTJUnXoa3boa_oDSZ-8mTLMcbEEBRnTaSbuRUbw/pic2.png</image>
+      <caption>Current password request form</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://psv4.userapi.com/s/v1/d/yJHJU2mFjQKocfMkTBlKTBrHnCuw3fu2X0_qkMH8O9U2kAvq82aR199hmc0u_WgLIJ0iw-faN8Nwbgn0ArkxSbcH7gwSoi90tG2Mi8I6qu6YRNAnesP6Fw/pic1.png</image>
+      <caption>Successful password change</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://psv4.userapi.com/s/v1/d/aBXiA96mxSVespWfnTxpYFX2lxEBkraZ4KxX9sbmHEX8XIEKuRSjb7zfgDN6P19GkI1YlCft9E7EphGXQZbnQ5yc3-JoM10BwP5jfdxSUGTFLxm9mxirGA/pic3.png</image>
+      <caption>Failed password change with information output</caption>
+    </screenshot>
+  </screenshots>
+</component>

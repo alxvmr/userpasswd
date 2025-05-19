@@ -34,6 +34,9 @@ set (SOURCES
 set (DESKTOP_FILE
      data/userpasswd.desktop)
 
+set (METAINFO_FILE
+    data/${PROJECT_NAME}.metainfo.xml)
+
 set (MARSHAL_FILE ${CMAKE_CURRENT_SOURCE_DIR}/userpasswd-marshal.list)
 
 message("Generating marshal.h: ${GLIB_GENMARSHAL} ${CMAKE_CURRENT_SOURCE_DIR}/marshal.list --header")
@@ -115,3 +118,7 @@ install(FILES data/icons/org.altlinux.userpasswd.Devel.svg
         DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps)
 install(FILES data/icons/org.altlinux.userpasswd-symbolic.svg
         DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/symbolic/apps)
+if (USE_ADWAITA)
+    install (FILES ${METAINFO_FILE} DESTINATION
+         ${CMAKE_INSTALL_DATADIR}/metainfo)
+endif ()

@@ -88,6 +88,7 @@ EOF
 %files gnome
 %_bindir/%binary_name_adwaita
 %_altdir/%binary_name_adwaita
+%_datadir/metainfo/%name.metainfo.xml
 
 %files common
 %_desktopdir/%name.desktop
