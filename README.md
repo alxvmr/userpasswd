@@ -1,13 +1,16 @@
-# Userpasswd-gnome
-> [!WARNING]
-> The app is in development
+# userpasswd
 
 A graphical utility to change your password in GNOME.\
 Application are written for use in [ALT](https://getalt.org/en/) distributions.
 
+The application is presented in two interfaces: Adwaita and only GTK4
+
 <p align="center">
-    <img src="https://psv4.userapi.com/s/v1/d/gv2IEIrIm4q5XcIvYNeZ9J-YoyADrCKGrsgEnscmRiiwoFlKZfWfFzBUHWt1rsuIwfWYI7cjrIGiNFpH5NhTX96N4X_GGrsSd7snRQex0nvh2rjSj3Agwg/IMG_5025.png">
+    <img src="https://psv4.userapi.com/s/v1/d/8nCNxSIJQC4mnCC21-MuwDHanu2l7hfpvQ3dydpZTDPOyKkjqYK3Go3Vq2g7dN-RUkIlBnQU6_xK5FE-gj_ueWw2gjRNd35WRjcLJM0yGsTP0Kcwx7SlgQ/Group_1_1.png">
 </p>
+
+These interfaces are provided in the **userpasswd-gnome** and **userpasswd** packages, respectively. 
+The local build is described below.
 
 # Dependencies
 ```
@@ -23,11 +26,20 @@ libadwaita-1
 
 # Build
 ## Local build
-In the root directory, create a build folder and run `cmake` and `make`:
+In the root directory, create a build folder and run `cmake` and `make`.\
+To build the version with **Adwaita**:
 ```bash
 mkdir build
 cd build
-cmake ..
+cmake -DUSE_ADWAITA=ON ..
+make
+make install
+```
+To build the version with **only GTK4**:
+```bash
+mkdir build
+cd build
+cmake -DUSE_ADWAITA=OFF ..
 make
 make install
 ```
@@ -39,8 +51,18 @@ chmod g+s /bin/pam_helper
 ## RPM package
 The `.spec` file for the project is in the repository:
 ```
-.gear/userpasswd-gnome.spec
+.gear/userpasswd.spec
 ```
+After the RPM package is built, the following packages will be created:
+* `userpasswd-common-<version>-<release>.<arch>.rpm` - provides common files for userpasswd and userpasswd-gnome (pam_helper, desktop file, icons, translations, ...);
+* `userpasswd-<version>-<release>.<arch>.rpm` - provides an application binary with only GTK4 version;
+* `userpasswd-gnome-<version>-<release>.<arch>.rpm` - provides an application binary with Adwaita version.
+
+> [!WARNING]
+> The `userpasswd-common` package is required for the rest of the packages to work
+
+> [!WARNING]
+> If `userpasswd` and `userpasswd-gnome` packages are installed on the system at the same time, the binary from `userpasswd-gnome` will be used thanks to the alternatives mechanism
 
 # Application Architecture
 Userpasswd is used to change a user's password.\
