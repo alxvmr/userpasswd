@@ -13,18 +13,22 @@ static inline int getstate(const char *msg) {
     /* Interpret possible PAM messages (not including errors)
        TODO: What should be the UI for kerberos and winbind?
     */
-    if (!strcmp(msg, "Current Password: ") || !strcmp(msg, "Current password: ") ||
-        !strcmp(msg, "Current Kerberos password:") || !strcmp(msg, "(current) NT password:"))
+    gchar *trimmed_msg = g_strdup(msg);
+    g_strstrip(trimmed_msg);
+
+    if (!strcmp(trimmed_msg, "Current Password:") || !strcmp(trimmed_msg, "Current password:") ||
+        !strcmp(trimmed_msg, "Current Kerberos password:") || !strcmp(trimmed_msg, "(current) NT password:"))
         return PAM_OLDPASS;
 
-    if (!strcmp(msg, "New Password: ") || !strcmp(msg, "Enter new password: ") ||
-        !strcmp(msg, "Enter new NT password:"))
+    if (!strcmp(trimmed_msg, "New Password:") || !strcmp(trimmed_msg, "Enter new password:") ||
+        !strcmp(trimmed_msg, "Enter new NT password:"))
         return PAM_NEWPASS;
 
-    if (!strcmp(msg, "Reenter new Password: ") || !strcmp(msg, "Re-type new password: ") ||
-        !strcmp(msg, "Retype new NT password:"))
+    if (!strcmp(trimmed_msg, "Reenter new Password:") || !strcmp(trimmed_msg, "Re-type new password:") ||
+        !strcmp(trimmed_msg, "Retype new NT password:"))
         return PAM_REPEATPASS;
 
+    g_free(trimmed_msg);
     return PAM_SKIPASS;
 }
 
