@@ -9,5 +9,6 @@ GenericName[ru]=Смена пароля
 Comment[ru]=Изменение личного пароля
 Icon=org.altlinux.userpasswd
 Exec=/usr/bin/userpasswd
+TryExec=/usr/bin/userpasswd
 Terminal=false
 Categories=Settings;
