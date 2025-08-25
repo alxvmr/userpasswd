@@ -49,6 +49,7 @@ typedef struct _UserpasswdWindow {
 
     GtkWidget *strength_indicator;
     GtkWidget *strength_indicator_label;
+    GtkWidget *password_not_match_label;
 
     GtkWidget *button;
 

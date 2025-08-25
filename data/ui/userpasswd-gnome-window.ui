@@ -26,6 +26,14 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkLabel" id="password_not_match_label">
+                        <property name="visible">False</property>
+                        <property name="css-classes">error</property>
+                        <property name="label" translatable="yes">Passwords don't match</property>
+                        <property name="margin-bottom">5</property>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkLevelBar" id="strength_indicator">
                         <property name="visible">False</property>
                       </object>
