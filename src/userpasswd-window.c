@@ -177,6 +177,8 @@ update_password_strength (GtkWidget  *password_row,
     check_reason = passwdqc_check(&params.qc, password, NULL, NULL);
 
     if (check_reason) {
+        gtk_widget_add_css_class (GTK_WIDGET (password_row), "error");
+
         capitalized_reason = g_strdup(check_reason);
         /* Make a message with a capital letter */
         if (capitalized_reason && capitalized_reason[0] != '\0') {
@@ -198,6 +200,8 @@ update_password_strength (GtkWidget  *password_row,
 
         g_free (capitalized_reason);
     } else {
+        gtk_widget_remove_css_class (GTK_WIDGET (password_row), "error");
+
         gtk_level_bar_set_value (GTK_LEVEL_BAR (window->strength_indicator), 1.0);
         gtk_label_set_label (GTK_LABEL (window->strength_indicator_label), _("Great password!"));
         gtk_widget_set_sensitive (window->button, TRUE);
