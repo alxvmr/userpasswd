@@ -81,7 +81,7 @@ userpasswd_app_press_enter (GSimpleAction *action,
 {
     UserpasswdApp *self = userdata;
 
-    if (self->window->button != NULL) {
+    if (self->window->button != NULL && gtk_widget_get_sensitive (self->window->button)) {
         g_signal_emit_by_name (self->window->button, "clicked", self);
     }
 }
