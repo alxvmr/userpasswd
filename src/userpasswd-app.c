@@ -1,4 +1,5 @@
 #include "userpasswd-window.h"
+#include "userpasswd-log-window.h"
 #include "userpasswd-app.h"
 #include "userpasswd-stream.h"
 
@@ -10,6 +11,7 @@ struct _UserpasswdApp {
 #endif
 
     UserpasswdWindow *window;
+    UserpasswdLogWindow *log_window;
     UserpasswdStream *stream;
     gchar *current_password;
     gchar *new_password;
@@ -75,6 +77,32 @@ userpasswd_app_quit_action (GSimpleAction *action,
 }
 
 static void
+on_log_window_destroy(GtkWidget *widget,
+                      gpointer   user_data)
+{
+    UserpasswdApp *app = USERPASSWD_APP(user_data);
+    app->log_window = NULL;
+}
+
+static void
+userpasswd_app_show_logs (GSimpleAction *action,
+                          GVariant      *parametr,
+                          gpointer       userdata)
+{
+    UserpasswdApp *self = userdata;
+
+    if (self->log_window == NULL) {
+        self->log_window = g_object_new (USERPASSWD_TYPE_LOGWINDOW,
+                                        "application", GTK_APPLICATION(self),
+                                        NULL);
+        g_signal_connect(self->log_window, "destroy", G_CALLBACK(on_log_window_destroy), self);
+    }
+
+    gtk_label_set_text (GTK_LABEL (self->log_window->info), gtk_label_get_text (GTK_LABEL (self->window->info)));
+    gtk_window_present (GTK_WINDOW (USERPASSWD_APP (self)->log_window));
+}
+
+static void
 userpasswd_app_press_enter (GSimpleAction *action,
                             GVariant      *parametr,
                             gpointer       userdata)
@@ -136,7 +164,8 @@ userpasswd_app_new (const char        *application_id,
 static const GActionEntry app_actions[] = {
     {"quit", userpasswd_app_quit_action},
     {"about", userpasswd_app_about_action},
-    {"press_enter", userpasswd_app_press_enter}
+    {"press_enter", userpasswd_app_press_enter},
+    {"show_logs", userpasswd_app_show_logs}
 };
 
 static void

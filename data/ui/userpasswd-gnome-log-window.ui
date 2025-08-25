@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.94.1 -->
+<interface>
+  <!-- interface-name qqq.ui -->
+  <requires lib="gtk" version="4.12"/>
+  <requires lib="libadwaita" version="1.4"/>
+  <template class="UserpasswdLogWindow" parent="AdwWindow">
+    <property name="content">
+      <object class="AdwToolbarView" id="toolbar">
+        <property name="content">
+          <object class="GtkScrolledWindow">
+            <child>
+              <object class="GtkLabel" id="info">
+                <property name="halign">start</property>
+                <property name="natural-wrap-mode">word</property>
+                <property name="selectable">True</property>
+                <property name="valign">start</property>
+                <property name="wrap">True</property>
+              </object>
+            </child>
+          </object>
+        </property>
+        <property name="margin-bottom">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
+        <child type="top">
+          <object class="AdwHeaderBar" id="header-bar">
+            <property name="can-focus">False</property>
+            <property name="show-back-button">False</property>
+            <property name="show-start-title-buttons">False</property>
+            <property name="title-widget">
+              <object class="AdwWindowTitle" id="title">
+                <property name="title">More</property>
+              </object>
+            </property>
+            <child type="start">
+              <object class="GtkButton" id="copy_button">
+                <property name="css-classes">suggested-action
+</property>
+                <property name="label">Copy</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </property>
+  </template>
+</interface>

@@ -55,18 +55,17 @@ userpasswd_window_show_status (UserpasswdWindow *self,
     g_debug ("Start status display");
     stop_spinner (self);
 
-    gtk_label_set_text (GTK_LABEL (self->status_mess), NULL);
-    gtk_label_set_text (GTK_LABEL (self->substatus_mess), NULL);
+    AdwToast *toast = adw_toast_new (status_mess);
+    if (!g_strcmp0 (status_type, "error"))
+    {
+        adw_toast_set_button_label (toast, _("More"));
+        adw_toast_set_action_name (toast, "app.show_logs");
 
-    gtk_label_set_text (GTK_LABEL (self->status_mess), status_mess);
-    gtk_widget_set_css_classes (GTK_WIDGET (self->status_mess), (const gchar *[]) {status_type, NULL});
-
-    if (substatus_mess) {
-        gtk_label_set_markup (GTK_LABEL (self->substatus_mess), substatus_mess);
-        gtk_widget_set_visible (self->substatus_mess, TRUE);
+        gtk_level_bar_set_value (GTK_LEVEL_BAR (self->strength_indicator), 1.0);
+        gtk_widget_set_visible (self->strength_indicator_label, FALSE);
     }
 
-    gtk_widget_set_visible (GTK_WIDGET (self->status_mess), TRUE);
+    adw_toast_overlay_add_toast (ADW_TOAST_OVERLAY (self->overlay), toast);
 }
 
 gchar*
@@ -187,6 +186,8 @@ update_password_strength (GtkWidget  *password_row,
     const gchar *check_reason;
     gchar *capitalized_reason = NULL;
     const gchar *config = PASSWDQC_CONFIG_FILE;
+
+    gtk_widget_set_visible (window->strength_indicator_label, TRUE);
 
     passwdqc_params_reset(&params);
 
@@ -407,6 +408,7 @@ userpasswd_window_class_init (UserpasswdWindowClass *class)
     gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, strength_indicator);
     gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, strength_indicator_label);
     gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, password_not_match_label);
+    gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, overlay);
 
     userpasswd_window_signals[CHECK_PWD] = g_signal_new (
         "check-password",

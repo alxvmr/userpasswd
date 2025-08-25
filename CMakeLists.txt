@@ -29,6 +29,7 @@ pkg_check_modules(PASSWDQC passwdqc)
 set (SOURCES
     src/userpasswd-app.c
     src/userpasswd-window.c
+    src/userpasswd-log-window.c
     src/userpasswd-stream.c
 )
 
@@ -68,6 +69,7 @@ add_custom_command(
     MAIN_DEPENDENCY ${RESOURCE_XML}
     DEPENDS
         data/ui/userpasswd-gnome-window.ui
+        data/ui/userpasswd-gnome-log-window.ui
 )
 
 add_custom_target(

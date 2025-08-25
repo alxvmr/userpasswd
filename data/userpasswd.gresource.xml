@@ -2,6 +2,7 @@
 <gresources>
   <gresource prefix="/org/altlinux/userpasswd">
     <file preprocess="xml-stripblanks" alias="userpasswd-gnome-window.ui">ui/userpasswd-gnome-window.ui</file>
+    <file preprocess="xml-stripblanks" alias="userpasswd-gnome-log-window.ui">ui/userpasswd-gnome-log-window.ui</file>
     <file preprocess="xml-stripblanks" alias="userpasswd-gtk-window.ui">ui/userpasswd-gtk-window.ui</file>
     <file alias="style.css">css/style.css</file>
   </gresource>
