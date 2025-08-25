@@ -242,16 +242,21 @@ create_change_password_elems (UserpasswdWindow *window)
     gtk_widget_set_can_focus (g_child, FALSE);
 
     window->button = gtk_button_new_with_label (_("Change password"));
-    gtk_widget_set_sensitive (window->button, FALSE);
     g_signal_connect (G_OBJECT (window->button), "clicked", G_CALLBACK (cb_change_password_button), window);
     
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), window->new_password_row);
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), window->repeat_new_password_row);
 
     /* Setting up a password complexity indicator */
-    gtk_widget_set_visible (window->strength_indicator, TRUE);
-    gtk_widget_set_visible (window->strength_indicator_label, TRUE);
-    g_signal_connect (G_OBJECT (window->new_password_row), "notify::text", G_CALLBACK (update_password_strength), window);
+    if (g_file_test (PASSWDQC_CONFIG_FILE, G_FILE_TEST_EXISTS))
+    {
+        gtk_widget_set_sensitive (window->button, FALSE);
+        gtk_widget_set_visible (window->strength_indicator, TRUE);
+        gtk_widget_set_visible (window->strength_indicator_label, TRUE);
+        g_signal_connect (G_OBJECT (window->new_password_row), "notify::text", G_CALLBACK (update_password_strength), window);
+    } else {
+        // TODO: add warning
+    }
 
 #ifndef USE_ADWAITA
     gtk_widget_set_focusable (GTK_WIDGET (
