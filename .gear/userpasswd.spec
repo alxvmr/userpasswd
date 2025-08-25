@@ -31,7 +31,7 @@ Summary: Desktop file and helper for userpasswd
 Group: System/Configuration/Other
 Conflicts: %name < 1.0.0-alt1
 Conflicts: %name-gnome < 1.0.0-alt1
-BuildRequires: pkgconfig(pam) pkgconfig(pam_misc)
+BuildRequires: pkgconfig(pam) pkgconfig(pam_misc) pkgconfig(passwdqc)
 # Due same as passwd PAM_SERVICE - /etc/pam.d/passwd
 Requires: passwd
 

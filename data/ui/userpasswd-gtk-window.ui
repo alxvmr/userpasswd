@@ -48,6 +48,21 @@
                 <property name="margin-bottom">10</property>
               </object>
             </child>
+            <child>
+              <object class="GtkLevelBar" id="strength_indicator">
+                <property name="visible">False</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="strength_indicator_label">
+                <property name="halign">start</property>
+                <property name="label">Mix uppercase and lowercase and try to use a number or two</property>
+                <property name="margin-bottom">10</property>
+                <property name="margin-top">5</property>
+                <property name="sensitive">False</property>
+                <property name="visible">False</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>

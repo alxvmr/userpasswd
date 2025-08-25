@@ -47,6 +47,9 @@ typedef struct _UserpasswdWindow {
     GtkWidget *new_password_row;
     GtkWidget *repeat_new_password_row;
 
+    GtkWidget *strength_indicator;
+    GtkWidget *strength_indicator_label;
+
     GtkWidget *button;
 
     GtkWidget *spinner;

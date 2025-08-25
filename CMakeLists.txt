@@ -24,6 +24,7 @@ if (USE_ADWAITA)
     pkg_check_modules (ADWAITA REQUIRED libadwaita-1)
 endif ()
 pkg_check_modules(JSON_GLIB json-glib-1.0)
+pkg_check_modules(PASSWDQC passwdqc)
 
 set (SOURCES
     src/userpasswd-app.c
@@ -96,18 +97,21 @@ target_include_directories(
     src
     ${GTK_INCLUDE_DIRS}
     ${JSON_GLIB_INCLUDE_DIRS}
+    ${PASSWDQC_INCLUDE_DIRS}
 )
 
 target_link_libraries(
     userpasswd PRIVATE
     ${GTK_LIBRARIES}
     ${JSON_GLIB_LIBRARIES}
+    ${PASSWDQC_LIBRARIES}
 )
 
 target_compile_options(
     userpasswd PRIVATE
     ${GTK_CFLAGS}
     ${JSON_GLIB_CFLAGS}
+    ${PASSWDQC_CFLAGS}
 )
 
 install (TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})

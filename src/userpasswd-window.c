@@ -1,5 +1,8 @@
 #include "userpasswd-window.h"
 #include "userpasswd-stream.h"
+#include <passwdqc.h>
+
+const gchar *PASSWDQC_CONFIG_FILE = "/etc/passwdqc.conf";
 
 enum {
     CHECK_PWD,
@@ -32,6 +35,15 @@ stop_spinner (UserpasswdWindow *self)
         gtk_widget_set_visible (self->spinner, FALSE);
         gtk_spinner_stop (GTK_SPINNER (self->spinner));
     }
+}
+
+static void
+clear_status (UserpasswdWindow *window)
+{
+    if (gtk_widget_get_visible (GTK_WIDGET (window->status_mess)))
+        gtk_widget_set_visible (GTK_WIDGET (window->status_mess), FALSE);
+    if (gtk_widget_get_visible (GTK_WIDGET (window->substatus_mess)))
+        gtk_widget_set_visible (GTK_WIDGET (window->substatus_mess), FALSE);
 }
 
 static void
@@ -103,10 +115,7 @@ cb_check_password_button (GtkWidget *button,
     UserpasswdWindow *self = USERPASSWD_WINDOW (user_data);
     start_spinner (self);
 
-    if (gtk_widget_get_visible (GTK_WIDGET (self->status_mess)))
-        gtk_widget_set_visible (GTK_WIDGET (self->status_mess), FALSE);
-    if (gtk_widget_get_visible (GTK_WIDGET (self->substatus_mess)))
-        gtk_widget_set_visible (GTK_WIDGET (self->substatus_mess), FALSE);
+    clear_status (self);
 
     const gchar *current_password = gtk_editable_get_text (GTK_EDITABLE (self->current_password_row));
     g_signal_emit (self, userpasswd_window_signals[CHECK_PWD], 0, current_password);
@@ -128,10 +137,7 @@ cb_change_password_button (GtkWidget *button,
     UserpasswdWindow *self = USERPASSWD_WINDOW (user_data);
     start_spinner (self);
 
-    if (gtk_widget_get_visible (GTK_WIDGET (self->status_mess)))
-        gtk_widget_set_visible (GTK_WIDGET (self->status_mess), FALSE);
-    if (gtk_widget_get_visible (GTK_WIDGET (self->substatus_mess)))
-        gtk_widget_set_visible (GTK_WIDGET (self->substatus_mess), FALSE);
+    clear_status (self);
 
     const gchar *new_password = gtk_editable_get_text (GTK_EDITABLE (self->new_password_row));
     const gchar *repeat_new_password = gtk_editable_get_text (GTK_EDITABLE (self->repeat_new_password_row));
@@ -141,6 +147,66 @@ cb_change_password_button (GtkWidget *button,
     }
     else {
         userpasswd_window_show_status (self, _("Passwords don't match"), NULL, "error");
+    }
+}
+
+void
+update_password_strength (GtkWidget  *password_row,
+                          GParamSpec *pspec,
+                          gpointer    user_data)
+{
+    UserpasswdWindow *window = USERPASSWD_WINDOW (user_data);
+
+    const gchar *password;
+    passwdqc_params_t params;
+    gchar *parse_reason = NULL;
+    const gchar *check_reason;
+    gchar *capitalized_reason = NULL;
+    const gchar *config = PASSWDQC_CONFIG_FILE;
+
+    passwdqc_params_reset(&params);
+
+    if (*config && passwdqc_params_load(&params, &parse_reason, config)) {
+        g_printerr ("Cannot check password quality: %s\n", (parse_reason ? parse_reason : "Out of memory"));
+		goto out;
+	}
+
+    clear_status (window);
+
+    password = gtk_editable_get_text (GTK_EDITABLE (password_row));
+    check_reason = passwdqc_check(&params.qc, password, NULL, NULL);
+
+    if (check_reason) {
+        capitalized_reason = g_strdup(check_reason);
+        /* Make a message with a capital letter */
+        if (capitalized_reason && capitalized_reason[0] != '\0') {
+            gunichar first_char = g_utf8_get_char(check_reason);
+            gunichar upper_char = g_unichar_toupper(first_char);
+
+            const gchar *rest = g_utf8_next_char(check_reason);
+
+            gchar upper_utf8[6] = {0};
+            gint bytes_written = g_unichar_to_utf8(upper_char, upper_utf8);
+            upper_utf8[bytes_written] = '\0';
+
+            capitalized_reason = g_strconcat(upper_utf8, rest, NULL);
+        }
+
+        gtk_level_bar_set_value (GTK_LEVEL_BAR (window->strength_indicator), 0.2);
+        gtk_label_set_label (GTK_LABEL (window->strength_indicator_label), capitalized_reason);
+        gtk_widget_set_sensitive (window->button, FALSE);
+
+        g_free (capitalized_reason);
+    } else {
+        gtk_level_bar_set_value (GTK_LEVEL_BAR (window->strength_indicator), 1.0);
+        gtk_label_set_label (GTK_LABEL (window->strength_indicator_label), _("Great password!"));
+        gtk_widget_set_sensitive (window->button, TRUE);
+    }
+
+out:
+    passwdqc_params_free(&params);
+    if (parse_reason) {
+        g_free (parse_reason);
     }
 }
 
@@ -176,10 +242,17 @@ create_change_password_elems (UserpasswdWindow *window)
     gtk_widget_set_can_focus (g_child, FALSE);
 
     window->button = gtk_button_new_with_label (_("Change password"));
+    gtk_widget_set_sensitive (window->button, FALSE);
     g_signal_connect (G_OBJECT (window->button), "clicked", G_CALLBACK (cb_change_password_button), window);
     
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), window->new_password_row);
     gtk_list_box_append (GTK_LIST_BOX (window->container_password), window->repeat_new_password_row);
+
+    /* Setting up a password complexity indicator */
+    gtk_widget_set_visible (window->strength_indicator, TRUE);
+    gtk_widget_set_visible (window->strength_indicator_label, TRUE);
+    g_signal_connect (G_OBJECT (window->new_password_row), "notify::text", G_CALLBACK (update_password_strength), window);
+
 #ifndef USE_ADWAITA
     gtk_widget_set_focusable (GTK_WIDGET (
                                 gtk_list_box_get_row_at_index (GTK_LIST_BOX (window->container_password), 0)),
@@ -292,6 +365,8 @@ userpasswd_window_class_init (UserpasswdWindowClass *class)
     gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, menu_button);
     gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, container_data_input);
     gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, container_password);
+    gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, strength_indicator);
+    gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), UserpasswdWindow, strength_indicator_label);
 
     userpasswd_window_signals[CHECK_PWD] = g_signal_new (
         "check-password",
