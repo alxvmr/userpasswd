@@ -68,10 +68,10 @@ userpasswd_app_quit_action (GSimpleAction *action,
                             gpointer       userdata)
 {
     UserpasswdApp *self = userdata;
-
+    GtkWindow *window;
     g_assert (USERPASSWD_IS_APP (self));
-
-    g_application_quit (G_APPLICATION (self));
+    window = gtk_application_get_active_window (GTK_APPLICATION (self));
+    gtk_window_close (window);
 }
 
 static void
