@@ -221,7 +221,7 @@ cb_new_status (gpointer         *stream,
 
         userpasswd_window_show_status (window,
                                        status_mess,
-                                       _("Press the Ctrl+w to exit"),
+                                       _("Press Ctrl+W to close the window"),
                                        status_type);
         return;
     }

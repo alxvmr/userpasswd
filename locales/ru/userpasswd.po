@@ -35,8 +35,8 @@ msgid "Change password"
 msgstr "Сменить пароль"
 
 #: src/userpasswd-window.c:164
-msgid "Press the Escape button to exit"
-msgstr "Для выхода нажмите клавишу Escape"
+msgid "Press Ctrl+W to close the window"
+msgstr "Для закрытия окна нажмите Ctrl+W"
 
 #: src/userpasswd-window.c:190
 msgid "Current password"

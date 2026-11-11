@@ -71,7 +71,9 @@ userpasswd_app_quit_action (GSimpleAction *action,
     GtkWindow *window;
     g_assert (USERPASSWD_IS_APP (self));
     window = gtk_application_get_active_window (GTK_APPLICATION (self));
-    gtk_window_close (window);
+    if (window != NULL){
+      gtk_window_close (window); 
+    }
 }
 
 static void
